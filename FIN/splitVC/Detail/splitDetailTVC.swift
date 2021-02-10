@@ -307,6 +307,12 @@ class splitDetailTVC: UITableViewController {
             cell.icon.isHidden = true
         }
         
+        if !UIDevice().model.contains("iPad") {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            cell.outlineView.addInteraction(interaction)
+            cell.outlineView.tag = indexPath.row
+        }
+        
         return cell
     }
     
@@ -478,29 +484,19 @@ class splitDetailTVC: UITableViewController {
 
                     var amountString = ""
                     let amountPerson = amount*ratio
-                    
-                    print("fasödklfajfsd")
-                    print(amountPerson)
-                    print(settled)
-                    print(settledUser)
-                    print(exchangeRate)
+                
                     if isPersonWhoPaid {
-                        print("jfjfjfjjfjf")
                         amountSUM = amountSUM + ((amountPerson - settled)/exchangeRate) // Home Currency
-                        print(amountSUM)
                         amountString = (getSymbol(forCurrencyCode: Locale.current.currencyCode ?? "EUR") ?? "€") + " " + (numberFormatter.string(from: NSNumber(value: abs(amountSUM))) ?? "")
                         sumOwed = (sumOwed ?? 0.00) - (((amount*ratioUser) - settledUser)/exchangeRate)
                     } else {
-                        print("jdlsjflsd")
                         amountSUM = amountSUM - ((amountPerson - settled)/exchangeRate)
-                        print(amountSUM)
                         amountString = (getSymbol(forCurrencyCode: Locale.current.currencyCode ?? "EUR") ?? "€") + " " + (numberFormatter.string(from: NSNumber(value: abs(amountSUM))) ?? "")
                         // Only if user paid, it is included in the overview
                         let up = (split.value(forKey: "createDatePersonWhoPaid") as? Date ?? Date()).compare(plusCreateDatePersonWhoPaid) == .orderedAscending
                         let down = (split.value(forKey: "createDatePersonWhoPaid") as? Date ?? Date()).compare(minusCreateDatePersonWhoPaid) == .orderedDescending
                         
                         if up && down && ((split.value(forKey: "namePersonWhoPaid") as? String ?? "") == userName) {
-                            print("dfskjjfjds")
                             sumOwed = (sumOwed ?? 0.00) + (((amount*ratioUser) - settled)/exchangeRate)
                         }
                     }
@@ -784,6 +780,100 @@ class splitDetailTVC: UITableViewController {
     }
 }
 
+// Context Menu
+extension splitDetailTVC: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        if selectedSegement == 0 { // Group has been selected
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: { self.makeSplitPersonDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = []
+                    return UIMenu(title: "", children: children)
+                  })
+        } else { // Person has been selected
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        }
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        if selectedSegement == 0 {
+            animator.addCompletion {
+                self.show(self.makeSplitPersonDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+            }
+        } else {
+            animator.addCompletion {
+                self.show(self.makeDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+            }
+        }
+    }
+    
+    func makeDeleteAction(rowString: String) -> UIAction {
+      return UIAction(
+        title: NSLocalizedString("deleteButton", comment: "Delete"),
+        image: UIImage(systemName: "trash"),
+        identifier: UIAction.Identifier(rowString),
+        attributes: .destructive,
+        handler: deleteTransaction)
+    }
+    
+    func deleteTransaction(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue)
+        
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+
+        if row != -1 {
+            let transactionDate = (rowData[(row)]?[7] as? Date ?? Date())
+            
+            let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: transactionDate)!
+            let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: transactionDate)!
+
+            let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            deleteDataQueried(entity: "Transactions", query: queryDelete)
+
+            let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            deleteDataQueried(entity: "Splits", query: querySplits)
+            
+            let nc = NotificationCenter.default
+            nc.post(name: Notification.Name("transactionDeleted"), object: nil)
+            nc.post(name: Notification.Name("groupPersonAdded"), object: nil)
+        }
+    }
+    
+    func makeSplitPersonDetailPreview(row: Int) -> UIViewController {
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "splitTSB", bundle: nil)
+        let addSplitVC = finStoryBoard.instantiateViewController(withIdentifier: "splitAddNewTVC") as! splitAddNewTVC
+        
+        addSplitVC.update = 1
+        addSplitVC.updateGroupOrPersonName = rowData[(row)]?[1] as? String ?? ""
+        addSplitVC.updateCreateDate = (rowData[(row)]?[5] as? Date ?? Date())
+
+        let navigationVC = UINavigationController(rootViewController: addSplitVC)
+        return navigationVC
+    }
+    
+    func makeDetailPreview(row: Int) -> UIViewController {
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        if let latestTransactionDate = (rowData[(row)]?[7] as? Date) {
+            addVC.updateCreateDate = latestTransactionDate
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        return navigationVC
+    }
+}
+
 // MARK: -DATA
 extension splitDetailTVC {
     func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
@@ -883,6 +973,28 @@ extension splitDetailTVC {
             print("Could not fetch. \(error)")
         }
         return [NSManagedObject]()
+    }
+    
+    func deleteDataQueried(entity: String, query: NSPredicate) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.predicate = query
+        do {
+            let delete = try managedContext.fetch(fetchRequest)
+            for data in delete {
+                managedContext.delete(data as! NSManagedObject)
+            }
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        } catch {
+            print(error)
+        }
     }
     
     func isUser(createDate:Date, namePerson:String) -> Bool {

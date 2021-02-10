@@ -319,6 +319,12 @@ class splitMasterTVC: UITableViewController {
             cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
         }
         
+        if !UIDevice().model.contains("iPad") {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            cell.outlineView.addInteraction(interaction)
+            cell.outlineView.tag = (indexPath.row-1)
+        }
+        
         return cell
     }
     
@@ -662,6 +668,37 @@ class splitMasterTVC: UITableViewController {
     }
 }
 
+// Context Menu
+extension splitMasterTVC: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(
+            identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+            previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+              actionProvider: { _ in
+                let children: [UIMenuElement] = []//[self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                return UIMenu(title: "", children: children)
+              })
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+            self.show(self.makeDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+        }
+    }
+    
+    func makeDetailPreview(row: Int) -> UIViewController {
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "splitTSB", bundle: nil)
+        let addSplitVC = finStoryBoard.instantiateViewController(withIdentifier: "splitAddNewTVC") as! splitAddNewTVC
+        
+        addSplitVC.update = selectedSegement
+        addSplitVC.updateGroupOrPersonName = rowData[(row)]?[0] as? String ?? ""
+        addSplitVC.updateCreateDate = (rowData[(row)]?[4] as? Date ?? Date())
+
+        let navigationVC = UINavigationController(rootViewController: addSplitVC)
+        return navigationVC
+    }
+}
+
 // MARK: -DATA
 extension splitMasterTVC {
     func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
@@ -794,6 +831,28 @@ extension splitMasterTVC {
             print("Could not fetch. \(error)")
         }
         return false
+    }
+    
+    func deleteDataQueried(entity: String, query: NSPredicate) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.predicate = query
+        do {
+            let delete = try managedContext.fetch(fetchRequest)
+            for data in delete {
+                managedContext.delete(data as! NSManagedObject)
+            }
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        } catch {
+            print(error)
+        }
     }
     
     func isUser(createDate:Date, namePerson:String) -> Bool {
