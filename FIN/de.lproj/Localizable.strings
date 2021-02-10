@@ -1,0 +1,882 @@
+/* 
+  Strings_German.strings
+  FIN
+
+  Created by Florian Riel on 26.06.20.
+  Copyright © 2020 Alpako. All rights reserved.
+*/
+// #### Shortcut Items
+"addNewTransactionTitle" = "Transaktion";
+
+// #### Intro ####
+// First
+"welcomeLabel" = "Willkommen";
+"welcomeSubLabel" = "FIN - Tracke deine Finanzen";
+"swipeText" = "Bildschirm berühren";
+
+// Second (Add categories)
+"secondDescriptionLabelText" = "Als erstes sollten Sie bitte Ihre Kategorien erstellen, unter 'Kategorien' im Tab: 'Benutzer'.";
+
+// Third (Type of categories)
+"thirdSecondDescriptionText" = "Neben den typischen Einnahmen & Ausgaben Kategorien, können Sie auch eine 'Spar' Kategorie ausgewählen.";
+"thirdDescriptionText" = "Eine 'Spar' Kategorie kann wie ein extra Konto für Ihr Erspartes gesehen werden, welches die sofort verfügbaren Mittel reduziert.";
+
+// Fourth (Add Transaction)
+"fourthDescriptionText" = "Zum Hinzugügen einer Transaktion einfach + in der 'Übersicht' drücken.";
+
+// Final (Go)
+"welcomeLabelFinalText" = "Fertig";
+"finalDescriptionLabelText" = "Das sollte für den Anfang reichen. Viel Erfolg beim Tracken Ihrer Finanzen!";
+"goButtonText" = "Auf gehts!";
+
+"Authentication" = "Entsperren";
+
+"goodMorning" = "Guten Morgen";
+"goodAfternoon" = "Guten Tag";
+"goodEvening" = "Guten Abend";
+"goodNight" = "Gute Nacht";
+
+"Enter Passcode" = "Zugangscode";
+// #### Forgot Code ####
+"Forgot Code?" = "Code vergessen?";
+"forgotCodeConfirmTitle" = "Code zurücksetzen?";
+"forgotCodeConfirmText" = "Ein neuer Code wird Ihnen per eMail zugesendet. Bitte verwenden Sie diesen neuen Code um FIN zu entsperren.";
+"forgotCodeConfirmAction" = "Zurücksetzen";
+"forgotCodeCancel" = "Abbrechen";
+"forgotCodeMailText1" = "Vielen Dank, dass Sie FIN nutzen. Ihr neuer Code zum Entsperren der App ist: <b>";
+"forgotCodeMailText2" = "</b><br><br>Ihr Alpako Support Team";
+"forgotCodeMailSubject" = "Wiederherstellungs Code - FIN";
+"forgotCodePositiveTitle" = "Gesendet";
+"forgotCodePositiveText" = "Falls Sie den Code nicht in den nächsten Minuten per Email erhalten, sehen Sie bitte Ihren Spam Ordner nach";
+"forgotCodeNegativeTitle" = "Fehler";
+"forgotCodeNegativeText" = "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.";
+"forgotCodeOK" = "OK";
+// #### Set Code ####
+"Cancel" = "Abbrechen";
+"Current Passcode" = "Akuteller Zugangscode";
+"New Passcode" = "Neuer Zugangscode";
+"Re-Enter Passcode" = "Zugangscode wiederholen";
+"New Passcode Success" = "Erfolg";
+"New Passcode Nomatch" = "Zugangscodes haben nicht übereingestimmt";
+
+// #### Top VC ####
+"availableLabel" = "Verfügbar";
+"lastEntryLabel" = "Letzte Transaktion";
+"noTransaction" = "Noch keine Transaktion";
+"splitsSubLabel" = "Splits";
+"categoriesSubLabel" = "Kategorien";
+
+// #### Add VC ####
+"createCategoriesTitle" = "Kategorien erstellen?";
+"createCategoriesText" = "Es sind noch keine Kategorien vorhanden. FIN kann ein paar gebräuchliche Kategorien für Sie anlegen.";
+
+"categoryHousehold" = "Haushalt";
+"categorySport" = "Sport";
+"categoryOther" = "Andere";
+"categorySalary" = "Gehalt";
+"categorySavingsAccount" = "Sparkonto";
+
+"Add Transaction Title" = "Neue Transaktion";
+"Update Transaction Title" = "Bearbeiten";
+"addRegularPaymentTitle" = "Regemäßige Zahlung";
+"editRegularPaymentTitle" = "Bearbeiten";
+
+"Add Tag" = "Label hinzufügen";
+"Add Tag Text" = "Ein neues Label zur Transaktion hinzufügen";
+"Tag *;* Error Title" = "Unerlaubte Kombination";
+"Tag *;* Error Text" = "Die Zeichenkombinationen *;* und *&* sind aus technischen Gründen nicht möglich. Bitte etwas anderes eingeben.";
+"Tag Already In List Title" = "Doppelter Eintrag";
+"Tag Already In List Text" = "Die Transaktion hat das eingegebene Label bereits. Bitte ein anderes Label eingeben.";
+"todayText" = "Heute";
+"yesterdayText" = "Gestern";
+"tomorrowText" = "Morgen";
+"dayAfterTomorrowText" = "Übermorgen";
+"dateText" = "Datum:";
+"splitButtonText" = "Teilen";
+"splitButtonEditText" = "Teilung";
+"addButtonText" = "Hinzufügen";
+
+"liquidLabelText" = "Betrag überwiesen";
+"liquidInfoTitle" = "Information";
+"liquidInfoText" = "Wenn nicht ausgewählt, handelt es sich um eine Bewegung innerhalb des Accounts. Zum Beispiel, wenn einen Renditenzahlung erfolgt, erhöhen sich die Ersparnisse, aber nicht die unmittelbare Zahlungsfähigkeit, ohne den Betrag zuerst auf das Girokonto zu überweisen.";
+
+"updateButtonText" = "Update";
+"updateButtonIncomeText" = "Update Einkommen";
+"updateButtonExpenseText" = "Update Ausgabe";
+"updatButtonUpdatedText" = "Updated";
+
+"addButtonIncomeText" = "Einkommen hinzufügen";
+"addButtonExpenseText" = "Ausgabe hinzufügen";
+
+"addButtonSaveAddText" = "Erspartes einzahlen";
+"addButtonSaveWithdrawText" = "Erspartes abheben";
+"addButtonSaveIncreaseText" = "Erspartes erhöhen";
+"addButtonSaveDecreaseText" = "Erspartes verringern";
+
+"addButtonAddedText" = "Hinzugefügt";
+"segmentDepositText" = "Einzahlen";
+"segmentWithdrawText" = "Abheben";
+"segmentIncreaseText" = "Erhöhen";
+"segmentDecreaseText" = "Verringern";
+
+"MissingAmountTitle" = "Betrag";
+"MissingAmountText" = "Bitte einen gültigen Betrag für die Transaktion eingeben";
+"MissingDescriptionTitle" = "Beschreibung";
+"MissingDescriptionText" = "Bitte eine gültige Beschreibung für die Transaktion eingeben";
+
+"bottomSegmentRepeatDaily" = "Täglich";
+"bottomSegmentRepeatWeekly" = "Wöchentlich";
+"bottomSegmentRepeatMonthly" = "Monatlich";
+"bottomSegmentRepeatYearly" = "Jährlich";
+
+"hasBeenAdded" = "wurde hinzugefügt.";
+
+"addTagButton" = "Hinzufügen";
+"transactionAddedNotificationTitle" = "Hinzugefügt";
+
+// Currency
+"Set" = "Übernehmen";
+
+// Split Transaction
+"selectGroupSplitTransactionTitle" = "In Gruppe aufteilen";
+"selectPersonSplitTransactionTitle" = "Mit Person teilen";
+"selectMultiple" = "Mehrere";
+"multipleSplitTitle" = "Mehrere Personen";
+"splitMultipleNavItem" = "Teilen";
+"backToSingle" = "Einzeln";
+
+// Split Detail
+"splitDetails" = "Aufteilung";
+"topLabelTextHowSplitWasSetOne" = "Wie wurden die ";
+"topLabelTextHowSplitWasSetSecond" = " aufgeteilt?";
+"saveText" = "Speichern";
+"youTheUser" = "Du";
+"youTheUserDir" = "dir";
+"personWhoPaidSublabel" = "Wer hat bezahlt?";
+"segmentSplitEqualy" = "Gleich";
+"segmentSplitPercent" = "%";
+"missingText" = "Es fehlen: ";
+"exactlyText" = "Aufgeteilt";
+"tooMuchText" = "Zu viel: ";
+"deleteButton" = "Löschen";
+
+// #### List View ####
+"viewTitle" = "Transaktionen";
+"bottomSegmentWeekly" = "Woche";
+"bottomSegmentMonthly" = "Monat";
+"bottomSegmentYearly" = "Jahr";
+"bottomSegmentAll" = "Alle";
+"searchbarPlaceholder" = "Suchen";
+
+"topPickerExpensesLabel" = "AUSGABEN";
+"topPickerEarningsLabel" = "EINNAHMEN";
+"topPickerSavingsLabel" = "ERSPARNISSE";
+
+"to" = "-";
+"thisWeek" = "Diese Woche";
+"lastWeek" = "Letzte Woche";
+"nextWeek" = "Nächste Woche";
+"today" = "Heute";
+"yesterday" = "Gestern";
+
+"searchTitle" = "Suchen";
+
+// List Filter
+"filterTitle" = "Filter";
+"filterCategorySegmentControll" = "Kategorie";
+"filterTagSegmentControll" = "Label";
+"filteredAll" = "Alle";
+"filteredAllSubCategory" = "Alle Kategorien auswählen";
+"filteredAllSubTag" = "Alle Labels auswählen";
+"filteredIsExpense" = "Ausgaben";
+"filteredIsIncome" = "Einnahmen";
+"filteredIsSave" = "Gespartes";
+
+// List Transaction Detail
+"viewTitleListDetail" = "Details";
+"detailTransactionExpensesLabel" = "Ausgabe";
+"detailTransactionEarningsLabel" = "Einnahme";
+"detailTransactionSavingsLabel" = "Erspartes";
+
+"detailTransactionSaveAddText" = "Erspartes eingezahlt";
+"detailTransactionIncreasedAddText" = "Erspartes erhöht";
+"detailTransactionSaveWithdrawText" = "Erspartes abgehoben";
+"detailTransactionDecreasedAddText" = "Erspartes verringert";
+
+"groupDetailSubLabel" = "Gruppe";
+"personDetailSubLabel" = "Personen";
+
+"backButton" = "Zurück";
+"deleteTitleTransaction" = "Transaction entfernen?";
+"deleteRepeatedTitleTransaction" = "Regemäßige Zahlungen entfernen?";
+"deleteTextTransaction" = "Dies kann nicht rückgängig gemacht werden!";
+
+// #### Graph VC ####
+
+// Settings
+"graphSettingsTitle" = "Diagramm";
+
+"graphSettingsCellTitle" = "Typ:";
+"lineChartTitle" = "Liniendiagramm";
+"barChartTitle" = "Tortendiagramm";
+
+"option1LineChartTitle" = "Liniendiagramm Optionen:";
+"lineChartOption1_0" = "Saldo";
+"lineChartOption1_1_h" = "Ein vs. Aus";
+"lineChartOption1_1_w" = "Einnahmen vs. Ausgaben";
+"lineChartOption1_2" = "Erspartes";
+
+"option1BarChartTitle" = "Tortendiagramm Optionen:";
+"barChartOption1_0" = "Ausgaben";
+"barChartOption1_1" = "Einnahmen";
+"barChartOption1_2" = "Erspartes";
+
+"option2ChartTitle" = "Zeitliche Gliederung:";
+
+"changeLabel" = "Entwicklung: ";
+
+// #### Split VC ####
+"bottomSegmentGroups" = "Gruppen";
+"bottomSegmentUsers" = "Personen";
+
+// Overview Cell
+"owedLabel" = "DU BEKOMMST:";
+"borrowedLabel" = "DU SCHULDEST:";
+
+"youAreOwedLabel" = "Du bekommst";
+"youBorrowedLabel" = "Du schuldest";
+"personBorrowedLabel" = "Schuldet";
+"personOwedLabel" = "Bekommt";
+
+"notInvolvedInSplit" = "Nicht beteiligt";
+"allSettledSplit" = "alles beglichen";
+"notInvolvedSplit" = "offene Rechnungen";
+
+// Add New
+"bottomAddSegmentGroups" = "Gruppe";
+"bottomAddSegmentUsers" = "Person";
+"bottomAddNewUser" = "Neue Person";
+"bottomAddNewGroup" = "Neue Gruppe";
+"bottomUpdateUser" = "Person bearbeiten";
+"bottomUpdateGroup" = "Gruppe bearbeiten";
+"addNewDefaultPersonsText" = "Keine Gruppen ausgewählt";
+"addNewDefaultGroupsText" = "Keine Personen ausgewählt";
+"addNewGroupText" = "Gruppen auswählen";
+"addNewPersonText" = "Personen auswählen";
+"updateGroupsText" = "Gruppen bearbeiten";
+"updatePersonsText" = "Personen bearbeiten";
+"updateAddButtonText" = "Aktualisieren";
+"addAddButtonText" = "Hinzufügen";
+"Input *;* Error Title" = "Unerlaubte Kombination";
+"Input *;* Error Text" = "Die Zeichenkombination *;* ist aus technischen Gründen nicht möglich. Bitte einen anderen Namen eingeben.";
+"addSuccessNavlabelGroup" = "Gruppe hinzugefügt";
+"addSuccessNavlabelPerson" = "Person hinzugefügt";
+"updateSuccessNavlabelGroup" = "Gruppe aktualisiert";
+"updateSuccessNavlabelPerson" = "Person aktualisiert";
+"AlreadyInDBErrorTitle" = "Duplikat";
+"AlreadyInDBErrorGroupText" = "Gruppe ist bereits vorhanden. Bitte einen anderen Titel wählen.";
+"AlreadyInDBErrorPersonText" = "Name ist bereits vorhanden. Bitte einen anderen Spitznamen wählen.";
+"SameAsUserErrorTitle" = "Benutzer";
+"SameAsUserErrorText" = "Name ist für Benutzer reserviert. Bitte einen anderen Spitznamen wählen.";
+
+"deleteTitlePersonSplit" = "Person entfernen?";
+"deleteTextPersonSplit" = "Das kann nicht rückgängig gemacht werden! Alle offenen Rechnungen werden beglichen.";
+
+"deleteTitleGroupSplit" = "Gruppe entfernen?";
+"deleteTextGroupSplit" = "Dies kann nicht rückgängig gemacht werden! Alle offenen Rechnungen werden beglichen.";
+
+// Select
+"splitSelectTitleUser" = "Personen auswählen";
+"splitSelectTitleGroup" = "Gruppen auswählen";
+"noUsers" = "Keine Personen definiert";
+"noGroups" = "Keine Gruppen definiert";
+"personsTitleText" = "Mitglieder:";
+"groupsTitleText" = "Gruppen:";
+"openSplitsOfPersonInGroupTitle" = "Offene Rechnungen";
+"openSplitsOfPersonInGroupText" = "Enternung aus Gruppe nicht möglich. Es gibt noch offenen Rechnungen.";
+
+// Detail
+"tabToSettle" = "Begleichen";
+"settleNavitem" = "Begleichen";
+"personsInGroup" = "Personen in ";
+"transactionsForPerson" = "Offene Rechnungen für ";
+
+"noDataText" = "Keine Einträge.";
+
+// Settle
+"settle" = "Begleichen";
+"nothingSelected" = "Nichts ausgewählt";
+"personPaid" = " bezahlt ";
+"personPaidFirstUser" = " bezahlst ";
+"transactionDefaultTitle" = "Transaktion";
+
+"settledTitle" = "Beglichen?";
+"youTheUserSmall" = "du";
+"settledPersonPaid" = "bezahlt";
+"settledHast" = "Hast";
+"settledHat" = "Hat";
+"settledAn" = "an";
+"settledDich" = "dich";
+
+"allSettledTitle" = "Alles begleichen?";
+"allSettledText" = "Sind alle offenen Rechnungen bezahlt?";
+
+"settleMissing" = "Noch offen";
+
+"settledDone" = "Beglichen: ";
+
+// #### User VC ####
+// Cell Titles
+"userTitle" = "Benutzer";
+"quickTitle" = "Schnelle Zahlungen";
+"regularPaymentsTitle" = "Regemäßige Zahlungen";
+"budgetMonthlyTitle" = "Budget";
+"categoriesTitle" = "Kategorien";
+"exportTitle" = "Export / Import";
+"settingsTitle" = "Einstellungen";
+"aboutTitle" = "Über";
+
+"purchaseButtonTitle" = "Premium Funktionen freischalten";
+"restoreTitle" = "Einkauf wiederherstellen";
+
+"errorProductRequestTitle" = "Error";
+"errorProductRequestText" = "\n\nBitte kontaktieren Sie unseren Support in der 'Über' Ansicht.";
+
+"errorProcessingText" = "Es ist ein Fehler aufgetretten. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.";
+
+"purchaseRestoredText" = "Ihr vorhergehender Einkauf wurde erfolgreich wiederhergestellt.";
+
+"purchaseTitle" = "Premium Funktion";
+"purchaseText" = "Wollen Sie diese und alle Premium Funktionen der App freischalten?";
+"buyTitle" = "Kaufen";
+
+"notFoundTitle" = "Nicht gefunden";
+"notFoundText" = "Es konnten keine vorhergehenden Einkäufe gefunden werden.";
+
+"notAuthorisedText" = "Das Gerät ist nicht für in-App Einkäufe freigegeben.";
+
+// About
+"aboutTitleText" = "alpako";
+"aboutTextText" = "Danke, dass Sie FIN verwenden, um Ihre persönlichen Finanzen zu tracken. Ich verwende die Applikation täglich für diesen Zweck, weswegen ich sie ständig weiter entwickle & mir regelmäßig neue Erweiterungen einfallen. Nichtsdestotrotz, übernehme ich keine Verantwortung für die Richtigkeit der angezeigten Beträge etc.\nAlle Daten werden automatisch in Ihrer persönlichen iCloud gesichert. Dies kann jederzeit in Ihren Privatsphäre Einstellungen geändert werden.\n\nFalls Sie Vorschläge zur Verbesserung der Applikation oder sonst ein konstruktives Feedback haben, können Sie mir jederzeit ein eMail zukommen lassen:";
+"feedbackTitle" = "Feedback";
+
+// Cell Texts
+"userText" = "Benutzer";
+"statisticsText" = "Ausgesuchte Kennzahlen über deine Finanzen";
+"regularPaymentsText" = "Regelmäßige, sich wiederholende Zahlungen";
+"budgetMonthlyText" = "Definition von deinem monatlichen Budget";
+"categoriesText" = "Kategorien deiner Einnahmen & Ausgaben";
+"exportText" = "Export & Import der Transaktionen";
+"settingsText" = "Deine persönlichen Informationen";
+
+// #### User VC Settings ####
+// Cell Texts
+"cellCodeSetText" = "Code Aktualisieren";
+"cellCodeNotSetText" = "Code Erstellen";
+
+"cutOffTitle" = "Information";
+"cutOffInfoText" = "Bei großen Datenmengen kann es passieren, dass die App bei bestimmten Schritten langsam wird. Um das zu vermeiden, kann hier ausgewählt werden, dass nur Transaktionen der letzten 2 Jahre angezeigt werden. Deren Summen werden natürlich in die Berechnungen miteinbezogen.";
+
+// #### Regular Payments ####
+"nextText" = "Nächste: ";
+"noRegularPayment" = "Keine regelmäßigen Zahlungen";
+
+// #### Export / Import ####
+"Export" = "Daten exportieren";
+"Import" = "Daten importieren";
+
+"startButtonExportTitle" = "Export CSV";
+"textE1" = "Die folgenden Spalten werden in einer CSV Datei exportiert:";
+
+// #### Import Wizard
+"text1" = "Jede Zeile der CSV Datei ist eine Transaktion und muss folgende Spalten haben:";
+"text2" = "Notwendige Spalten:";
+"bullet1" = "Betrag";
+"bullet2" = "Datum";
+"bullet3" = "Kategorie";
+"text3" = "Kategorien können nach dem Import bearbeitet werden (Einnahme, Ausgabe oder Ersparniss).";
+"text4" = "Optional:";
+"bullet4" = "Beschreibung";
+"bullet5" = "Währungskennzahl (z.B.: EUR)";
+"bullet6" = "Wechselkurs";
+"bullet7" = "Tag 1";
+"bullet8" = "Tag 2";
+"bullet9" = "...";
+"text5" = "TIPP: Wenn unsicher, einfach einen Export aus der App erstellen.";
+"importBullet5" = "Währungskennzahl";
+
+"startButtonTitle" = "CSV importieren";
+"importPreviewTitle" = "Vorschau";
+"delimiterTitle" = "  Delimiter";
+
+"errorTitle" = "Import Error";
+"errorText" = "Bitte Kontrollieren Sie ob alle notwendigen Spalten in der Datei vorhanden sind und der richtige Delimiter ausgewählt wurde";
+
+"errorFirstText" = "Fehler in Zeile ";
+"errorDateText" = "Datum konnte nicht importiert werden: ";
+"errorAmountText" = "Betrag konnte nicht importiert werden: ";
+"errorAmountText2" = " Wurde das richtige Dezimaltrennzeichen verwendet?";
+
+"foundTitle" = "Erfolg";
+"foundText" = " Transaktionen gefunden (";
+"foundText2" = " werden angezeigt)";
+
+"importButton" = "Import";
+
+"importTitle" = "Schritt (2/2)";
+"importText" = "Transaktionen wirklich importieren? Das kann nicht rückgängig gemacht werden.";
+
+"preImportTitle" = "Schritt (1/2)";
+"preImportText" = "Vorschau erstellen. Je nach Dateigröße, sollte dieser Vorgang nur ein paar Momente dauern. Bitte die Applikation während dem gesamten Vorgang nicht schließen.";
+
+"cancelImport" = "Abbrechen";
+
+// #### Category ####
+"CategoryTitle" = "Hinzufügen";
+"categoryTitlePlaceholder" = "Kategorie Name";
+"categoryExpenseSegmentTitle" = "Ausgabe";
+"categoryIncomeSegmentTitle" = "Einkommen";
+"categoryExpenseSaveSegmentTitle" = "Abheben";
+"categoryIncomeSaveSegmentTitle" = "Zurücklegen";
+"categorySaveTitle" = "Sparen";
+"categorySaveSegmentTitle" = "Sparkonto";
+"categoryButtonAdd" = "Hinzufügen";
+"categoryButtonUpdate" = "Aktualisieren";
+"deleteTitle" = "Kategorie löschen?";
+"deleteText" = "Dies kann nicht rückgängig gemacht werden. ALLE Transaktionen dieser Kategorie werden gelöscht!";
+"deleteNo" = "Nein";
+"deleteYes" = "Ja";
+"noNameTitle" = "Kategorie";
+"noNameText" = "Bitte einen Titel für die Kategorie eingeben";
+"noNameOk" = "Ok";
+
+"subtitleExpensesLabel" = "Ausgaben";
+"subtitleEarningsLabel" = "Einkommen";
+"subtitleSavingsLabel" = "Sparkonten";
+
+// #### CURRENCY ####
+// Country Names
+"AF"="Afghanistan";
+"AL"="Albanien";
+"DZ"="Algerien";
+"AS"="Amerikanisch-Samoa";
+"AD"="Andorra";
+"AO"="Angola";
+"AI"="Anguilla";
+"AG"="Antigua und Barbuda";
+"AR"="Argentinien";
+"AM"="Armenien";
+"AW"="Aruba";
+"AU"="Australien";
+"AT"="Österreich";
+"AZ"="Aserbaidschan";
+"BS"="Bahamas";
+"BH"="Bahrain";
+"BD"="Bangladesch";
+"BB"="Barbados";
+"BY"="Belarus (Weißrussland)";
+"BE"="Belgien";
+"BZ"="Belize";
+"BJ"="Benin";
+"BM"="Bermuda";
+"BT"="Bhutan";
+"BO"="Bolivien";
+"BA"="Bosnien und Herzegowina";
+"BW"="Botswana";
+"BV"="Bouvetinsel";
+"BR"="Brasilien";
+"IO"="Britisches Territorium im Indischen Ozean";
+"BN"="Brunei Darussalam";
+"BG"="Bulgarien";
+"BF"="Burkina Faso";
+"BI"="Burundi";
+"KH"="Kambodscha";
+"CM"="Kamerun";
+"CA"="Kanada";
+"CV"="Kap Verde";
+"KY"="Kaimaninseln";
+"CF"="Zentralafrikanische Republik";
+"TD"="Tschad";
+"CL"="Chile";
+"CN"="China, Volksrepublik";
+"CX"="Weihnachtsinsel";
+"CC"="Kokosinseln (Keelinginseln)";
+"CO"="Kolumbien";
+"KM"="Komoren";
+"CG"="Republik Kongo";
+"CD"="Kongo";
+"CK"="Cookinseln";
+"CR"="Costa Rica";
+"CI"="Elfenbeinküste";
+"HR"="Kroatien";
+"CU"="Kuba";
+"CY"="Zypern";
+"CZ"="Tschechische Republik";
+"DK"="Dänemark";
+"DJ"="Dschibuti";
+"DM"="Dominica";
+"DO"="Dominikanische Republik";
+"EC"="Ecuador";
+"EG"="Ägypten";
+"SV"="El Salvador";
+"GQ"="Äquatorialguinea";
+"ER"="Eritrea";
+"EE"="Estland (Reval)";
+"ET"="Äthiopien";
+"FK"="Falklandinseln (Malwinen)";
+"FO"="Färöer";
+"FJ"="Fidschi";
+"FI"="Finnland";
+"FR"="Frankreich";
+"GF"="Französisch-Guayana";
+"PF"="Französisch-Polynesien";
+"TF"="Französische Süd- und Antarktisgebiete";
+"GA"="Gabun";
+"GM"="Gambia";
+"GE"="Georgien";
+"DE"="Deutschland";
+"GH"="Ghana";
+"GI"="Gibraltar";
+"GR"="Griechenland";
+"GL"="Grönland";
+"GD"="Grenada";
+"GP"="Guadeloupe";
+"GU"="Guam";
+"GT"="Guatemala";
+"GG"="Guernsey (Kanalinsel)";
+"GN"="Guinea";
+"GW"="Guinea-Bissau";
+"GY"="Guyana";
+"HT"="Haiti";
+"HM"="Heard- und McDonald-Inseln";
+"VA"="Vatikanstadt";
+"HN"="Honduras";
+"HK"="Hongkong";
+"HU"="Ungarn";
+"IS"="Island";
+"IN"="Indien";
+"ID"="Indonesien";
+"IR"="Iran";
+"IQ"="Irak";
+"IE"="Irland";
+"IM"="Insel Man";
+"IL"="Israel";
+"IT"="Italien";
+"JM"="Jamaika";
+"JP"="Japan";
+"JE"="Jersey (Kanalinsel)";
+"JO"="Jordanien";
+"KZ"="Kasachstan";
+"KE"="Kenia";
+"KI"="Kiribati";
+"KP"="Nordkorea";
+"KR"="Südkorea";
+"KW"="Kuwait";
+"KG"="Kirgisistan";
+"LA"="Laos";
+"LV"="Lettland";
+"LB"="Libanon";
+"LS"="Lesotho";
+"LR"="Liberia";
+"LY"="Libyen";
+"LI"="Liechtenstein";
+"LT"="Litauen";
+"LU"="Luxemburg";
+"MO"="Macau";
+"MK"="Mazedonien";
+"MG"="Madagaskar";
+"MW"="Malawi";
+"MY"="Malaysia";
+"MV"="Malediven";
+"ML"="Mali";
+"MT"="Malta";
+"MH"="Marshallinseln";
+"MQ"="Martinique";
+"MR"="Mauretanien";
+"MU"="Mauritius";
+"YT"="Mayotte";
+"MX"="Mexiko";
+"FM"="Mikronesien";
+"MD"="Moldawien";
+"MC"="Monaco";
+"MN"="Mongolei";
+"ME"="Montenegro";
+"MS"="Montserrat";
+"MA"="Marokko";
+"MZ"="Mosambik";
+"MM"="Myanmar (Burma)";
+"NA"="Namibia";
+"NR"="Nauru";
+"NP"="Nepal";
+"NL"="Niederlande";
+"NC"="Neukaledonien";
+"NZ"="Neuseeland";
+"NI"="Nicaragua";
+"NE"="Niger";
+"NG"="Nigeria";
+"NU"="Niue";
+"NF"="Norfolkinsel";
+"MP"="Nördliche Marianen";
+"NO"="Norwegen";
+"OM"="Oman";
+"PK"="Pakistan";
+"PW"="Palau";
+"PA"="Panama";
+"PG"="Papua-Neuguinea";
+"PY"="Paraguay";
+"PE"="Peru";
+"PH"="Philippinen";
+"PN"="Pitcairninseln";
+"PL"="Polen";
+"PT"="Portugal";
+"PR"="Puerto Rico";
+"QA"="Katar";
+"RE"="Réunion";
+"RO"="Rumänien";
+"RU"="Russische Föderation";
+"RW"="Ruanda";
+"SH"="St. Helena";
+"KN"="St. Kitts und Nevis";
+"LC"="St. Lucia";
+"PM"="St. Pierre und Miquelon";
+"VC"="St. Vincent und die Grenadinen";
+"WS"="Samoa";
+"SM"="San Marino";
+"ST"="São Tomé und Príncipe";
+"SA"="Saudi-Arabien";
+"SN"="Senegal";
+"RS"="Serbien";
+"SC"="Seychellen";
+"SL"="Sierra Leone";
+"SG"="Singapur";
+"SK"="Slowakei";
+"SI"="Slowenien";
+"SB"="Salomonen";
+"SO"="Somalia";
+"ZA"="Südafrika";
+"ES"="Spanien";
+"LK"="Sri Lanka";
+"SD"="Sudan";
+"SR"="Suriname";
+"SJ"="Svalbard und Jan Mayen";
+"SZ"="Swasiland";
+"SE"="Schweden";
+"CH"="Schweiz";
+"SY"="Syrien";
+"TW"="Taiwan";
+"TJ"="Tadschikistan";
+"TZ"="Tansania";
+"TH"="Thailand";
+"TG"="Togo";
+"TK"="Tokelau";
+"TO"="Tonga";
+"TT"="Trinidad und Tobago";
+"TN"="Tunesien";
+"TR"="Türkei";
+"TM"="Turkmenistan";
+"TC"="Turks- und Caicosinseln";
+"TV"="Tuvalu";
+"UG"="Uganda";
+"UA"="Ukraine";
+"AE"="Vereinigte Arabische Emirate";
+"GB"="Großbritannien und Nordirland";
+"US"="Vereinigte Staaten von Amerika";
+"UM"="Amerikanisch-Ozeanien";
+"UY"="Uruguay";
+"UZ"="Usbekistan";
+"VU"="Vanuatu";
+"VE"="Venezuela";
+"VN"="Vietnam";
+"VG"="Britische Jungferninseln";
+"VI"="Amerikanische Jungferninseln";
+"WF"="Wallis und Futuna";
+"EH"="Westsahara";
+"YE"="Jemen";
+"ZM"="Sambia";
+"ZW"="Simbabwe";
+
+// Currency Names
+"AFN"="Afghani";
+"ALL"="Lek";
+"DZD"="Algerischer Dinar";
+"USD"="US-Dollar";
+"EUR"="Euro";
+"AOA"="Angolischer Kwanza";
+"XCD"="Ostkaribischer Dollar";
+"XCD"="Ostkaribischer Dollar";
+"ARS"="Argentinischer Peso";
+"AMD"="Dram";
+"ANG"="Aruba-Florin";
+"AUD"="Australischer Dollar";
+"AZN"="Aserbeidschan Manat";
+"BSD"="Bahama-Dollar";
+"BHD"="Bahrain-Dinar";
+"BDT"="Taka";
+"BBD"="Barbados-Dollar";
+"BYR"="Belarus Rubel";
+"BZD"="Belize-Dollar";
+"XOF"="CFA Franc (West)";
+"BMD"="Bermuda-Dollar";
+"INR"="Indische Rupie";
+"BOB"="Boliviano";
+"BAM"="Konvertierbare Mark";
+"BWP"="Pula";
+"NOK"="Norwegische Krone";
+"BRL"="Brasilianischer Real";
+"BND"="Brunei-Dollar";
+"BGN"="Bulgarischer Lev";
+"XOF"="CFA Franc (West)";
+"BIF"="Burundi-Franc";
+"KHR"="Riel";
+"XAF"="CFA Franc (Äquatorial)";
+"CAD"="Kanadischer Dollar";
+"CVE"="Kap Verde Escudo";
+"KYD"="Kaiman-Dollar";
+"XAF"="CFA Franc (Äquatorial)";
+"CLP"="Chilenischer Peso";
+"CNY"="Renminbi Yuan";
+"COP"="Kolumbianischer Peso";
+"KMF"="Komoren Franc";
+"XAF"="CFA Franc (Äquatorial)";
+"CDF"="Franc Congolais";
+"NZD"="Neuseeland Dollar";
+"CRC"="Costa Rica Colon";
+"XOF"="CFA Franc (West)";
+"HRK"="Kroatische Kuna";
+"CUP"="Kubanischer Peso";
+"CYP"="Euro";
+"CZK"="Tschechische Krone";
+"DKK"="Dänische Krone";
+"DJF"="Dschibuti-Franc";
+"XCD"="Ostkaribischer Dollar";
+"DOP"="Dominikanischer Peso";
+"ECS"="US Dollar";
+"EGP"="Ägyptisches Pfund";
+"SVC"="El Salvador Colon";
+"XAF"="CFA Franc (Äquatorial)";
+"ETB"="Nakfa";
+"EEK"="EURO";
+"ETB"="Birr";
+"FKP"="Falkland Pfund";
+"DKK"="Dänische Krone";
+"FJD"="Fidschi Dollar";
+"XPF"="CFP Franc";
+"XAF"="CFA Franc (Äquatorial)";
+"GMD"="Dalasi";
+"GEL"="Lari";
+"GHS"="Ghana Cedi";
+"GIP"="Gibraltar Pfund";
+"DKK"="Dänische Krone";
+"XCD"="Ostkaribischer Dollar";
+"GTQ"="Quetzal";
+"GGP"="Pfund Sterling";
+"GNF"="Guinea Franc";
+"XOF"="CFA Franc (West)";
+"GYD"="Guyana Dollar";
+"HTG"="Gourde";
+"HNL"="Lempira";
+"HKD"="Hongkong Dollar";
+"HUF"="UngarischeForint";
+"ISK"="Isländische Krone";
+"INR"="Indische Rupie";
+"IDR"="Indonesische Rupiah";
+"IRR"="Rial";
+"IQD"="Irak Dinar";
+"GBP"="Pfund Sterling";
+"ILS"="Israelischer Schekel";
+"JMD"="Jamaika Dollar";
+"JPY"="Japanische Yen";
+"JOD"="Jordan-Dinar";
+"KZT"="Tenge Kasachstan";
+"KES"="Kenia Schilling";
+"KPW"="Nordkoreanischer Won";
+"KRW"="Südkoreanischer Won";
+"KWD"="Kuwait Dinar";
+"KGS"="Som";
+"LAK"="Lao Kip";
+"LVL"="EURO";
+"LBP"="Libanesisches Pfund";
+"LSL"="Loti";
+"LRD"="Liberianischer Dollar";
+"LYD"="Libyscher Dinar";
+"CHF"="Schweizer Franken";
+"LTL"="EURO";
+"MOP"="Pataca";
+"MKD"="Denar";
+"MGA"="Madagaskar Ariary";
+"MWK"="Malawi Kwacha";
+"MYR"="Malaysischer Ringgit";
+"MVR"="Rufiyaa";
+"XOF"="CFA Franc (West)";
+"MTL"="EURO";
+"MRO"="Ouguiya";
+"MUR"="Mauritius Rupie";
+"MXN"="Mexikanische Peso";
+"MDL"="Moldau Leu";
+"MNT"="Tugrik";
+"XCD"="Ostkaribischer Dollar";
+"MAD"="Dirham";
+"MZN"="Metical";
+"MMK"="Kyat";
+"NAD"="Namibia Dollar";
+"NPR"="Nepalesische Rupie";
+"XPF"="CFP Franc";
+"NIO"="Gold-Cordoba";
+"XOF"="CFA Franc (West)";
+"NGN"="Naira";
+"NOK"="Norwegische Krone";
+"OMR"="Rial Omani";
+"PKR"="Pakistanische Rupie";
+"PAB"="Balboa";
+"PGK"="Kina";
+"PYG"="Guarani";
+"PEN"="Sol";
+"PHP"="Philippinischer Peso";
+"PLN"="Polnischer Zloty";
+"QAR"="Katar Riyal";
+"RON"="Rumänischer Leu";
+"RUB"="Russischer Rubel";
+"RWF"="Ruanda Franc";
+"XCD"="Ostkaribischer Dollar";
+"STD"="Dobra";
+"SAR"="Saudi Riyal";
+"XOF"="CFA Franc (West)";
+"RSD"="Serbischer Dinar";
+"SCR"="Seychellen-Rupie";
+"SLL"="Leone";
+"SGD"="Singapur-Dollar";
+"SKK"="EURO";
+"SBD"="Salomonen Dollar";
+"SOS"="Somalia Schilling";
+"ZAR"="Südafrikanischer Rand";
+"LKR"="Sri Lanka Rupie";
+"SDG"="Sudanesisches Pfund";
+"SRD"="Surinam Dollar";
+"NOK"="Norwegische Krone";
+"SZL"="Lilangeni";
+"SEK"="Schwedische Krone";
+"CHF"="Schweizer Franken";
+"SYP"="Syrisches Pfund";
+"TWD"="Neuer Taiwan Dollar";
+"TJS"="Somoni";
+"TZS"="Tansania Schilling";
+"THB"="Thailändischer Baht";
+"XOF"="CFA Franc (West)";
+"TOP"="Pa'Anga";
+"TTD"="Trinidad und Tobago Dollar";
+"TND"="Tunesische Dinar";
+"TRY"="Türkische Lira";
+"TMT"="Turkmenistan Neuer Manat";
+"UGX"="Uganda Schilling";
+"UAH"="Hryvnia";
+"AED"="Dirham";
+"UYU"="Uruguay Peso";
+"UZS"="Usbekistan Sum";
+"VUV"="Vatu";
+"VEF"="Bolivar Soberano";
+"VND"="Dong";
+"XPF"="CFP Franc";
+"MAD"="Dirham";
+"YER"="Jemen Rial";
+"ZMK"="Zambian Kwacha";
+"ZWD"="Simbabwe Dollar";

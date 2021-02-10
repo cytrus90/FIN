@@ -1,0 +1,66 @@
+
+/* Class = "UIButton"; normalTitle = "1"; ObjectID = "0Im-rt-4Kq"; */
+"0Im-rt-4Kq.normalTitle" = "1";
+
+/* Class = "UIButton"; normalTitle = "7"; ObjectID = "0Ze-gh-ttu"; */
+"0Ze-gh-ttu.normalTitle" = "7";
+
+/* Class = "UIButton"; normalTitle = "3"; ObjectID = "5U0-de-7PR"; */
+"5U0-de-7PR.normalTitle" = "3";
+
+/* Class = "UIViewController"; title = "Graphs"; ObjectID = "6ig-f9-IwF"; */
+"6ig-f9-IwF.title" = "Graphs";
+
+/* Class = "UITabBarItem"; title = "Item 1"; ObjectID = "96k-Ig-5lD"; */
+"96k-Ig-5lD.title" = "Item 1";
+
+/* Class = "UIViewController"; title = "Settings"; ObjectID = "BYZ-38-t0r"; */
+"BYZ-38-t0r.title" = "Settings";
+
+/* Class = "UIViewController"; title = "Split"; ObjectID = "ClF-dY-AQ2"; */
+"ClF-dY-AQ2.title" = "Split";
+
+/* Class = "UIButton"; normalTitle = "6"; ObjectID = "DJP-2W-yUm"; */
+"DJP-2W-yUm.normalTitle" = "6";
+
+/* Class = "UIButton"; normalTitle = "2"; ObjectID = "IQv-aH-n8O"; */
+"IQv-aH-n8O.normalTitle" = "2";
+
+/* Class = "UIButton"; normalTitle = "8"; ObjectID = "KVH-aY-Vxp"; */
+"KVH-aY-Vxp.normalTitle" = "8";
+
+/* Class = "UIViewController"; title = "Add"; ObjectID = "Ngh-zS-A4g"; */
+"Ngh-zS-A4g.title" = "Add";
+
+/* Class = "UITabBarItem"; title = "Item"; ObjectID = "OXy-lf-Kwm"; */
+"OXy-lf-Kwm.title" = "Item";
+
+/* Class = "UITabBarController"; title = "TabController"; ObjectID = "PQo-LE-vfI"; */
+"PQo-LE-vfI.title" = "TabController";
+
+/* Class = "UITabBarItem"; title = "Item"; ObjectID = "R6u-wO-unk"; */
+"R6u-wO-unk.title" = "Item";
+
+/* Class = "UIButton"; normalTitle = "4"; ObjectID = "RQI-Of-0bu"; */
+"RQI-Of-0bu.normalTitle" = "4";
+
+/* Class = "UITabBarItem"; title = "Item"; ObjectID = "XMA-en-e5N"; */
+"XMA-en-e5N.title" = "Item";
+
+/* Class = "UIButton"; normalTitle = "0"; ObjectID = "lWN-mP-Ix1"; */
+"lWN-mP-Ix1.normalTitle" = "0";
+
+/* Class = "UIViewController"; title = "Login"; ObjectID = "nwr-WN-odz"; */
+"nwr-WN-odz.title" = "Login";
+
+/* Class = "UIViewController"; title = "Overview"; ObjectID = "pfl-gO-FFI"; */
+"pfl-gO-FFI.title" = "Overview";
+
+/* Class = "UIButton"; normalTitle = "9"; ObjectID = "rMH-Yf-5WV"; */
+"rMH-Yf-5WV.normalTitle" = "9";
+
+/* Class = "UIButton"; normalTitle = "5"; ObjectID = "y40-xh-oL0"; */
+"y40-xh-oL0.normalTitle" = "5";
+
+/* Class = "UITabBarItem"; title = "Item 2"; ObjectID = "z2s-9a-zmS"; */
+"z2s-9a-zmS.title" = "Item 2";

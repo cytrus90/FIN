@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Categories" representedClassName="Categories" syncable="YES" codeGenerationType="class">
+        <attribute name="cID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="color" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="countEntries" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isIncome" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isSave" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="selectedForFilter" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Currency" representedClassName="Currency" syncable="YES" codeGenerationType="class">
+        <attribute name="automated" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="countryCode_2" optional="YES" attributeType="String"/>
+        <attribute name="countryCode_3" optional="YES" attributeType="String"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="saved" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="GraphSettings" representedClassName="GraphSettings" syncable="YES" codeGenerationType="class">
+        <attribute name="graphActive" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="graphID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphName" optional="YES" attributeType="String"/>
+        <attribute name="graphOption1" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphOption2" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="ImportRAM" representedClassName="ImportRAM" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="category" optional="YES" attributeType="String"/>
+        <attribute name="categoryID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="dateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="descriptionNote" optional="YES" attributeType="String"/>
+        <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="realAmount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="RegularPayments" representedClassName="RegularPayments" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="categoryDateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="categoryID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="dateTimeNext" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="descriptionNote" optional="YES" attributeType="String"/>
+        <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="frequency" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isLiquid" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="isSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isSplit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="realAmount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="tags" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Settings" representedClassName="Settings" syncable="YES" codeGenerationType="class">
+        <attribute name="cutOffCalculated" optional="YES" attributeType="Date" defaultDateTimeInterval="-629220" usesScalarValueType="NO"/>
+        <attribute name="cutOffDate" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="filteredCategoriesZero" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="filteredTagsZero" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="firstLaunch" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="firstLaunchDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isLeft" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="isOnEdge" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastCurrencyCode" optional="YES" attributeType="String" defaultValueString="EUR"/>
+        <attribute name="loginEnabled" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="recoveryMail" optional="YES" attributeType="String"/>
+        <attribute name="showAdds" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="userCode" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="userColor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="userName" optional="YES" attributeType="String" defaultValueString="User"/>
+    </entity>
+    <entity name="SplitGroups" representedClassName="SplitGroups" syncable="YES" codeGenerationType="class">
+        <attribute name="color" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="includesUser" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="nameGroup" optional="YES" attributeType="String"/>
+        <attribute name="persons" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="SplitPersons" representedClassName="SplitPersons" syncable="YES" codeGenerationType="class">
+        <attribute name="color" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isUser" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="namePerson" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Splits" representedClassName="Splits" syncable="YES" codeGenerationType="class">
+        <attribute name="createDateGroup" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createDatePerson" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createDatePersonWhoPaid" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateTimeTransaction" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="nameGroup" optional="YES" attributeType="String"/>
+        <attribute name="namePerson" optional="YES" attributeType="String"/>
+        <attribute name="namePersonWhoPaid" optional="YES" attributeType="String"/>
+        <attribute name="paidByUser" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="ratio" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="settled" optional="YES" attributeType="Double" minValueString="0" defaultValueString="NO" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="SplitsRegularPayments" representedClassName="SplitsRegularPayments" syncable="YES" codeGenerationType="class">
+        <attribute name="createDateGroup" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createDatePerson" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createDatePersonWhoPaid" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateTimeTransaction" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="nameGroup" optional="YES" attributeType="String"/>
+        <attribute name="namePerson" optional="YES" attributeType="String"/>
+        <attribute name="namePersonWhoPaid" optional="YES" attributeType="String"/>
+        <attribute name="paidByUser" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="ratio" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="settled" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Tags" representedClassName="Tags" syncable="YES" codeGenerationType="class">
+        <attribute name="countEntries" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastUsed" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="selectedForFilter" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="tagColor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tagName" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Transactions" representedClassName="Transactions" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="categoryDateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="categoryID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="dateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="descriptionNote" optional="YES" attributeType="String"/>
+        <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="isLiquid" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="isSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isSplit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="realAmount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="tags" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="Categories" positionX="112.56640625" positionY="45.76171875" width="128" height="149"/>
+        <element name="Currency" positionX="144" positionY="-18" width="128" height="134"/>
+        <element name="GraphSettings" positionX="144" positionY="-9" width="128" height="104"/>
+        <element name="ImportRAM" positionX="144" positionY="-9" width="128" height="164"/>
+        <element name="RegularPayments" positionX="90.2578125" positionY="145.76953125" width="128" height="224"/>
+        <element name="Settings" positionX="-43.3125" positionY="-131.890625" width="128" height="14"/>
+        <element name="SplitGroups" positionX="335.60546875" positionY="-15.921875" width="128" height="104"/>
+        <element name="SplitPersons" positionX="306.44921875" positionY="111.0078125" width="128" height="89"/>
+        <element name="Splits" positionX="265.578125" positionY="-168.0625" width="128" height="179"/>
+        <element name="SplitsRegularPayments" positionX="144" positionY="-9" width="128" height="179"/>
+        <element name="Tags" positionX="144" positionY="-18" width="128" height="104"/>
+        <element name="Transactions" positionX="-49.8671875" positionY="116.1484375" width="128" height="209"/>
+    </elements>
+</model>

@@ -1,0 +1,54 @@
+PODS:
+  - Charts (3.6.0):
+    - Charts/Core (= 3.6.0)
+  - Charts/Core (3.6.0)
+  - CSVImporter (1.9.1):
+    - HandySwift (~> 2.5)
+  - HandySwift (2.8.0)
+  - IGColorPicker (0.4.3):
+    - M13Checkbox
+  - M13Checkbox (3.4.0)
+  - mailcore2-ios (0.6.4)
+  - ScalingCarousel (3.2.0)
+  - SmoothPicker (1.1.3):
+    - SnapKit (~> 4.2.0)
+  - SnapKit (4.2.0)
+  - TagListView (1.4.1)
+
+DEPENDENCIES:
+  - Charts
+  - CSVImporter
+  - IGColorPicker
+  - mailcore2-ios
+  - ScalingCarousel
+  - SmoothPicker
+  - TagListView
+
+SPEC REPOS:
+  trunk:
+    - Charts
+    - CSVImporter
+    - HandySwift
+    - IGColorPicker
+    - M13Checkbox
+    - mailcore2-ios
+    - ScalingCarousel
+    - SmoothPicker
+    - SnapKit
+    - TagListView
+
+SPEC CHECKSUMS:
+  Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
+  CSVImporter: 1543192354ecf8abccd2cc77947d190fd9cf2b18
+  HandySwift: 0a32500215166a56a58f972f7ce1641361307e8b
+  IGColorPicker: f6034f8629aa90cce308a76ecc0fdf2afed0bf34
+  M13Checkbox: 6f59404540ac98ba83a3d1afac335895a40c6a5d
+  mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
+  ScalingCarousel: d40f0ce438af5cfb2225e2f723f7161597961128
+  SmoothPicker: a3f4b3c3a95fff73f20d526856aeff2c32696375
+  SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
+  TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
+
+PODFILE CHECKSUM: 43e4183c5df5345e7964f013f2869894694adac6
+
+COCOAPODS: 1.10.1

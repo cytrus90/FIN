@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="transactionSplitRow" customModule="FIN" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="43"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="YJK-Sq-AOZ">
+                    <rect key="frame" x="0.0" y="2" width="414" height="39"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zHL-Gk-ybB">
+                            <rect key="frame" x="0.0" y="9.5" width="307" height="20.5"/>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="€" textAlignment="right" adjustsFontForContentSizeCategory="YES" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="wbE-oc-Rvj">
+                            <rect key="frame" x="312" y="2.5" width="102" height="34"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                            <textInputTraits key="textInputTraits" returnKeyType="next"/>
+                        </textField>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="zHL-Gk-ybB" firstAttribute="width" secondItem="wbE-oc-Rvj" secondAttribute="width" multiplier="3" id="mm9-9e-g5n"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="YJK-Sq-AOZ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="3Dv-5W-UIj"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="YJK-Sq-AOZ" secondAttribute="trailing" id="DUy-VC-afz"/>
+                <constraint firstItem="YJK-Sq-AOZ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="2" id="bqW-QG-akk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="YJK-Sq-AOZ" secondAttribute="bottom" constant="2" id="yd8-pE-D6k"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="amountTextField" destination="wbE-oc-Rvj" id="bu9-CS-nr6"/>
+                <outlet property="label" destination="zHL-Gk-ybB" id="lnf-jW-for"/>
+            </connections>
+            <point key="canvasLocation" x="137.68115942028987" y="-31.138392857142854"/>
+        </view>
+    </objects>
+</document>

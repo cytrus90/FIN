@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="iN0-l3-epB" customClass="searchBar" customModule="FIN" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="463" height="46"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <searchBar hidden="YES" contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="TIe-zC-ucy">
+                    <rect key="frame" x="0.0" y="0.0" width="463" height="46"/>
+                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                    <scopeButtonTitles>
+                        <string>Title</string>
+                        <string>Title</string>
+                    </scopeButtonTitles>
+                </searchBar>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <constraints>
+                <constraint firstItem="TIe-zC-ucy" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Gc5-Vx-1yI"/>
+                <constraint firstAttribute="bottom" secondItem="TIe-zC-ucy" secondAttribute="bottom" id="NBg-p1-lcU"/>
+                <constraint firstAttribute="trailing" secondItem="TIe-zC-ucy" secondAttribute="trailing" id="RUy-lr-fDy"/>
+                <constraint firstItem="TIe-zC-ucy" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="VTM-i3-erA"/>
+                <constraint firstItem="TIe-zC-ucy" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="W8m-e2-sZZ"/>
+                <constraint firstItem="TIe-zC-ucy" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="mku-D9-HH7"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="searchBar" destination="TIe-zC-ucy" id="vyU-2Z-jWA"/>
+            </connections>
+            <point key="canvasLocation" x="173.18840579710147" y="406.47321428571428"/>
+        </view>
+    </objects>
+</document>

@@ -1,0 +1,881 @@
+/* 
+  Strings_German.strings
+  FIN
+
+  Created by Florian Riel on 26.06.20.
+  Copyright © 2020 Alpako. All rights reserved.
+*/
+// #### Shortcut Items
+"addNewTransactionTitle" = "Transaction";
+
+// #### Intro ####
+// First
+"welcomeLabel" = "Welcome";
+"welcomeSubLabel" = "FIN - track your finances";
+"swipeText" = "Touch to start";
+
+// Second (Add Categories)
+"secondDescriptionLabelText" = "At first, please create your categories in the 'Category' menu inside the tab: 'User'.";
+
+// Third (Type of categories)
+"thirdSecondDescriptionText" = "Beside the typical Expense & Income categories, you can also choose a Savings category.";
+"thirdDescriptionText" = "A Savings category is like a separate account for your invested/saved money, which reduces your immediate liquidity.";
+
+// Fourth (Add Transaction)
+"fourthDescriptionText" = "To add a new transaction, simply press + in the tab: 'Overview'.";
+
+// Final (Go)
+"welcomeLabelFinalText" = "Ready";
+"finalDescriptionLabelText" = "That should get you started. May you do well tracking your finances!";
+"goButtonText" = "Let's go!";
+
+"Authentication" = "Authentication";
+
+"goodMorning" = "Good morning";
+"goodAfternoon" = "Good afternoon";
+"goodEvening" = "Good evening";
+"goodNight" = "Good night";
+
+"Enter Passcode" = "Enter passcode";
+// #### Forgot Code ####
+"Forgot Code?" = "Forgot your code?";
+"forgotCodeConfirmTitle" = "Reset code";
+"forgotCodeConfirmText" = "The new code will be sent to you by email. Use this code to unlock FIN.";
+"forgotCodeConfirmAction" = "Reset";
+"forgotCodeCancel" = "Cancel";
+"forgotCodeMailText1" = "Thank you for using FIN. Your new code to unlock the app is: <b>";
+"forgotCodeMailText2" = "</b><br><br>Your Alpako Support Team";
+"forgotCodeMailSubject" = "Recovery code - FIN";
+"forgotCodePositiveTitle" = "SENT";
+"forgotCodePositiveText" = "If you do not receive the code within the next couple of minutes, please check your spam filter.";
+"forgotCodeNegativeTitle" = "ERROR";
+"forgotCodeNegativeText" = "FIN encountered an error. Please try again.";
+"forgotCodeOK" = "OK";
+// #### Set Code ####
+"Cancel" = "Cancel";
+"Current Passcode" = "Current passcode";
+"New Passcode" = "Enter new passcode";
+"Re-Enter Passcode" = "Repeat new passcode";
+"New Passcode Success" = "Success";
+"New Passcode Nomatch" = "Did not match";
+
+// #### Top VC ####
+"availableLabel" = "Available";
+"lastEntryLabel" = "Latest transaction";
+"noTransaction" = "No transaction yet";
+"splitsSubLabel" = "Splits";
+"categoriesSubLabel" = "Categories";
+
+
+// #### Add VC ####
+"createCategoriesTitle" = "Create categories?";
+"createCategoriesText" = "There are no categories yet. FIN can create a few common categories for you.";
+
+"categoryHousehold" = "Household";
+"categorySport" = "Sport";
+"categoryOther" = "Other";
+"categorySalary" = "Salary";
+"categorySavingsAccount" = "Savings Account";
+
+"Add Transaction Title" = "New transaction";
+"Update Transaction Title" = "Edit transaction";
+"addRegularPaymentTitle" = "New regular payment";
+"editRegularPaymentTitle" = "Edit regular payment";
+
+"Add Tag" = "Add tag";
+"Add Tag Text" = "Add a new tag to your transaction";
+"Tag *;* Error Title" = "Invalid entry";
+"Tag *;* Error Text" = "The combinations *;* and *&* are due to technical reasons not possible. Please choose another name.";
+"Tag Already In List Title" = "Double tag";
+"Tag Already In List Text" = "The transaction has the entered tag already.";
+"todayText" = "Today";
+"yesterdayText" = "Yesterday";
+"tomorrowText" = "Tomorrow";
+"dayAfterTomorrowText" = "Day after tomorrow";
+"dateText" = "Date:";
+"splitButtonText" = "Split";
+"splitButtonEditText" = "Edit split";
+"addButtonText" = "Add";
+
+"liquidLabelText" = "Amount transfered";
+"liquidInfoTitle" = "Info";
+"liquidInfoText" = "If not selected, the amount is a movement within the account. For example, if you get a yield payment from an investment. This increases the value of your savings but has no impact on your overall, immediate liquidity, without first transferring the amount to a current account.";
+
+"updateButtonText" = "Update";
+"updateButtonIncomeText" = "Update income";
+"updateButtonExpenseText" = "Update expense";
+"updatButtonUpdatedText" = "Updated";
+
+"addButtonIncomeText" = "Add income";
+"addButtonExpenseText" = "Add expense";
+"addButtonAddedText" = "Added";
+
+"addButtonSaveAddText" = "Deposit saving";
+"addButtonSaveWithdrawText" = "Withdraw saving";
+"addButtonSaveIncreaseText" = "Increase savings";
+"addButtonSaveDecreaseText" = "Decrease savings";
+
+"segmentDepositText" = "Deposit";
+"segmentWithdrawText" = "Withdraw";
+"segmentIncreaseText" = "Increase";
+"segmentDecreaseText" = "Decrease";
+
+"MissingAmountTitle" = "Amount";
+"MissingAmountText" = "Please enter a valid amount for the transaction";
+"MissingDescriptionTitle" = "Description";
+"MissingDescriptionText" = "Please enter a valid description for the transaction";
+
+"bottomSegmentRepeatDaily" = "Daily";
+"bottomSegmentRepeatWeekly" = "Weekly";
+"bottomSegmentRepeatMonthly" = "Monthly";
+"bottomSegmentRepeatYearly" = "Yearly";
+
+"hasBeenAdded" = "has been added.";
+
+"addTagButton" = "Add";
+"transactionAddedNotificationTitle" = "Added";
+
+// Currency
+"Set"="Set";
+
+// Split Transaction
+"selectGroupSplitTransactionTitle" = "Split within group";
+"selectPersonSplitTransactionTitle" = "Split with person";
+"selectMultiple" = "Multiple";
+"multipleSplitTitle" = "Multiple persons";
+"splitMultipleNavItem" = "Split";
+"backToSingle" = "Individual";
+
+// Split Detail
+"splitDetails" = "Split details";
+"topLabelTextHowSplitWasSetOne" = "How have the ";
+"topLabelTextHowSplitWasSetSecond" = " been split?";
+"saveText" = "Save";
+"youTheUser" = "You";
+"personWhoPaidSublabel" = "Who paid?";
+"segmentSplitEqualy" = "Evenly";
+"segmentSplitPercent" = "%";
+"missingText" = "Missing: ";
+"exactlyText" = "All split";
+"tooMuchText" = "Overcharged: ";
+"deleteButton" = "Delete";
+
+// #### List View ####
+"viewTitle" = "Transactions";
+"bottomSegmentWeekly" = "Weekly";
+"bottomSegmentMonthly" = "Monthly";
+"bottomSegmentYearly" = "Yearly";
+"bottomSegmentAll" = "All";
+"searchbarPlaceholder" = "Search";
+
+"topPickerExpensesLabel" = "EXPENSES";
+"topPickerEarningsLabel" = "EARNINGS";
+"topPickerSavingsLabel" = "SAVINGS";
+
+"to" = "-";
+"thisWeek" = "This Week";
+"lastWeek" = "Last Week";
+"nextWeek" = "Next Week";
+"today" = "Today";
+"yesterday" = "Yesterday";
+
+"searchTitle" = "Search";
+
+// List Filter
+"filterTitle" = "Filter";
+"filterCategorySegmentControll" = "Category";
+"filterTagSegmentControll" = "Tag";
+"filteredAll" = "All";
+"filteredAllSubCategory" = "Select all categories";
+"filteredAllSubTag" = "Select all tags";
+"filteredIsExpense" = "Expense";
+"filteredIsIncome" = "Income";
+"filteredIsSave" = "Save";
+
+// List Transaction Detail
+"viewTitleListDetail" = "Details";
+"detailTransactionExpensesLabel" = "Expense";
+"detailTransactionEarningsLabel" = "Earning";
+"detailTransactionSavingsLabel" = "Savings";
+
+"detailTransactionSaveAddText" = "Deposited saving";
+"detailTransactionIncreasedAddText" = "Increased savings";
+"detailTransactionSaveWithdrawText" = "Withdrew saving";
+"detailTransactionDecreasedAddText" = "Decreased savings";
+
+"groupDetailSubLabel" = "Group";
+"personDetailSubLabel" = "Persons";
+
+"backButton" = "Back";
+"deleteTitleTransaction" = "Delete transaction?";
+"deleteRepeatedTitleTransaction" = "Remove regular payment?";
+"deleteTextTransaction" = "This can't be undone!";
+
+// #### Graph VC ####
+
+// Settings
+"graphSettingsTitle" = "Graph";
+
+"graphSettingsCellTitle" = "Type:";
+"lineChartTitle" = "Line chart";
+"barChartTitle" = "Pie chart";
+
+"option1LineChartTitle" = "Line chart options:";
+"lineChartOption1_0" = "Balance";
+"lineChartOption1_1_h" = "Exp v. Ear";
+"lineChartOption1_1_w" = "Expenses vs. Earnings";
+"lineChartOption1_2" = "Savings";
+
+"option1BarChartTitle" = "Pie chart options:";
+"barChartOption1_0" = "Expenses";
+"barChartOption1_1" = "Income";
+"barChartOption1_2" = "Savings";
+
+"option2ChartTitle" = "Timely structure:";
+
+"changeLabel" = "Change: ";
+
+// #### Split VC ####
+"bottomSegmentGroups" = "Groups";
+"bottomSegmentUsers" = "Persons";
+
+// Overview Cell
+"owedLabel" = "YOU GET:";
+"borrowedLabel" = "YOU BORROWED:";
+
+"youAreOwedLabel" = "you get";
+"youBorrowedLabel" = "you borrowed";
+"personBorrowedLabel" = "borrowed";
+"personOwedLabel" = "gets";
+
+"notInvolvedInSplit" = "not involved";
+"allSettledSplit" = "all settled";
+"notInvolvedSplit" = "open splits";
+
+// Add New
+"bottomAddSegmentGroups" = "Group";
+"bottomAddSegmentUsers" = "Person";
+"bottomAddNewUser" = "New person";
+"bottomAddNewGroup" = "New group";
+"bottomUpdateUser" = "Edit person";
+"bottomUpdateGroup" = "Edit group";
+"addNewDefaultPersonsText" = "No groups selected";
+"addNewDefaultGroupsText" = "No members selected";
+"addNewGroupText" = "Add groups";
+"addNewPersonText" = "Add persons";
+"updateGroupsText" = "Edit groups";
+"updatePersonsText" = "Edit persons";
+"updateAddButtonText" = "Update";
+"addAddButtonText" = "Add";
+"Input *;* Error Title" = "Invalid entry";
+"Input *;* Error Text" = "The combination *;* is due to technical reasons not allowed. Please choose another name.";
+"addSuccessNavlabelGroup" = "Group added";
+"addSuccessNavlabelPerson" = "Person added";
+"updateSuccessNavlabelGroup" = "Group updated";
+"updateSuccessNavlabelPerson" = "Person updated";
+"AlreadyInDBErrorTitle" = "Duplicate";
+"AlreadyInDBErrorGroupText" = "Group already already in database. Please choose another name for the group.";
+"AlreadyInDBErrorPersonText" = "Name already in database. Please choose another nickname for the person.";
+"SameAsUserErrorTitle" = "User";
+"SameAsUserErrorText" = "Name is reserved for the user. Please choose another nickname for the person.";
+
+"deleteTitlePersonSplit" = "Remove person?";
+"deleteTextPersonSplit" = "This can't be undone! All open bills will be settled.";
+
+"deleteTitleGroupSplit" = "Remove group?";
+"deleteTextGroupSplit" = "This can't be undone! All open bills will be settled.";
+
+// Select
+"splitSelectTitleUser" = "Select persons";
+"splitSelectTitleGroup" = "Select groups";
+"noUsers" = "No users defined";
+"noGroups" = "No groups defined";
+"personsTitleText" = "Members:";
+"groupsTitleText" = "Groups:";
+"openSplitsOfPersonInGroupTitle" = "Unsettled";
+"openSplitsOfPersonInGroupText" = "Cannot remove person from group. There are still bills to settle.";
+
+// Detail
+"tabToSettle" = "Tab to settle";
+"settleNavitem" = "Settle";
+"personsInGroup" = "Persons in ";
+"transactionsForPerson" = "Open transactions for ";
+
+"noDataText" = "No entries.";
+
+// Settle
+"settle" = "Settle";
+"nothingSelected" = "Nothing selected";
+"personPaid" = " paid ";
+"transactionDefaultTitle" = "Transaction";
+
+"settledTitle" = "Settled?";
+"youTheUserSmall" = "you";
+"settledHat" = "Has";
+"settledHast" = "Have";
+"settledDich" = "you";
+"settledPersonPaid" = "paid";
+"settledAn" = "to";
+
+"allSettledTitle" = "Settle all?";
+"allSettledText" = "Are you sure all debts have been settled?";
+
+"settleMissing" = "Still missing";
+
+"settledDone" = "Settled: ";
+
+// #### User VC ####
+// Cell Titles
+"userTitle" = "User";
+"quickTitle" = "Quick transactions";
+"regularPaymentsTitle" = "Regular payments";
+"budgetMonthlyTitle" = "Budget";
+"categoriesTitle" = "Categories";
+"exportTitle" = "Export / Import";
+"settingsTitle" = "Settings";
+"aboutTitle" = "About";
+
+"purchaseButtonTitle" = "Unlock premium features";
+"restoreTitle" = "Restore purchase";
+
+"errorProductRequestTitle" = "Error";
+"errorProductRequestText" = "\n\nPlease contact support in the 'About' view.";
+
+"errorProcessingText" = "FIN encountered an error while processing your order. Please try again.";
+
+"purchaseRestoredText" = "Your previous purchase has been restored successfully.";
+
+"purchaseTitle" = "Premium Feature";
+"purchaseText" = "Do you want to unlock this and all other premium features?";
+"buyTitle" = "Buy";
+
+"notFoundTitle" = "Not found";
+"notFoundText" = "Not able to find any previous purchases.";
+
+"notAuthorisedText" = "Device is not authorised to perform In-App purchases";
+
+// About
+"aboutTitleText" = "alpako";
+"aboutTextText" = "Thank you for using FIN. I use the app myself daily, therefor I improve it constantly and there are still lots of new ideas in my head. Nevertheless, I do not take any responsibility, if the values recorded are not correct.\nAll data is backed up automatically to your iCloud. You can disable this in your privacy settings if you only want to save your data locally.\n\nIf you have constructive feedback, did find any bugs or if you are interested in becoming a beta tester for new releases, please feel free to drop me an Email:";
+"feedbackTitle" = "Feedback";
+
+// Cell Texts
+"userText" = "User";
+"statisticsText" = "Selected key figures about your finances";
+"regularPaymentsText" = "Regular, recurring payments";
+"budgetMonthlyText" = "Monthly budget for your expenses & income";
+"categoriesText" = "Categories for your payments";
+"exportText" = "Export & Import Data";
+"settingsText" = "Your personal information as well as import or export data";
+
+// #### User VC Settings ####
+// Cell Texts
+"cellCodeSetText" = "Update passcode";
+"cellCodeNotSetText" = "Set passcode";
+
+"cutOffTitle" = "Info";
+"cutOffInfoText" = "As the database grows larger, the app could get slow. To address this challenge, you might choose to only show transactions from the last two years. Their sums are of course included during the calculation of overview amounts.";
+
+// #### Regular Payments ####
+"nextText" = "Next: ";
+"noRegularPayment" = "No regular payments";
+
+// #### Export / Import ####
+"Export" = "Export data";
+"Import" = "Import data";
+
+"startButtonExportTitle" = "Export CSV";
+"textE1" = "The following columns will be exported to a CSV file:";
+
+// #### Import Wizard
+"text1" = "The CSV file must contain a row for each transaction with the following columns:";
+"text2" = "Mandatory:";
+"bullet1" = "Amount";
+"bullet2" = "Date";
+"bullet3" = "Category";
+"text3" = "You can edit (if save, expense or income) the category after the import.";
+"text4" = "Optional:";
+"bullet4" = "Description";
+"bullet5" = "Currency Code (e.g.: EUR)";
+"bullet6" = "Exchange Rate";
+"bullet7" = "Tag 1";
+"bullet8" = "Tag 2";
+"bullet9" = "...";
+"text5" = "HINT: If you are unsure, you can export and look at some test data.";
+
+"importBullet5" = "Currency Code";
+
+"startButtonTitle" = "Import CSV";
+"importPreviewTitle" = "Preview";
+"delimiterTitle" = "  Delimiter";
+
+"errorTitle" = "Import error";
+"errorText" = "Please check if all mandatory columns are in the file, the correct delimiter has been chosen";
+"errorFirstText" = "Error in line ";
+"errorDateText" = "Not able to import date: ";
+"errorAmountText" = "Not able to import amount: ";
+"errorAmountText2" = " Have you used the correct comma separator?";
+
+"foundTitle" = "Success";
+"foundText" = " transactions found (";
+"foundText2" = " shown)";
+
+"importButton" = "Import";
+
+"importTitle" = "Step (2/2)";
+"importText" = "Proceed with import? This can't be undone.";
+
+"preImportTitle" = "Step (1/2)";
+"preImportText" = "Creating preview. Depending on the size of the input file, this should only take a few moments. Please do not close the app during import.";
+
+"cancelImport" = "Cancel";
+
+// #### Category ####
+"CategoryTitle" = "Add";
+"categoryTitlePlaceholder" = "Category name";
+"categoryExpenseSegmentTitle" = "Expense";
+"categoryIncomeSegmentTitle" = "Income";
+"categoryExpenseSaveSegmentTitle" = "Withdraw";
+"categoryIncomeSaveSegmentTitle" = "Deposit";
+"categorySaveTitle" = "Save";
+"categorySaveSegmentTitle" = "Savings account";
+"categoryButtonAdd" = "Add";
+"categoryButtonUpdate" = "Update";
+"deleteTitle" = "Delete category?";
+"deleteText" = "This cannot be undone. ALL transactions of this category will be deleted!";
+"deleteNo" = "No";
+"deleteYes" = "Yes";
+"noNameTitle" = "Category";
+"noNameText" = "Please add a title for the category";
+"noNameOk" = "Ok";
+
+"subtitleExpensesLabel" = "Expenses";
+"subtitleEarningsLabel" = "Income";
+"subtitleSavingsLabel" = "Savings accounts";
+
+// #### CURRENCY ####
+// Country Names
+"AF"="Afghanistan";
+"AL"="Albania";
+"DZ"="Algeria";
+"AS"="American Samoa";
+"AD"="Andorra";
+"AO"="Angola";
+"AI"="Anguilla";
+"AG"="Antigua and Barbuda";
+"AR"="Argentina";
+"AM"="Armenia";
+"AW"="Aruba";
+"AU"="Australia";
+"AT"="Austria";
+"AZ"="Azerbaijan";
+"BS"="Bahamas";
+"BH"="Bahrain";
+"BD"="Bangladesh";
+"BB"="Barbados";
+"BY"="Belarus";
+"BE"="Belgium";
+"BZ"="Belize";
+"BJ"="Benin";
+"BM"="Bermuda";
+"BT"="Bhutan";
+"BO"="Bolivia";
+"BA"="Bosnia and Herzegovina";
+"BW"="Botswana";
+"BV"="Bouvet Island";
+"BR"="Brazil";
+"IO"="British Indian Ocean Territory";
+"BN"="Brunei";
+"BG"="Bulgaria";
+"BF"="Burkina Faso";
+"BI"="Burundi";
+"KH"="Cambodia";
+"CM"="Cameroon";
+"CA"="Canada";
+"CV"="Cape Verde";
+"KY"="Cayman Islands";
+"CF"="Central African Republic";
+"TD"="Chad";
+"CL"="Chile";
+"CN"="China";
+"CX"="Christmas Island";
+"CC"="Cocos (Keeling) Islands";
+"CO"="Colombia";
+"KM"="Comoros";
+"CG"="Congo (Brazzaville)";
+"CD"="Congo (Kinshasa)";
+"CK"="Cook Islands";
+"CR"="Costa Rica";
+"CI"="Ivory Coast";
+"HR"="Croatia";
+"CU"="Cuba";
+"CY"="Cyprus";
+"CZ"="Czech Republic";
+"DK"="Denmark";
+"DJ"="Djibouti";
+"DM"="Dominica";
+"DO"="Dominican Republic";
+"EC"="Ecuador";
+"EG"="Egypt";
+"SV"="El Salvador";
+"GQ"="Equatorial Guinea";
+"ER"="Eritrea";
+"EE"="Estonia";
+"ET"="Ethiopia";
+"FK"="Falkland Islands";
+"FO"="Faroe Islands";
+"FJ"="Fiji";
+"FI"="Finland";
+"FR"="France";
+"GF"="French Guiana";
+"PF"="French Polynesia";
+"TF"="French Southern Territories";
+"GA"="Gabon";
+"GM"="Gambia";
+"GE"="Georgia";
+"DE"="Germany";
+"GH"="Ghana";
+"GI"="Gibraltar";
+"GR"="Greece";
+"GL"="Greenland";
+"GD"="Grenada";
+"GP"="Guadeloupe";
+"GU"="Guam";
+"GT"="Guatemala";
+"GG"="Guernsey";
+"GN"="Guinea";
+"GW"="Guinea-Bissau";
+"GY"="Guyana";
+"HT"="Haiti";
+"HM"="Heard Island and McDonald Islands";
+"VA"="Vatican";
+"HN"="Honduras";
+"HK"="Hong Kong S.A.R., China";
+"HU"="Hungary";
+"IS"="Iceland";
+"IN"="India";
+"ID"="Indonesia";
+"IR"="Iran";
+"IQ"="Iraq";
+"IE"="Ireland";
+"IM"="Isle of Man";
+"IL"="Israel";
+"IT"="Italy";
+"JM"="Jamaica";
+"JP"="Japan";
+"JE"="Jersey";
+"JO"="Jordan";
+"KZ"="Kazakhstan";
+"KE"="Kenya";
+"KI"="Kiribati";
+"KP"="North Korea";
+"KR"="South Korea";
+"KW"="Kuwait";
+"KG"="Kyrgyzstan";
+"LA"="Laos";
+"LV"="Latvia";
+"LB"="Lebanon";
+"LS"="Lesotho";
+"LR"="Liberia";
+"LY"="Libya";
+"LI"="Liechtenstein";
+"LT"="Lithuania";
+"LU"="Luxembourg";
+"MO"="Macao S.A.R., China";
+"MK"="Macedonia";
+"MG"="Madagascar";
+"MW"="Malawi";
+"MY"="Malaysia";
+"MV"="Maldives";
+"ML"="Mali";
+"MT"="Malta";
+"MH"="Marshall Islands";
+"MQ"="Martinique";
+"MR"="Mauritania";
+"MU"="Mauritius";
+"YT"="Mayotte";
+"MX"="Mexico";
+"FM"="Micronesia";
+"MD"="Moldova";
+"MC"="Monaco";
+"MN"="Mongolia";
+"ME"="Montenegro";
+"MS"="Montserrat";
+"MA"="Morocco";
+"MZ"="Mozambique";
+"MM"="Myanmar";
+"NA"="Namibia";
+"NR"="Nauru";
+"NP"="Nepal";
+"NL"="Netherlands";
+"NC"="New Caledonia";
+"NZ"="New Zealand";
+"NI"="Nicaragua";
+"NE"="Niger";
+"NG"="Nigeria";
+"NU"="Niue";
+"NF"="Norfolk Island";
+"MP"="Northern Mariana Islands";
+"NO"="Norway";
+"OM"="Oman";
+"PK"="Pakistan";
+"PW"="Palau";
+"PA"="Panama";
+"PG"="Papua New Guinea";
+"PY"="Paraguay";
+"PE"="Peru";
+"PH"="Philippines";
+"PN"="Pitcairn";
+"PL"="Poland";
+"PT"="Portugal";
+"PR"="Puerto Rico";
+"QA"="Qatar";
+"RE"="Reunion";
+"RO"="Romania";
+"RU"="Russia";
+"RW"="Rwanda";
+"SH"="Saint Helena";
+"KN"="Saint Kitts and Nevis";
+"LC"="Saint Lucia";
+"PM"="Saint Pierre and Miquelon";
+"VC"="Saint Vincent and the Grenadines";
+"WS"="Samoa";
+"SM"="San Marino";
+"ST"="Sao Tome and Principe";
+"SA"="Saudi Arabia";
+"SN"="Senegal";
+"RS"="Serbia";
+"SC"="Seychelles";
+"SL"="Sierra Leone";
+"SG"="Singapore";
+"SK"="Slovakia";
+"SI"="Slovenia";
+"SB"="Solomon Islands";
+"SO"="Somalia";
+"ZA"="South Africa";
+"ES"="Spain";
+"LK"="Sri Lanka";
+"SD"="Sudan";
+"SR"="Suriname";
+"SJ"="Svalbard and Jan Mayen";
+"SZ"="Swaziland";
+"SE"="Sweden";
+"CH"="Switzerland";
+"SY"="Syria";
+"TW"="Taiwan";
+"TJ"="Tajikistan";
+"TZ"="Tanzania";
+"TH"="Thailand";
+"TG"="Togo";
+"TK"="Tokelau";
+"TO"="Tonga";
+"TT"="Trinidad and Tobago";
+"TN"="Tunisia";
+"TR"="Turkey";
+"TM"="Turkmenistan";
+"TC"="Turks and Caicos Islands";
+"TV"="Tuvalu";
+"UG"="Uganda";
+"UA"="Ukraine";
+"AE"="United Arab Emirates";
+"GB"="United Kingdom";
+"US"="United States";
+"UM"="United States Minor Outlying Islands";
+"UY"="Uruguay";
+"UZ"="Uzbekistan";
+"VU"="Vanuatu";
+"VE"="Venezuela";
+"VN"="Vietnam";
+"VG"="British Virgin Islands";
+"VI"="U.S. Virgin Islands";
+"WF"="Wallis and Futuna";
+"EH"="Western Sahara";
+"YE"="Yemen";
+"ZM"="Zambia";
+"ZW"="Zimbabwe";
+
+// Currency Names
+"AFN"="Afghani";
+"ALL"="Lek";
+"DZD"="Algerian Dinar";
+"USD"="United States Dollar";
+"EUR"="Euro";
+"AOA"="Angolan kwanza";
+"XCD"="East Caribbean Dollar";
+"ARS"="Peso";
+"AMD"="Dram";
+"ANG"="Netherlands Antilles Guilder";
+"AUD"="Australian Dollars";
+"AZN"="Manat";
+"BSD"="Bahamian Dollar";
+"BHD"="Bahraini Dinar";
+"BDT"="Taka";
+"BBD"="Barbadian Dollar";
+"BYR"="Belarus Ruble";
+"BZD"="Belizean Dollar";
+"XOF"="CFA Franc BCEAO";
+"BMD"="Bermudian Dollar";
+"INR"="Indian Rupee";
+"BOB"="Boliviano";
+"BAM"="Bosnia and Herzegovina convertible mark";
+"BWP"="Pula";
+"NOK"="Norwegian Krone";
+"BRL"="Brazilian Real";
+"BND"="Bruneian Dollar";
+"BGN"="Bulgarian Lev";
+"XOF"="CFA Franc BCEAO";
+"BIF"="Burundi Franc";
+"KHR"="Riel";
+"XAF"="CFA Franc BEAC";
+"CAD"="Canadian Dollar";
+"CVE"="Escudo";
+"KYD"="Caymanian Dollar";
+"XAF"="CFA Franc BEAC";
+"XAF"="CFA Franc BEAC";
+"CLP"="Chilean Peso";
+"CNY"="Yuan Renminbi";
+"COP"="Peso";
+"KMF"="Comoran Franc";
+"XAF"="CFA Franc BEAC";
+"CDF"="Congolese Frank";
+"CRC"="Costa Rican Colon";
+"XOF"="CFA Franc BCEAO";
+"HRK"="Croatian Kuna";
+"CUP"="Cuban Peso";
+"CYP"="Cypriot Pound";
+"CZK"="Czech Koruna";
+"DKK"="Danish Krone";
+"DJF"="Djiboutian Franc";
+"XCD"="East Caribbean Dollar";
+"DOP"="Dominican Peso";
+"ECS"="Sucre";
+"EGP"="Egyptian Pound";
+"SVC"="Salvadoran Colon";
+"XAF"="CFA Franc BEAC";
+"ETB"="Ethiopian Birr";
+"EEK"="Estonian Kroon";
+"ETB"="Ethiopian Birr";
+"FKP"="Falkland Pound";
+"DKK"="Danish Krone";
+"FJD"="Fijian Dollar";
+"XPF"="CFP Franc";
+"XAF"="CFA Franc BEAC";
+"GMD"="Dalasi";
+"GEL"="Lari";
+"GHS"="Ghana cedi";
+"GIP"="Gibraltar Pound";
+"DKK"="Danish Krone";
+"XCD"="East Caribbean Dollar";
+"GTQ"="Quetzal";
+"GGP"="Guernsey pound";
+"GNF"="Guinean Franc";
+"XOF"="CFA Franc BCEAO";
+"GYD"="Guyanaese Dollar";
+"HTG"="Gourde";
+"HNL"="Lempira";
+"HKD"="Hong Kong Dollar";
+"HUF"="Hungarian forint";
+"ISK"="Icelandic Krona";
+"INR"="Indian Rupee";
+"IDR"="Indonesian Rupiah";
+"IRR"="Iranian Rial";
+"IQD"="Iraqi Dinar";
+"ILS"="Israeli Shekel";
+"JMD"="Jamaican Dollar";
+"JPY"="Japanese Yen";
+"GBP"="British Pound";
+"JOD"="Jordanian Dinar";
+"KZT"="Tenge";
+"KES"="Kenyan Shilling";
+"KPW"="Won";
+"KRW"="South Korean Won";
+"KWD"="Kuwaiti Dinar";
+"KGS"="Som";
+"LAK"="Kip";
+"LVL"="Lat";
+"LBP"="Lebanese Pound";
+"LSL"="Loti";
+"LRD"="Liberian Dollar";
+"LYD"="Libyan Dinar";
+"CHF"="Swiss Franc";
+"LTL"="Lita";
+"MOP"="Pataca";
+"MKD"="Denar";
+"MGA"="Malagasy Franc";
+"MWK"="Malawian Kwacha";
+"MYR"="Malaysian Ringgit";
+"MVR"="Rufiyaa";
+"XOF"="CFA Franc BCEAO";
+"MTL"="Maltese Lira";
+"MRO"="Ouguiya";
+"MUR"="Mauritian Rupee";
+"MXN"="Mexican Peso";
+"MDL"="Leu";
+"MNT"="Tugrik";
+"XCD"="East Caribbean Dollar";
+"MAD"="Dirham";
+"MZN"="Metical";
+"MMK"="Kyat";
+"NAD"="Dollar";
+"NPR"="Nepalese Rupee";
+"XPF"="CFP Franc";
+"NZD"="New Zealand Dollars";
+"NIO"="Cordoba Oro";
+"XOF"="CFA Franc BCEAO";
+"NGN"="Naira";
+"NOK"="Norwegian Krone";
+"OMR"="Sul Rial";
+"PKR"="Rupee";
+"PAB"="Balboa";
+"PGK"="Kina";
+"PYG"="Guarani";
+"PEN"="Nuevo Sol";
+"PHP"="Philippine peso";
+"PLN"="Polish Złoty";
+"QAR"="Rial";
+"RON"="Romanian Leu";
+"RUB"="Russian Ruble";
+"RWF"="Rwanda Franc";
+"XCD"="East Caribbean Dollar";
+"STD"="Dobra";
+"SAR"="Riyal";
+"XOF"="CFA Franc BCEAO";
+"RSD"="Serbian dinar";
+"SCR"="Rupee";
+"SLL"="Leone";
+"SGD"="Singapore Dollar";
+"SKK"="Koruna";
+"SBD"="Solomon Islands Dollar";
+"SOS"="Shilling";
+"ZAR"="South African Rand";
+"LKR"="Rupee";
+"SDG"="Dinar";
+"SRD"="Surinamese Guilder";
+"NOK"="Norwegian Krone";
+"SZL"="Lilangeni";
+"SEK"="Swedish Krona";
+"CHF"="Swiss Franc";
+"SYP"="Syrian Pound";
+"TWD"="Dollar";
+"TJS"="Tajikistan Ruble";
+"TZS"="Shilling";
+"THB"="Thai Baht";
+"XOF"="CFA Franc BCEAO";
+"TOP"="PaÕanga";
+"TTD"="Trinidad and Tobago Dollar";
+"TND"="Tunisian Dinar";
+"TRY"="Turkish Lira";
+"TMT"="Manat";
+"UGX"="Shilling";
+"UAH"="Hryvnia";
+"AED"="Dirham";
+"UYU"="Peso";
+"UZS"="Som";
+"VUV"="Vatu";
+"VEF"="Bolivar";
+"VND"="Dong";
+"XPF"="CFP Franc";
+"MAD"="Dirham";
+"YER"="Rial";
+"ZMK"="Kwacha";
+"ZWD"="Zimbabwe Dollar";
