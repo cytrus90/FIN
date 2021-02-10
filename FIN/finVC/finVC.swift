@@ -765,6 +765,9 @@ extension finTVC: UIContextMenuInteractionDelegate {
         let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
         deleteDataQueried(entity: "Transactions", query: queryDelete)
         
+        let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+        deleteDataQueried(entity: "Splits", query: querySplits)
+        
         let nc = NotificationCenter.default
         nc.post(name: Notification.Name("transactionDeleted"), object: nil)
     }

@@ -650,6 +650,13 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         } else {
             cell.icon.isHidden = true
         }
+        
+        if !UIDevice().model.contains("iPad") {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            cell.cellOutlineView.addInteraction(interaction)
+            cell.cellOutlineView.tag = indexPath.row
+        }
+        
         return cell
     }
     
@@ -1608,6 +1615,74 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         }
     }
 }
+
+// Context Menu
+extension userDetailVC: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(
+            identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+            previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+              actionProvider: { _ in
+                let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                return UIMenu(title: "", children: children)
+              })
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+            self.show(self.makeDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+        }
+    }
+    
+    func makeDetailPreview(row: Int) -> UIViewController {
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        if let latestTransactionDate = ((userDetailCells[(row)] as? [Int:Any])?[4] as? Date) {
+            addVC.updateCreateDate = latestTransactionDate
+            addVC.superRegularPayment = true
+            addVC.newRegularPayment = true
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        return navigationVC
+    }
+    
+    func makeDeleteAction(rowString: String) -> UIAction {
+      return UIAction(
+        title: NSLocalizedString("deleteButton", comment: "Delete"),
+        image: UIImage(systemName: "trash"),
+        identifier: UIAction.Identifier(rowString),
+        attributes: .destructive,
+        handler: deleteTransaction)
+    }
+    
+    func deleteTransaction(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue)
+        
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+
+        if row != -1 {
+            let transactionDate = ((userDetailCells[(row)] as? [Int:Any])?[4] as? Date ?? Date())
+            
+            let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: transactionDate)!
+            let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: transactionDate)!
+
+            let queryDelete = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            deleteDataQueried(entity: "RegularPayments", query: queryDelete)
+
+            let queryDeleteSplitsRegularPayments = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            deleteDataQueried(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
+            
+            let nc = NotificationCenter.default
+            nc.post(name: Notification.Name("transactionDeleted"), object: nil)
+        }
+    }
+}
+
 
 extension userDetailVC {
     // MARK: -In-App Purchase
