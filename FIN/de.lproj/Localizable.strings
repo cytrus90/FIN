@@ -454,6 +454,10 @@
 "subtitleEarningsLabel" = "Einkommen";
 "subtitleSavingsLabel" = "Sparkonten";
 
+"categorySegmentExpense" = "Ausgaben";
+"categorySegmentIncome" = "Einkommen";
+"categorySegmentSave" = "Sparkonten";
+
 // #### CURRENCY ####
 // Country Names
 "AF"="Afghanistan";

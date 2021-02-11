@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D64" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Categories" representedClassName="Categories" syncable="YES" codeGenerationType="class">
         <attribute name="cID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="color" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -8,6 +8,7 @@
         <attribute name="isIncome" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isSave" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="order" optional="YES" attributeType="Integer 16" usesScalarValueType="YES"/>
         <attribute name="selectedForFilter" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
     </entity>
     <entity name="Currency" representedClassName="Currency" syncable="YES" codeGenerationType="class">
@@ -128,7 +129,7 @@
         <attribute name="tags" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Categories" positionX="112.56640625" positionY="45.76171875" width="128" height="149"/>
+        <element name="Categories" positionX="112.56640625" positionY="45.76171875" width="128" height="164"/>
         <element name="Currency" positionX="144" positionY="-18" width="128" height="134"/>
         <element name="GraphSettings" positionX="144" positionY="-9" width="128" height="104"/>
         <element name="ImportRAM" positionX="144" positionY="-9" width="128" height="164"/>

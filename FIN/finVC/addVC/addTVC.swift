@@ -12,7 +12,7 @@ import TagListView
 import SmoothPicker
 
 var tags = [Int:[String:Any]]()
-var selectedCategory: Int = 1
+var selectedCategory: Int = 1 // Category ID
 var currencyCodeSet:String = "EUR"
 var currencyExchangeRate:Double?
 
@@ -546,6 +546,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             
             oldCategoryID = categoryID ?? -1
         } else {
+            selectedCategory = Int(loadFirstCategory())
             transactionData[0] = "" // Amount
             transactionData[1] = currencyCodeSet // Currency Symbol
             transactionData[2] = currencyExchangeRate // Exchange Rate
@@ -2322,6 +2323,26 @@ extension addTVC {
             print("Could not fetch. \(error)")
         }
         return [NSManagedObject]()
+    }
+    
+    func loadFirstCategory() -> Int16 {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        fetchRequest.fetchLimit = 1
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData[0].value(forKey: "cID") as? Int16 ?? -1
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return -1
     }
     
     // MARK: -DATA SETTINGS

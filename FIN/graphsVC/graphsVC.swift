@@ -687,8 +687,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
             }
         }
-        print("fjdslkfjalksdfjds")
-        print(lineChartRealValues)
         return (entries,dates,lastNegative,differenceFirstLast)
     }
     

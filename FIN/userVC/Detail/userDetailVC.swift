@@ -32,6 +32,18 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         return nib.instantiate(withOwner: self, options: nil).first as! headerView
     }()
     
+    // Bottom Bar for re-Ordering of Categories
+    var categoryBottomBar:categoryBottomBar = {
+        let nib = UINib(nibName: "categoriesBottomBar", bundle: nil)
+        return nib.instantiate(withOwner: self, options: nil).first as! categoryBottomBar
+    }()
+    var widthAnchorConstraintBottomBar: NSLayoutConstraint?
+    var bottomAnchorConstraintBottomBar: NSLayoutConstraint?
+    
+    var selectedSegmentOrderCategories = 0
+    
+    var removeIDs = [Int]()
+    
     var numberOfSections: Int = 1
     
     // MARK: CATEGORY VARIABLES
@@ -44,6 +56,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     var userDetailCells = [Int:Any]()
     var codeIsSet: Bool = false
     let setCodeCellIndexPath: IndexPath = IndexPath(row: 1, section: 0)
+    
+    var userDetailCellsTmp = [Int:Any]()
     
     var numberFormatter = NumberFormatter()
     var mediumDate = DateFormatter()
@@ -164,7 +178,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         cell.subtitleLabel.text = ""
         
         switch selectedRowForCells {
-        case 0:
+        case 0: // Repeated Payments
             if (((userDetailCells[indexPath.row]) as? [Int:Any])?[9] as? Bool ?? false) {
                 return getSubtitleCell(indexPath: indexPath)
             } else {
@@ -191,7 +205,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             default:
                 return getCutOffCell(indexPath: indexPath)
             }
-        case 4:
+        case 4: // About
             if indexPath.row == 0 {
                 return getAboutTitleCell(indexPath: indexPath)
             } else {
@@ -285,7 +299,84 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             }
         }
     }
+    
+    // Reodering of Categories
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        // Update Order within Group -> j
+        // Also update position within Table -> exchange i
+        let des_i = (userDetailCells[destinationIndexPath.row] as? [Int:Any])?[7] as? Int
+        
+        var newOld = [Int:Int]() // [Int_new:Int_old] -> Position within the main table
+        
+        if sourceIndexPath.row < destinationIndexPath.row { // #1
+            for k in sourceIndexPath.row...destinationIndexPath.row {
+                if k == sourceIndexPath.row {
+                    var dictRam = userDetailCells[k] as? [Int:Any]
+                    newOld[destinationIndexPath.row] = dictRam?[7] as? Int ?? 0
+                    dictRam?[6] = destinationIndexPath.row
+                    dictRam?[7] = des_i
+                    userDetailCells[k] = dictRam
+                } else {
+                    var dictRam = userDetailCells[k] as? [Int:Any]
+                    dictRam?[6] = k - 1
+                    let i_RAM = ((dictRam?[7] as? Int ?? 1) - 1)
+                    newOld[k - 1] = (userDetailCells[k] as? [Int:Any])?[7] as? Int ?? 0
+                    dictRam?[7] = i_RAM
+                    userDetailCells[k] = dictRam
+                }
+            }
+        } else { // #2
+            for k in destinationIndexPath.row...sourceIndexPath.row {
+                if k == sourceIndexPath.row {
+                    var dictRam = userDetailCells[k] as? [Int:Any]
+                    newOld[destinationIndexPath.row] = dictRam?[7] as? Int ?? 0
+                    dictRam?[6] = destinationIndexPath.row
+                    dictRam?[7] = des_i
+                    userDetailCells[k] = dictRam
+                } else {
+                    var dictRam = userDetailCells[k] as? [Int:Any]
+                    dictRam?[6] = k + 1
+                    let i_RAM = ((dictRam?[7] as? Int ?? 1) + 1)
+                    newOld[k + 1] = (userDetailCells[k] as? [Int:Any])?[7] as? Int ?? 0
+                    dictRam?[7] = i_RAM
+                    userDetailCells[k] = dictRam
+                }
+            }
+        }
 
+        var userDetailCellsTmp2 = userDetailCells
+        userDetailCells.removeAll()
+        for (_,value) in userDetailCellsTmp2.enumerated() {
+            userDetailCells[((value.value as? [Int:Any])?[6] as? Int ?? 0)] = value.value
+        }
+        
+        for (_,value) in newOld.enumerated() {
+            userDetailCellsTmp[value.value] = userDetailCells[value.key]
+        }
+        
+        userDetailCellsTmp2.removeAll()
+        userDetailCellsTmp2 = userDetailCellsTmp
+        for (_,value) in userDetailCellsTmp2.enumerated() {
+            userDetailCellsTmp[((value.value as? [Int:Any])?[7] as? Int ?? 0)] = value.value
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.none
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        if (userDetailCells[indexPath.row] as? [Int:Any])?[9] as? Bool ?? false {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     // MARK: -CELL FUNCTIONS
     func initCells(selectedRowForCells: Int) {
         switch selectedRowForCells {
@@ -363,17 +454,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             
             var countData = loadDataGrouped(entitie: "Transactions", groupByColumn: "categoryID") as? [[String:Any]]
 
-            var i = 0
-            
-            let ramDict = [
-                3:-1,
-                9:true
-            ] as [Int : Any]
-            userDetailCells[i] = ramDict
-            i = i + 1
+            var j:Int = 0 // order within Group (expenses, income, savings)
+            var i = 0 // order within Table
             
             let ramDict0 = [
                 3:0,
+                7:i,
                 9:true
             ] as [Int : Any]
             userDetailCells[i] = ramDict0
@@ -403,16 +489,20 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         2:Int64(numberExpensesInCategory),
                         3:expense.value(forKey: "color") as? Int16 ?? 0,
                         4:expense.value(forKey: "isIncome") as? Bool ?? false,
-                        5:expense.value(forKey: "isSave") as? Bool ?? false
+                        5:expense.value(forKey: "isSave") as? Bool ?? false,
+                        6:j,
+                        7:i
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
+                    j = j + 1
                 }
             }
             // Get Income
-            
+            j = 0
             let ramDict2 = [
                 3:1,
+                7:i,
                 9:true
             ] as [Int : Any]
             userDetailCells[i] = ramDict2
@@ -440,20 +530,24 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         2:Int64(numberIncomeInCategory),
                         3:income.value(forKey: "color") as? Int16 ?? 0,
                         4:income.value(forKey: "isIncome") as? Bool ?? true,
-                        5:income.value(forKey: "isSave") as? Bool ?? false
+                        5:income.value(forKey: "isSave") as? Bool ?? false,
+                        6:j,
+                        7:i
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
+                    j = j + 1
                 }
             }
             
             let ramDict3 = [
                 3:2,
+                7:i,
                 9:true
             ] as [Int : Any]
             userDetailCells[i] = ramDict3
             i = i + 1
-            
+            j = 0
             // Get Save Deposit
             let predicateSaveDeposit:NSPredicate = NSPredicate(format: "isIncome == false && isSave == true")
             let savesDeposit = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit)
@@ -477,10 +571,13 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         2:Int64(numberSavingsInCategory),
                         3:save.value(forKey: "color") as? Int16 ?? 0,
                         4:save.value(forKey: "isIncome") as? Bool ?? false,
-                        5:save.value(forKey: "isSave") as? Bool ?? true
+                        5:save.value(forKey: "isSave") as? Bool ?? true,
+                        6:j,
+                        7:i
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
+                    j = j + 1
                 }
             }
             // Get Save Withdraw
@@ -506,13 +603,21 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         2:numberSavingsInCategory,
                         3:save.value(forKey: "color") as? Int16 ?? 0,
                         4:save.value(forKey: "isIncome") as? Bool ?? false,
-                        5:save.value(forKey: "isSave") as? Bool ?? true
+                        5:save.value(forKey: "isSave") as? Bool ?? true,
+                        6:j,
+                        7:i
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
+                    j = j + 1
                 }
             }
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryTabbed))
+            
+            let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryTabbed))
+            let orderButton = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), style: .plain, target: self, action: #selector(reorderCategories))
+            
+            navigationItem.rightBarButtonItems = [addButton,orderButton]
+            
             break
         case 2: // Export / Import
             numberOfSections = 1
@@ -554,7 +659,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
 //                ] as [Int : Any]
             }
             break
-        case 4:
+        case 4: // About
             numberOfSections = 1
             userDetailCells.removeAll()
             
@@ -849,35 +954,42 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             headerView.backgroundColor = .secondarySystemBackground
         }
         
-        if selectedRowForCells != 1 {
-            headerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            headerView.headerLabel.text = " "
-            
-            headerView.frame = CGRect(
-                x: 0,
-                y: view.safeAreaInsets.top,
-                width: view.frame.width,
-                height: view.frame.height * headerHeightFactor
-            )
-            headerView.maxHeight = view.frame.height * headerHeightFactor
-            headerView.maxLabelPointSize = headerView.headerLabel.font.pointSize
-            headerView.minLabelPointSize = 20.0
-            headerView.scrollView = table
-            
-            var heightFloat = view.frame.height * headerHeightFactor + 20
-            if selectedRowForCells == 4 {
-                heightFloat = 0
-            }
-            
-            table.backgroundView = UIView()
-            table.backgroundView?.addSubview(headerView)
-            table.contentInset = UIEdgeInsets(
-                top: heightFloat,
-                left: 0,
-                bottom: 0,
-                right: 0
-            )
+        var headerHeight = view.frame.height * headerHeightFactor
+        if selectedRowForCells == 1 {
+            headerHeight = 20
         }
+        
+        headerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        headerView.headerLabel.text = " "
+            
+        headerView.frame = CGRect(
+            x: 0,
+            y: view.safeAreaInsets.top,
+            width: view.frame.width,
+            height: headerHeight
+        )
+        headerView.maxHeight = headerHeight
+        headerView.maxLabelPointSize = headerView.headerLabel.font.pointSize
+        headerView.minLabelPointSize = 20.0
+        headerView.scrollView = table
+            
+        var heightFloat = view.frame.height * headerHeightFactor + 20
+        var bottomInset:CGFloat = 0.0
+        if selectedRowForCells == 4 {
+            heightFloat = 0.0
+        } else if selectedRowForCells == 1 {
+            heightFloat = 20.0
+            bottomInset = 20.0
+        }
+            
+        table.backgroundView = UIView()
+        table.backgroundView?.addSubview(headerView)
+        table.contentInset = UIEdgeInsets(
+            top: heightFloat,
+            left: 0,
+            bottom: bottomInset,
+            right: 0
+        )
         
         activityIndicator.style = .medium
         activityIndicator.hidesWhenStopped = true
@@ -886,7 +998,60 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         activityIndicator.centerYAnchor.constraint(equalTo: table.safeAreaLayoutGuide.centerYAnchor, constant: 0).isActive = true
         activityIndicator.centerXAnchor.constraint(equalTo: table.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
         
+        if selectedRowForCells == 1 {
+            categoryBottomBar.isHidden = true
+            initBottomBar()
+            hideBottomBar()
+        }
+        
         loadViewIfNeeded()
+    }
+    
+    func initBottomBar() {
+        categoryBottomBar.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(categoryBottomBar, aboveSubview: userDetailTable)
+        categoryBottomBar.initView()
+        
+        initBottomBarSize()
+        
+        categoryBottomBar.delegete = self
+    }
+    
+    func initBottomBarSize() {
+        widthAnchorConstraintBottomBar?.isActive = false
+        widthAnchorConstraintBottomBar = categoryBottomBar.widthAnchor.constraint(equalToConstant: min(view.frame.width, 400))
+        widthAnchorConstraintBottomBar?.isActive = true
+        
+        bottomAnchorConstraintBottomBar?.isActive = false
+        bottomAnchorConstraintBottomBar = categoryBottomBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5)
+        bottomAnchorConstraintBottomBar?.isActive = true
+        
+        categoryBottomBar.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor, constant: 1.0).isActive = true
+    }
+    
+    func hideBottomBar() {
+        bottomAnchorConstraintBottomBar?.isActive = false
+        bottomAnchorConstraintBottomBar = categoryBottomBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5)
+        bottomAnchorConstraintBottomBar?.isActive = true
+        
+        UIView.animate(withDuration: 0.4, animations: {
+            self.view.layoutIfNeeded()
+        } , completion: { finished in
+            self.categoryBottomBar.isHidden = true
+        })
+    }
+    
+    func showBottomBar() {
+        bottomAnchorConstraintBottomBar?.isActive = false
+        bottomAnchorConstraintBottomBar = categoryBottomBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5)
+        bottomAnchorConstraintBottomBar?.isActive = true
+        self.categoryBottomBar.isHidden = false
+        
+        UIView.animate(withDuration: 0.4, animations: {
+            self.view.layoutIfNeeded()
+        } , completion: { finished in
+            
+        })
     }
     
     func sendEmail() {
@@ -938,6 +1103,104 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
             }
+        }
+    }
+    
+    @objc func categoryReorderDone() {
+        var cellsShown = [Int]()
+        for (_,value) in userDetailCells.enumerated() {
+            cellsShown.append((value.value  as? [Int:Any])?[7] as? Int ?? 0)
+        }
+        
+        var addIDs = [IndexPath]()
+        for (_,value) in userDetailCellsTmp.enumerated() {
+            if find(value: value.key, in: cellsShown) == nil {
+                addIDs.append(IndexPath(row: value.key, section: 0))
+            }
+        }
+
+        userDetailCells.removeAll()
+        userDetailCells = userDetailCellsTmp
+        userDetailTable.setEditing(false, animated: true)
+        
+        userDetailTable.beginUpdates()
+        userDetailTable.insertRows(at: addIDs, with: .automatic)
+        userDetailTable.endUpdates()
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryTabbed))
+        let orderButton = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), style: .plain, target: self, action: #selector(reorderCategories))
+        
+        navigationItem.rightBarButtonItems = [addButton,orderButton]
+        hideBottomBar()
+        
+        var j:Int16 = 1
+        for i in 0...userDetailCells.count-1 {
+            if (userDetailTable.cellForRow(at: IndexPath(row: i, section: 0)) as? cellDetailCategory) != nil {
+                let querySaveOrder = NSPredicate(format: "cID == %i", Int((userDetailCells[i] as? [Int:Any])?[0] as? Int16 ?? -1) as NSInteger)
+                saveSingleData(entity: "Categories", attibute: "order", newValue: j, query: querySaveOrder)
+                j = j + 1
+            }
+        }
+    }
+    
+    @objc func reorderCategories() {
+        removeIDs.removeAll()
+        userDetailCellsTmp.removeAll()
+        userDetailCellsTmp = userDetailCells
+
+        changeCategoriesForOrder(selectedType: selectedSegmentOrderCategories, reloadTable: false)
+        showBottomBar()
+        userDetailTable.isEditing = true
+            
+        navigationItem.rightBarButtonItems?.removeAll()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(categoryReorderDone))
+    }
+    
+    func changeCategoriesForOrder(selectedType:Int, reloadTable:Bool) {
+        userDetailCells.removeAll()
+        userDetailCells = userDetailCellsTmp
+        
+        removeIDs.removeAll()
+        for (_,value) in userDetailCells.enumerated() {
+            switch selectedType {
+            case 1: // Income
+                if !(((value.value  as? [Int:Any])?[4] as? Bool ?? false) && !((value.value  as? [Int:Any])?[5] as? Bool ?? true)) {
+                    removeIDs.append(value.key)
+                }
+                break
+            case 2: // Savings
+                if !((value.value  as? [Int:Any])?[5] as? Bool ?? false) {
+                    removeIDs.append(value.key)
+                }
+                break
+            default: // Expenses
+                if !(!((value.value  as? [Int:Any])?[4] as? Bool ?? true) && !((value.value  as? [Int:Any])?[5] as? Bool ?? true)) {
+                    removeIDs.append(value.key)
+                }
+                break
+            }
+        }
+        
+        var indexPathsToBeDeleted = [IndexPath]()
+        for index in removeIDs {
+            indexPathsToBeDeleted.append(IndexPath(row: index, section: 0))
+            userDetailCells.removeValue(forKey: index)
+        }
+
+        var userDetailCellsTmp2 = [Int:Any]()
+        for (_,value) in userDetailCells.enumerated() {
+            userDetailCellsTmp2[Int((value.value  as? [Int:Any])?[6] as? Int ?? 0)] = value.value
+        }
+        
+        userDetailCells.removeAll()
+        userDetailCells = userDetailCellsTmp2
+
+        if reloadTable {
+            userDetailTable.reloadData()
+        } else {
+            userDetailTable.beginUpdates()
+            userDetailTable.deleteRows(at: indexPathsToBeDeleted, with: .automatic)
+            userDetailTable.endUpdates()
         }
     }
     
@@ -1084,6 +1347,15 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         return locale.displayName(forKey: .currencySymbol, value: code)
     }
     
+    func find(value searchValue: Int, in array: [Int]) -> Int? {
+        for (index, value) in array.enumerated() {
+            if value == searchValue {
+                return index
+            }
+        }
+        return nil
+    }
+    
     // MARK: -DATA
     // MARK: SAVE
     func saveSettings(settingsChange: String, newValue: Any) {
@@ -1145,6 +1417,28 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                     try managedContext.save()
                     break
                 }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleData(entity:String, attibute: String, newValue: Any, query: NSPredicate) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                let managedObject = data
+                managedObject.setValue(newValue, forKey: attibute)
+                try managedContext.save()
+                break
             }
         } catch {
             print("ERROR. \(error)")
@@ -1463,6 +1757,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
         fetchRequest.returnsObjectsAsFaults = false
         fetchRequest.predicate = query
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         do {
             let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
             return loadData
@@ -1683,6 +1978,12 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
     }
 }
 
+extension userDetailVC: categoryBottomBarDelegate {
+    func segmentControlChanged(selected: Int) {
+        changeCategoriesForOrder(selectedType: selected, reloadTable: true)
+        selectedSegmentOrderCategories = selected
+    }
+}
 
 extension userDetailVC {
     // MARK: -In-App Purchase

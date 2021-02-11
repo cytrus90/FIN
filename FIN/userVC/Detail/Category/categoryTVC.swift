@@ -15,6 +15,13 @@ class categoryTVC: UITableViewController {
         
     var categoryData = [Int:Any]()
     
+    struct CategoryEntry {
+        var cID:Int16
+        var name:String
+        var dateTime:Date
+        var order:Int16
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = NSLocalizedString("CategoryTitle", comment: "CategoryTitle")
@@ -149,6 +156,8 @@ class categoryTVC: UITableViewController {
                 }
                 self.deleteData(entity: "RegularPayments", query: queryDeleteTransactions)
                 
+                self.updateCategoryOrder()
+                
                 NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
                 NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
                 self.dismiss(animated: true, completion: nil)
@@ -158,6 +167,65 @@ class categoryTVC: UITableViewController {
             alert.popoverPresentationController?.sourceView = self.view
             alert.popoverPresentationController?.sourceRect = self.view.bounds
             self.present(alert, animated: true)
+        }
+    }
+    
+    func updateCategoryOrder() {
+        // get & order all categories
+        // order each one
+        // update enties
+        // save to categories
+        var expenses = [CategoryEntry]()
+        var income = [CategoryEntry]()
+        var savings = [CategoryEntry]()
+        
+        for category in loadBulkDataSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
+            if (category.value(forKey: "isSave") as? Bool ?? false) { // isSave
+                savings.append(CategoryEntry(
+                                cID: category.value(forKey: "cID") as? Int16 ?? -1,
+                                name: category.value(forKey: "name") as? String ?? "",
+                                dateTime: category.value(forKey: "createDate") as? Date ?? Date(),
+                                order: category.value(forKey: "order") as? Int16 ?? category.value(forKey: "cID") as? Int16 ?? -1))
+            } else if (category.value(forKey: "isIncome") as? Bool ?? false) { // isIncome
+                income.append(CategoryEntry(
+                                cID: category.value(forKey: "cID") as? Int16 ?? -1,
+                                name: category.value(forKey: "name") as? String ?? "",
+                                dateTime: category.value(forKey: "createDate") as? Date ?? Date(),
+                                order: category.value(forKey: "order") as? Int16 ?? category.value(forKey: "cID") as? Int16 ?? -1))
+            } else { // isExpense
+                expenses.append(CategoryEntry(
+                                    cID: category.value(forKey: "cID") as? Int16 ?? -1,
+                                    name: category.value(forKey: "name") as? String ?? "",
+                                    dateTime: category.value(forKey: "createDate") as? Date ?? Date(),
+                                    order: category.value(forKey: "order") as? Int16 ?? category.value(forKey: "cID") as? Int16 ?? -1))
+            }
+        }
+        
+        var expensesSorted = expenses.sorted(by: { $0.order < $1.order })
+        var incomeSorted = income.sorted(by: { $0.order < $1.order })
+        var savingsSorted = savings.sorted(by: { $0.order < $1.order })
+        
+        var j:Int16 = 0
+        for i in 0...expensesSorted.count-1 {
+            expensesSorted[i].order = j
+            j = j + 1
+            
+            let querySave = NSPredicate(format: "cID == %i", expensesSorted[i].cID)
+            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: expensesSorted[i].order)
+        }
+        for i in 0...incomeSorted.count-1 {
+            incomeSorted[i].order = j
+            j = j + 1
+            
+            let querySave = NSPredicate(format: "cID == %i", incomeSorted[i].cID)
+            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: incomeSorted[i].order)
+        }
+        for i in 0...savingsSorted.count-1 {
+            savingsSorted[i].order = j
+            j = j + 1
+            
+            let querySave = NSPredicate(format: "cID == %i", savingsSorted[i].cID)
+            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
         }
     }
     
@@ -184,13 +252,15 @@ extension categoryTVC {
             managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
             let categorySave = Categories(context: managedContext)
             
-            categorySave.cID = loadNextCategoryID()
+            let nextID = loadNextCategoryID()
+            categorySave.cID = nextID
             categorySave.name = categoryData[0] as? String ?? ""
             categorySave.isIncome = categoryData[1] as? Bool ?? false
             categorySave.isSave = categoryData[2] as? Bool ?? false
             categorySave.color = categoryData[3] as? Int16 ?? 0
             categorySave.countEntries = 0
             categorySave.createDate = Date()
+            categorySave.order = nextID
             
             do {
                 try managedContext.save()
@@ -259,6 +329,23 @@ extension categoryTVC {
         return [NSManagedObject]()
     }
     
+    func loadBulkDataSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = sort
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
     func loadNextCategoryID() -> Int16 {
         var i:Int16 = 0
         
@@ -284,6 +371,28 @@ extension categoryTVC {
             print("Could not fetch. \(error)")
         }
         return i
+    }
+    
+    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if fetchedData.count > 1 || fetchedData.count <= 0 {
+                return
+            } else {
+                fetchedData[0].setValue(value, forKey: attribute)
+                try managedContext.save()
+                return
+            }
+        } catch {
+            fatalError("Failed to fetch recordings: \(error)")
+        }
     }
     
     func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) {
@@ -374,12 +483,14 @@ extension categoryTVC: cellCategoryAddDelegate {
         reloadAddView = true
         if selectedCategoryDetail == -1 {
             if saveNewCategory() {
+                updateCategoryOrder()
                 NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
                 NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
                 self.dismiss(animated: true, completion: nil)
             }
         } else {
             if updateCategory() {
+                updateCategoryOrder()
                 NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
                 NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
                 self.dismiss(animated: true, completion: nil)

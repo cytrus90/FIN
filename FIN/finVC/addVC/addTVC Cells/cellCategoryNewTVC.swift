@@ -17,7 +17,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
     var categoryData = [[Int:Any]]()
     let alphaValue:CGFloat = 0.6
     
-    var selectedCell = max(0,selectedCategory-1)
+    var selectedCell = 0
     var firstLoad:Bool = true
     
     weak var delegate: cellNewCategoryTVCDelegate?
@@ -60,10 +60,10 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
     // MARK: -DATA
     func getCategoryData() {
         categoryData.removeAll()
-        let categorySort = NSSortDescriptor(key: "cID", ascending: true)
+        let categorySortOrder = NSSortDescriptor(key: "order", ascending: true)
         // Get Expense Categories
         let predicateExpenses:NSPredicate = NSPredicate(format: "isIncome == false && isSave == false")
-        let expenses = loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses, sort: [categorySort])
+        let expenses = loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses, sort: [categorySortOrder])
         if expenses.count != 0 {
             for expense in expenses {
                 let ramDict = [
@@ -78,7 +78,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Income Categories
         let predicateIncome:NSPredicate = NSPredicate(format: "isIncome == true && isSave == false")
-        let incomes = loadBulkDataWithQuery(entitie: "Categories", query: predicateIncome, sort: [categorySort])
+        let incomes = loadBulkDataWithQuery(entitie: "Categories", query: predicateIncome, sort: [categorySortOrder])
         if incomes.count != 0 {
             for income in incomes {
                 let ramDict = [
@@ -93,7 +93,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Savings Income Categories
         let predicateSaveDeposit:NSPredicate = NSPredicate(format: "isIncome == false && isSave == true")
-        let savesDeposit = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit, sort: [categorySort])
+        let savesDeposit = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit, sort: [categorySortOrder])
         if savesDeposit.count != 0 {
             for saveIncome in savesDeposit {
                 let ramDict = [
@@ -108,7 +108,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Savings Expense Categories
         let predicateSaveWithdraw:NSPredicate = NSPredicate(format: "isIncome == true && isSave == true")
-        let savesWithdraw = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveWithdraw, sort: [categorySort])
+        let savesWithdraw = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveWithdraw, sort: [categorySortOrder])
         if savesWithdraw.count != 0 {
             for saveExpense in savesWithdraw {
                 let ramDict = [
@@ -141,6 +141,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         cell.label.text = (categoryData[indexPath.row][1] as? String ?? "")
         
         if (categoryData[indexPath.row][0] as? Int16 ?? -1) == Int16(selectedCategory) {
+            selectedCell = indexPath.row
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
             cell.label.textColor = UIColor.white
             if firstLoad {
@@ -176,7 +177,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
             cell.label.textColor = UIColor.white
             
-            selectedCell = Int(indexPath.row)
+            selectedCell = indexPath.row
         }
     }
     

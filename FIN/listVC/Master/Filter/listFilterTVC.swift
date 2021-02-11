@@ -201,11 +201,11 @@ class listFilterTVC: UITableViewController {
     func initFileredCategories() {
         fileredCategories.removeAll()
         var i = 1
-        let categorySortID = NSSortDescriptor(key: "cID", ascending: true)
+        let categorySortOrder = NSSortDescriptor(key: "order", ascending: true)
 
         // Get Expenses
         let expensesCategoriesPredicate = NSPredicate(format: "isIncome == %@ AND isSave == %@", NSNumber(value: false), NSNumber(value: false))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: expensesCategoriesPredicate, sort: [categorySortID]) {
+        for data in loadBulkQueriedSorted(entitie: "Categories", query: expensesCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",
@@ -218,7 +218,7 @@ class listFilterTVC: UITableViewController {
         
         // Get Incomes
         let incomesCategoriesPredicate = NSPredicate(format: "isIncome == %@ AND isSave == %@", NSNumber(value: true), NSNumber(value: false))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: incomesCategoriesPredicate, sort: [categorySortID]) {
+        for data in loadBulkQueriedSorted(entitie: "Categories", query: incomesCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",
@@ -231,7 +231,7 @@ class listFilterTVC: UITableViewController {
         
         // Get Save
         let savingsCategoriesPredicate = NSPredicate(format: "isSave == %@", NSNumber(value: true))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: savingsCategoriesPredicate, sort: [categorySortID]) {
+        for data in loadBulkQueriedSorted(entitie: "Categories", query: savingsCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",

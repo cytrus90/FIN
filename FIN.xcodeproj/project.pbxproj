@@ -92,6 +92,8 @@
 		17AF201C24BE462500223931 /* setPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF201A24BE462500223931 /* setPasscode.swift */; };
 		17AF202224C01DBB00223931 /* balanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF202024C01DBB00223931 /* balanceView.swift */; };
 		17AF202324C01DBB00223931 /* balanceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17AF202124C01DBB00223931 /* balanceView.xib */; };
+		17B3E05825D5048E007A4182 /* categoriesBottomBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */; };
+		17B3E05B25D504B7007A4182 /* categoryBottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */; };
 		17BA4A5E24C713D200AB800A /* finTSB.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17BA4A5D24C713D200AB800A /* finTSB.storyboard */; };
 		17C30A0024CA054700573E19 /* datePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C309FF24CA054700573E19 /* datePickerView.swift */; };
 		17C30A0224CA055900573E19 /* datePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17C30A0124CA055900573E19 /* datePickerView.xib */; };
@@ -236,6 +238,8 @@
 		17AF201A24BE462500223931 /* setPasscode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setPasscode.swift; sourceTree = "<group>"; };
 		17AF202024C01DBB00223931 /* balanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = balanceView.swift; sourceTree = "<group>"; };
 		17AF202124C01DBB00223931 /* balanceView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = balanceView.xib; sourceTree = "<group>"; };
+		17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = categoriesBottomBar.xib; sourceTree = "<group>"; };
+		17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = categoryBottomBar.swift; sourceTree = "<group>"; };
 		17BA4A5D24C713D200AB800A /* finTSB.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = finTSB.storyboard; sourceTree = "<group>"; };
 		17C309FF24CA054700573E19 /* datePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = datePickerView.swift; sourceTree = "<group>"; };
 		17C30A0124CA055900573E19 /* datePickerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = datePickerView.xib; sourceTree = "<group>"; };
@@ -400,6 +404,7 @@
 				17F7D8ED24D2F886009FF599 /* Category */,
 				17AF201924BE45EE00223931 /* Passcode */,
 				17CA4502258F713F007525DC /* Import+Export */,
+				17B3E05625D503F7007A4182 /* XIBs */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -543,6 +548,15 @@
 				17AF201A24BE462500223931 /* setPasscode.swift */,
 			);
 			path = Passcode;
+			sourceTree = "<group>";
+		};
+		17B3E05625D503F7007A4182 /* XIBs */ = {
+			isa = PBXGroup;
+			children = (
+				17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */,
+				17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */,
+			);
+			path = XIBs;
 			sourceTree = "<group>";
 		};
 		17C30A0524CC0D5800573E19 /* addTVC Cells */ = {
@@ -803,6 +817,7 @@
 			files = (
 				17BA4A5E24C713D200AB800A /* finTSB.storyboard in Resources */,
 				17C30A0424CC0CAB00573E19 /* currencies.csv in Resources */,
+				17B3E05825D5048E007A4182 /* categoriesBottomBar.xib in Resources */,
 				1786C4BE24A103B100FE36E5 /* LaunchScreen.storyboard in Resources */,
 				173779D624B71C9C00BED279 /* headerView.xib in Resources */,
 				17F6BCBE2596299A006A4B38 /* graphsTSB.storyboard in Resources */,
@@ -972,6 +987,7 @@
 				17F6BD4925968B29006A4B38 /* graphsVC.swift in Sources */,
 				17F6BD5225969CAF006A4B38 /* graphCarouselCell.swift in Sources */,
 				1749721E24BD81850087031F /* cellUserSettings.swift in Sources */,
+				17B3E05B25D504B7007A4182 /* categoryBottomBar.swift in Sources */,
 				17F7D8F124D2F8C0009FF599 /* cellCategoryMain.swift in Sources */,
 				171ADE1B25949F7C00382710 /* exportTVC.swift in Sources */,
 				17DBF0CB24FA8CF500B9F2E5 /* listFilterBottomBar.swift in Sources */,

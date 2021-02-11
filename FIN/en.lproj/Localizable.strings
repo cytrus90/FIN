@@ -453,6 +453,10 @@
 "subtitleEarningsLabel" = "Income";
 "subtitleSavingsLabel" = "Savings accounts";
 
+"categorySegmentExpense" = "Expenses";
+"categorySegmentIncome" = "Income";
+"categorySegmentSave" = "Savings";
+
 // #### CURRENCY ####
 // Country Names
 "AF"="Afghanistan";
