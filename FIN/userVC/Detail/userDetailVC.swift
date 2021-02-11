@@ -2183,6 +2183,8 @@ extension userDetailVC: cellUserSettingsDelegate {
                 if newText.count > 0 {
                     saveSettings(settingsChange: "userName", newValue: newText)
                     updateSplitsNewUser(newUserName: newText)
+                    let nc = NotificationCenter.default
+                    nc.post(name: Notification.Name("updateUserHeader"), object: nil)
                 }
                 break
             }

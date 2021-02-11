@@ -83,6 +83,7 @@ class userMasterVC: UITableViewController {
             }
             canPerformPurchase = PKIAPHandler.shared.canMakePurchases()
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(updateUserHeader), name: Notification.Name("updateUserHeader"), object: nil)
         
         initFirstSelected()
         initView(table: userTable)
@@ -236,13 +237,7 @@ class userMasterVC: UITableViewController {
         }
         
         headerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        let userName = loadData(entitie: "Settings", attibute: "userName") as? String ?? "User"
-        if userName == "User" {
-            headerView.headerLabel.text = navTitle
-        } else {
-            headerView.headerLabel.text = userName
-            navTitle = userName
-        }
+        updateUserHeader()
         
         headerView.frame = CGRect(
             x: 0,
@@ -314,6 +309,16 @@ class userMasterVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellPurchase", for: indexPath) as! cellPurchase
         cell.delegate = self
         return cell
+    }
+    
+    @objc func updateUserHeader() {
+        let userName = loadData(entitie: "Settings", attibute: "userName") as? String ?? "User"
+        if userName == "User" {
+            headerView.headerLabel.text = navTitle
+        } else {
+            headerView.headerLabel.text = userName
+            navTitle = userName
+        }
     }
     
     // MARK: -DATA
