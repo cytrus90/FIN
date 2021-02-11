@@ -785,9 +785,6 @@ class settleSplitTVC: UITableViewController {
         }
         amountToBeSettled = abs(amountToBeSettled)
         
-        print("fdslkafjdslkf")
-        print(amountToBeSettled)
-        
         let otherPersonName = rowData[row]?[positionOtherPersonName] as? String ?? ""
         let otherPersonCreateDate = rowData[row]?[positionOtherPersonCreateDate] as? Date ?? Date()
         
@@ -826,8 +823,6 @@ class settleSplitTVC: UITableViewController {
             let amountTransactionOtherPerson = amountTransaction * (loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
             
             let amountLeft = amountTransactionOtherPerson - settledOtherPerson
-            print("fjjfjfjf")
-            print(amountLeft)
 //            let amountSettledTransaction = min(amountLeft,amountTransactionOtherPerson)
             amountToBeSettled = amountToBeSettled + amountLeft
             
@@ -860,10 +855,6 @@ class settleSplitTVC: UITableViewController {
             
             let amountTransaction = amount / exchangeRate // Home Currency
             let settled = (split.value(forKey: "settled") as? Double ?? 0.00)/exchangeRate // Home Currency
-            
-            print(split.value(forKey: "namePerson"))
-            print(split.value(forKey: "namePersonWhoPaid"))
-            print(split.value(forKey: "ratio"))
             
             let amountTransactionPerson = amountTransaction * (split.value(forKey: "ratio") as? Double ?? 0.00)
             
@@ -904,10 +895,6 @@ class settleSplitTVC: UITableViewController {
             if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
-            
-            print(amountToBeSettled)
-            print(settlePersonNew)
-            print(settledPersonWhoPaidNew)
         }
         
         let dateSort = NSSortDescriptor(key: "dateTimeTransaction", ascending: true)
@@ -1049,8 +1036,6 @@ class settleSplitTVC: UITableViewController {
             positionOtherPersonName = 4
             positionOtherPersonCreateDate = 6
         }
-        print("flkdsjflksadjflkösadj")
-        print(amountToBeSettled)
         amountToBeSettled = abs(amountToBeSettled) // Home Currency
         
         let otherPersonName = rowData[row]?[positionOtherPersonName] as? String ?? ""
@@ -1085,10 +1070,7 @@ class settleSplitTVC: UITableViewController {
             let queryRatioOther = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString)
             let settledOtherPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryRatioOther) as? Double ?? 0.00) / exchangeRate // Home Currency
             let ratioOtherPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
-            
-            print(ratioOtherPerson)
-            print(split.value(forKey: "ratio"))
-            
+
             if ratioOtherPerson == 0.00 {
                 continue
             }
@@ -1112,12 +1094,7 @@ class settleSplitTVC: UITableViewController {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
             
-            print(settlePersonNew)
-            print(settledOtherPersonNew)
-            print(amountToBeSettled)
-            
         }
-        print("------------------")
         let querySplitsNotPaid = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString, createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString)
         for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplitsNotPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
             if abs(amountToBeSettled) <= 0.005 {
@@ -1173,10 +1150,6 @@ class settleSplitTVC: UITableViewController {
             if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settledPersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
-            
-            print(settledPersonNew)
-            print(settledPersonWhoPaidNew)
-            print(amountToBeSettled)
             
         }
         let dateSort = NSSortDescriptor(key: "dateTimeTransaction", ascending: true)

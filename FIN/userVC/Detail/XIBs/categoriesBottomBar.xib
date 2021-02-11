@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="categoryBottomBar" customModule="FIN" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="36"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M80-fQ-lL3">
+                    <rect key="frame" x="15" y="0.0" width="384" height="36"/>
+                    <subviews>
+                        <segmentedControl opaque="NO" alpha="0.96999999999999997" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="IjZ-qq-csF">
+                            <rect key="frame" x="5" y="5" width="374" height="27"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                            <segments>
+                                <segment title="First"/>
+                                <segment title="Second"/>
+                                <segment title="Third"/>
+                            </segments>
+                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="selectedSegmentTintColor" red="0.0" green="0.58823529411764708" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="segmentControlChanged:" destination="iN0-l3-epB" eventType="valueChanged" id="ovB-xW-IzH"/>
+                            </connections>
+                        </segmentedControl>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="IjZ-qq-csF" firstAttribute="top" secondItem="M80-fQ-lL3" secondAttribute="top" constant="5" id="Gky-p5-aP4"/>
+                        <constraint firstItem="IjZ-qq-csF" firstAttribute="centerY" secondItem="M80-fQ-lL3" secondAttribute="centerY" id="Idd-hL-995"/>
+                        <constraint firstAttribute="bottom" secondItem="IjZ-qq-csF" secondAttribute="bottom" constant="5" id="dnz-8N-vTi"/>
+                        <constraint firstAttribute="trailing" secondItem="IjZ-qq-csF" secondAttribute="trailing" constant="5" id="ppH-0E-o4g"/>
+                        <constraint firstItem="IjZ-qq-csF" firstAttribute="centerX" secondItem="M80-fQ-lL3" secondAttribute="centerX" id="rpe-Px-ofG"/>
+                        <constraint firstItem="IjZ-qq-csF" firstAttribute="leading" secondItem="M80-fQ-lL3" secondAttribute="leading" constant="5" id="tp2-2g-y3t"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="M80-fQ-lL3" secondAttribute="bottom" id="38z-f1-n2X"/>
+                <constraint firstItem="M80-fQ-lL3" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="K0l-Fb-knP"/>
+                <constraint firstItem="M80-fQ-lL3" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="gSp-dj-PxU"/>
+                <constraint firstItem="M80-fQ-lL3" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="jan-gJ-cYW"/>
+                <constraint firstItem="M80-fQ-lL3" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="kiO-wL-BBq"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="M80-fQ-lL3" secondAttribute="trailing" constant="15" id="uS8-AQ-HOH"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="segmentControl" destination="IjZ-qq-csF" id="Jbf-rF-k8R"/>
+            </connections>
+            <point key="canvasLocation" x="137.68115942028987" y="206.25"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

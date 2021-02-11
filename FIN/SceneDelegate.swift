@@ -32,7 +32,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let shortcutItem = connectionOptions.shortcutItem {
             if shortcutItem.type == "info.alpako.fin.new" {
                 openNewTransaction = true
-                print("fkljdsaflöajsdlkrrrr")
             }
         }
     }

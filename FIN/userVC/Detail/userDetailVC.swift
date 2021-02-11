@@ -979,7 +979,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             heightFloat = 0.0
         } else if selectedRowForCells == 1 {
             heightFloat = 20.0
-            bottomInset = 20.0
+            bottomInset = 50.0
         }
             
         table.backgroundView = UIView()
@@ -1122,6 +1122,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         userDetailCells.removeAll()
         userDetailCells = userDetailCellsTmp
         userDetailTable.setEditing(false, animated: true)
+        userDetailTable.showsVerticalScrollIndicator = true
+        navigationItem.hidesBackButton = false
         
         userDetailTable.beginUpdates()
         userDetailTable.insertRows(at: addIDs, with: .automatic)
@@ -1135,7 +1137,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         var j:Int16 = 1
         for i in 0...userDetailCells.count-1 {
-            if (userDetailTable.cellForRow(at: IndexPath(row: i, section: 0)) as? cellDetailCategory) != nil {
+            if !((userDetailCells[i] as? [Int:Any])?[9] as? Bool ?? false) {
                 let querySaveOrder = NSPredicate(format: "cID == %i", Int((userDetailCells[i] as? [Int:Any])?[0] as? Int16 ?? -1) as NSInteger)
                 saveSingleData(entity: "Categories", attibute: "order", newValue: j, query: querySaveOrder)
                 j = j + 1
@@ -1151,7 +1153,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         changeCategoriesForOrder(selectedType: selectedSegmentOrderCategories, reloadTable: false)
         showBottomBar()
         userDetailTable.isEditing = true
-            
+        userDetailTable.showsVerticalScrollIndicator = false
+        navigationItem.hidesBackButton = true
+        
         navigationItem.rightBarButtonItems?.removeAll()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(categoryReorderDone))
     }
