@@ -137,6 +137,11 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             userDetailTable.reloadData()
         }
         initRows(clearRows: true)
+        
+        if (loadBulkData(entitie: "Categories", orderBy: "cID")).count <= 0 && selectedRowForCells == 1 {
+            initCategories()
+        }
+        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -1072,6 +1077,43 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
       controller.dismiss(animated: true)
     }
     
+    func initCategories() {
+        let categoryTitle = NSLocalizedString("createCategoriesTitle", comment: "Delete Transaction Title")
+        let categoryPrompt = UIAlertController(title: categoryTitle, message: NSLocalizedString("createCategoriesText", comment: "Create Categories Text"), preferredStyle: .alert)
+
+        categoryPrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .default, handler: { action in
+            
+            for i in 0...4 {
+                switch i {
+                case 1:
+                    self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 10, isIncome: false, isSave: false)
+                    break
+                case 2:
+                    self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 2, isIncome: false, isSave: false)
+                    break
+                case 3:
+                    self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 4, isIncome: true, isSave: false)
+                    break
+                case 4:
+                    self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true)
+                    break
+                default:
+                    self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 8, isIncome: false, isSave: false)
+                    break
+                }
+            }
+            let nc = NotificationCenter.default
+            nc.post(name: Notification.Name("categoryChanged"), object: nil)
+        }))
+        
+        categoryPrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .cancel, handler: nil ))
+            
+        categoryPrompt.popoverPresentationController?.sourceView = self.view
+        categoryPrompt.popoverPresentationController?.sourceRect = self.view.bounds
+            
+        self.present(categoryPrompt, animated: true)
+    }
+    
     @objc func addRegularPaymentTabbed() {
         let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
         let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
@@ -1093,10 +1135,10 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 self.purchaseButtonPressed()
             }))
             purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-            
+                
             purchasePrompt.popoverPresentationController?.sourceView = self.view
             purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-            
+                
             self.present(purchasePrompt, animated: true)
         } else {
             selectedCategoryDetail = -1
@@ -1146,18 +1188,34 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func reorderCategories() {
-        removeIDs.removeAll()
-        userDetailCellsTmp.removeAll()
-        userDetailCellsTmp = userDetailCells
+        if showAdds {
+            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
 
-        changeCategoriesForOrder(selectedType: selectedSegmentOrderCategories, reloadTable: false)
-        showBottomBar()
-        userDetailTable.isEditing = true
-        userDetailTable.showsVerticalScrollIndicator = false
-        navigationItem.hidesBackButton = true
-        
-        navigationItem.rightBarButtonItems?.removeAll()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(categoryReorderDone))
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+                self.purchaseButtonPressed()
+            }))
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+            
+            purchasePrompt.popoverPresentationController?.sourceView = self.view
+            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+            
+            self.present(purchasePrompt, animated: true)
+        } else {
+            removeIDs.removeAll()
+            userDetailCellsTmp.removeAll()
+            userDetailCellsTmp = userDetailCells
+
+            changeCategoriesForOrder(selectedType: selectedSegmentOrderCategories, reloadTable: false)
+            showBottomBar()
+            userDetailTable.isEditing = true
+            userDetailTable.showsVerticalScrollIndicator = false
+            navigationItem.hidesBackButton = true
+            
+            navigationItem.rightBarButtonItems?.removeAll()
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(categoryReorderDone))
+        }
     }
     
     func changeCategoriesForOrder(selectedType:Int, reloadTable:Bool) {

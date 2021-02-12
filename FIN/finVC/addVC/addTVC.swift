@@ -2123,6 +2123,7 @@ extension addTVC {
         let id = loadNextCategoryID()
         
         categorySave.cID = id
+        categorySave.order = id
         categorySave.name = name
         categorySave.color = color
         categorySave.countEntries = countEntries
