@@ -1212,10 +1212,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             removeIDs.removeAll()
             userDetailCellsTmp.removeAll()
             userDetailCellsTmp = userDetailCells
+            
+            userDetailTable.isEditing = true
 
             changeCategoriesForOrder(selectedType: selectedSegmentOrderCategories, reloadTable: false)
             showBottomBar()
-            userDetailTable.isEditing = true
+            
             userDetailTable.showsVerticalScrollIndicator = false
             navigationItem.hidesBackButton = true
             
@@ -2018,7 +2020,6 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
             addVC.superRegularPayment = true
             addVC.newRegularPayment = true
         }
-        
         let navigationVC = UINavigationController(rootViewController: addVC)
         return navigationVC
     }
@@ -2040,7 +2041,9 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
     }
     
     func triggerReorder(from action: UIAction) {
-        reorderCategories()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.reorderCategories()
+        }
     }
     
     func deleteTransaction(from action: UIAction) {
