@@ -355,6 +355,8 @@
 
 "notAuthorisedText" = "Das Gerät ist nicht für in-App Einkäufe freigegeben.";
 
+"reorderCategoryQuickAction" = "Reihenfolge ändern";
+
 // About
 "aboutTitleText" = "alpako";
 "aboutTextText" = "Danke, dass Sie FIN verwenden, um Ihre persönlichen Finanzen zu tracken. Ich verwende die Applikation täglich für diesen Zweck, weswegen ich sie ständig weiter entwickle & mir regelmäßig neue Erweiterungen einfallen. Nichtsdestotrotz, übernehme ich keine Verantwortung für die Richtigkeit der angezeigten Beträge etc.\nAlle Daten werden automatisch in Ihrer persönlichen iCloud gesichert. Dies kann jederzeit in Ihren Privatsphäre Einstellungen geändert werden.\n\nFalls Sie Vorschläge zur Verbesserung der Applikation oder sonst ein konstruktives Feedback haben, können Sie mir jederzeit ein eMail zukommen lassen:";

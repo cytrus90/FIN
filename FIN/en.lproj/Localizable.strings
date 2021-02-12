@@ -354,6 +354,8 @@
 
 "notAuthorisedText" = "Device is not authorised to perform In-App purchases";
 
+"reorderCategoryQuickAction" = "Change order";
+
 // About
 "aboutTitleText" = "alpako";
 "aboutTextText" = "Thank you for using FIN. I use the app myself daily, therefor I improve it constantly and there are still lots of new ideas in my head. Nevertheless, I do not take any responsibility, if the values recorded are not correct.\nAll data is backed up automatically to your iCloud. You can disable this in your privacy settings if you only want to save your data locally.\n\nIf you have constructive feedback, did find any bugs or if you are interested in becoming a beta tester for new releases, please feel free to drop me an Email:";

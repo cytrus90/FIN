@@ -845,6 +845,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             cell.cellBottomIcon.isHidden = true
         }
         cell.cellOutlineView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
+        
+        if !UIDevice().model.contains("iPad") {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            cell.cellOutlineView.addInteraction(interaction)
+        }
+        
         return cell
     }
     
@@ -1976,18 +1982,30 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
 // Context Menu
 extension userDetailVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(
-            identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-            previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
-              actionProvider: { _ in
-                let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
-                return UIMenu(title: "", children: children)
-              })
+        if selectedRowForCells == 1 { // Categories
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: nil,
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeCategoryAction()]
+                    return UIMenu(title: "", children: children)
+                  })
+        } else {
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        }
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        animator.addCompletion {
-            self.show(self.makeDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+        if selectedRowForCells == 0 {
+            animator.addCompletion {
+                self.show(self.makeDetailPreview(row: (interaction.view?.tag ?? -1)), sender: self)
+            }
         }
     }
     
@@ -2012,6 +2030,17 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
         identifier: UIAction.Identifier(rowString),
         attributes: .destructive,
         handler: deleteTransaction)
+    }
+    
+    func makeCategoryAction() -> UIAction {
+      return UIAction(
+        title: NSLocalizedString("reorderCategoryQuickAction", comment: "Change order"),
+        image: UIImage(systemName: "arrow.up.arrow.down"),
+        handler: triggerReorder)
+    }
+    
+    func triggerReorder(from action: UIAction) {
+        reorderCategories()
     }
     
     func deleteTransaction(from action: UIAction) {
