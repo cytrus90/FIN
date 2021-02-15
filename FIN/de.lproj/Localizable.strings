@@ -23,7 +23,7 @@
 
 // Third Two (Initial value)
 "thirdTwoSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
-"thirdTwoDescriptionText" = "Für jede Kategorie kann ein Start Betrag definiert werden.";
+"thirdTwoDescriptionText" = "Für jede Kategorie kann ein Start-Betrag definiert werden.";
 
 // Fourth (Add Transaction)
 "fourthDescriptionText" = "Zum Hinzugügen einer Transaktion einfach + in der 'Übersicht' drücken (oder Tab 2x drücken).";
@@ -33,6 +33,22 @@
 "finalDescriptionLabelText" = "Das sollte für den Anfang reichen. Viel Erfolg beim Tracken Ihrer Finanzen!";
 "goButtonText" = "Auf gehts!";
 
+// #### Update ####
+// First
+"updateLabel" = "Update";
+"updateSwipeText" = "Bildschirm berühren";
+
+// Second
+"twoUpdateDescriptionText" = "Es kann jetzt für jede Kategorie ein Start-Betrag definiert werden.";
+"twoUpdateSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
+
+//Final
+
+"goButtonUpdateText" = "Weiter zu FIN";
+
+// #### LOGIN
+"updateLabelFinalText" = "Fertig";
+"updateFinalDescriptionLabelText" = "Das wars's auch schon. Weiterhin viel Erfolg beim Tracken Ihrer Finanzen!";
 "Authentication" = "Entsperren";
 
 "goodMorning" = "Guten Morgen";

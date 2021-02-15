@@ -277,9 +277,11 @@ class finTVC: UITableViewController {
         if indexPath.row == 1 {
             cell.subtitleLabel.text = NSLocalizedString("splitsSubLabel", comment: "Splits")
         } else if indexPath.row == 3 {
-            cell.subtitleLabel.text = NSLocalizedString("categoriesSubLabel", comment: "Categories")
+            let monthInt = Calendar.current.component(.month, from: Date())
+            let monthStr = Calendar.current.monthSymbols[monthInt-1]
+            cell.subtitleLabel.text = monthStr
+            // cell.subtitleLabel.text = NSLocalizedString("categoriesSubLabel", comment: "Categories")
         }
-        
         return cell
     }
     

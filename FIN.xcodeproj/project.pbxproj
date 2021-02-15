@@ -118,6 +118,7 @@
 		17E085D9252F969B006DFD68 /* splitTransactionSelectTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E085D8252F969B006DFD68 /* splitTransactionSelectTVC.swift */; };
 		17EA04F524C23BBE00F316B1 /* Pods_FIN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 974A7B83D6D490B8865D8036 /* Pods_FIN.framework */; };
 		17EB5ED825D95E7A00F9281B /* cellCategoryInitial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17EB5ED725D95E7A00F9281B /* cellCategoryInitial.swift */; };
+		17EB5EDB25DA976100F9281B /* updateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17EB5EDA25DA976100F9281B /* updateVC.swift */; };
 		17F4278324B5AF6B008273BB /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F4278224B5AF6B008273BB /* CloudKit.framework */; };
 		17F4278524B5AF9B008273BB /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F4278424B5AF9B008273BB /* StoreKit.framework */; };
 		17F4278924B5B21A008273BB /* userMasterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F4278824B5B21A008273BB /* userMasterVC.swift */; };
@@ -266,6 +267,7 @@
 		17EA04F824C23D2000F316B1 /* TagListView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TagListView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17EA04FC24C23D3800F316B1 /* TagListView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TagListView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17EB5ED725D95E7A00F9281B /* cellCategoryInitial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellCategoryInitial.swift; sourceTree = "<group>"; };
+		17EB5EDA25DA976100F9281B /* updateVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = updateVC.swift; sourceTree = "<group>"; };
 		17F4278224B5AF6B008273BB /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		17F4278424B5AF9B008273BB /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		17F4278824B5B21A008273BB /* userMasterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userMasterVC.swift; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				1713389224A520440075189B /* loginVC.swift */,
 				1713389F24A5C2990075189B /* tabControllerVC.swift */,
 				1797D29425BED6EC00D6E42D /* introVC.swift */,
+				17EB5EDA25DA976100F9281B /* updateVC.swift */,
 			);
 			path = mainVC;
 			sourceTree = "<group>";
@@ -905,6 +908,7 @@
 				17087DBD253C6F0800FD2034 /* cellSplitTransactionSplitAddButton.swift in Sources */,
 				17A8CE0424BB7FC0003A2E39 /* userDetailVC.swift in Sources */,
 				173B2F3725AC60B300CADA71 /* cellAboutLogo.swift in Sources */,
+				17EB5EDB25DA976100F9281B /* updateVC.swift in Sources */,
 				17FE902724E002DF00B09189 /* listBottomBar.swift in Sources */,
 				17AF201C24BE462500223931 /* setPasscode.swift in Sources */,
 				173779D424B717FA00BED279 /* headerView.swift in Sources */,
@@ -1188,7 +1192,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.30;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1221,7 +1225,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.30;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

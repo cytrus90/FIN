@@ -33,6 +33,22 @@
 "finalDescriptionLabelText" = "That should get you started. May you do well tracking your finances!";
 "goButtonText" = "Let's go!";
 
+// #### Update ####
+// First
+"updateLabel" = "Update";
+"updateSwipeText" = "Touch to see changes";
+
+// Second
+"twoUpdateDescriptionText" = "You can now set an initial amount for each category.";
+"twoUpdateSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
+
+//Final
+"updateLabelFinalText" = "Ready";
+"updateFinalDescriptionLabelText" = "That's it for now. May you continue doing well tracking your finances!";
+"goButtonUpdateText" = "Back to FIN";
+
+// #### LOGIN
+
 "Authentication" = "Authentication";
 
 "goodMorning" = "Good morning";

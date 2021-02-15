@@ -77,7 +77,6 @@ class tabController: UITabBarController {
         let tabBarList = [addViewController, listViewController, graphViewController, splitViewController, userViewController]
         
         viewControllers = tabBarList
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -88,7 +87,10 @@ class tabController: UITabBarController {
         }
         
         let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
-        if numbersOpened > -1 {//== 0 {
+        
+        let update130 = UserDefaults.standard.integer(forKey: "update130")
+        
+        if numbersOpened == 0 {
             if !UIDevice().model.contains("iPad") {
                 AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
             }
@@ -100,6 +102,19 @@ class tabController: UITabBarController {
             self.present(navigationVC, animated: true, completion: nil)
             
             UserDefaults.standard.setValue((numbersOpened+1), forKey: "numbersOpened")
+            UserDefaults.standard.setValue(1, forKey: "update130")
+        } else if update130 == 0 {
+            if !UIDevice().model.contains("iPad") {
+                AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+            }
+            
+            let mainStoryBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            let introVC = mainStoryBoard.instantiateViewController(withIdentifier: "updateVC") as! updateVC
+            let navigationVC = UINavigationController(rootViewController: introVC)
+            navigationVC.isNavigationBarHidden = true
+            self.present(navigationVC, animated: true, completion: nil)
+            
+            UserDefaults.standard.setValue(1, forKey: "update130")
         } else if numbersOpened == 10 {
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 SKStoreReviewController.requestReview(in: scene)
@@ -110,6 +125,9 @@ class tabController: UITabBarController {
         } else if numbersOpened >= 21 {
             UserDefaults.standard.setValue((11), forKey: "numbersOpened")
         }
+        
+        
+        
     }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
