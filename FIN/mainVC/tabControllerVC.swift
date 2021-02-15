@@ -88,7 +88,7 @@ class tabController: UITabBarController {
         }
         
         let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
-        if numbersOpened == 0 {
+        if numbersOpened > -1 {//== 0 {
             if !UIDevice().model.contains("iPad") {
                 AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
             }

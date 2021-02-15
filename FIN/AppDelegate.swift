@@ -59,6 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         checkForCategoryDuplicates()
         checkTags()
         checkForTransactionDuplicates()
+        checkForInitialTransactionDuplicates()
         
         return true
     }
@@ -133,6 +134,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 deleteDataSingle(entity: "Transactions", query: queryDelete)
             }
             checkForTransactionDuplicates()
+        }
+    }
+    
+    func checkForInitialTransactionDuplicates() {
+        var duplicateInt = [Int16]()
+        
+        let transactionsCountArray = loadDataInitialTransactionsGrouped(entitie: "Transactions", groupByColumn: "categoryID") as? [[String:Any]]
+        if (transactionsCountArray?.count ?? 0) > 0 {
+            for i in 0...((transactionsCountArray?.count ?? 1)-1) {
+                if transactionsCountArray?[i]["count"] as? Int64 ?? 0 > 1 {
+                    duplicateInt.append(transactionsCountArray?[i]["categoryID"] as? Int16 ?? -2)
+                }
+            }
+        }
+        
+        if duplicateInt.count > 0 {
+            for duplicate in duplicateInt {
+                let queryDelete = NSPredicate(format: "dateTime == nil AND categoryID == %i", duplicate)
+                deleteDataSingle(entity: "Transactions", query: queryDelete)
+            }
+            checkForInitialTransactionDuplicates()
         }
     }
     
@@ -309,6 +331,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
         fetchRequest.resultType = .dictionaryResultType
         fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest)
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
+    func loadDataInitialTransactionsGrouped(entitie:String, groupByColumn:String) -> Any {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        
+        let keypathExp = NSExpression(forKeyPath: groupByColumn) // can be any column
+        let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer64AttributeType
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.propertiesToGroupBy = [groupByColumn]
+        fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "dateTime == nil")
         
         do {
             let loadData = try managedContext.fetch(fetchRequest)

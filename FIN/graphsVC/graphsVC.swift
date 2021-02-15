@@ -626,6 +626,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             lineChartRealValues.removeAll()
             var selected = lineChartEntries.filter { $0.dateTime >= fromDate && $0.dateTime <= toDate }
             
+            print("flksdjflksd")
+            print(fromDate)
+            print(toDate)
+            
             if selected.count == 1 {
                 let value = selected[0].value
                 let selecteRAM = selected[0]
@@ -831,14 +835,20 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
             }
-            let query = NSPredicate(format: "categoryID != %i" + tagFilterPredicateString, -1)
             
             var savings:Double = 0.00
+            
+            let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
+            let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == true" + tagFilterPredicateString, -1)
+            
+            for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+                savings = savings + (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
+            }
 //            var i = 0
             var index = 1
             
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
-            lineChartEntries.append(LineChartEntry(value: 0.00, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
+            lineChartEntries.append(LineChartEntry(value: savings, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
             for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
@@ -886,13 +896,24 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
             }
-            let query = NSPredicate(format: "categoryID != %i" + tagFilterPredicateString, -1)
+            let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
             
             var balance:Double = 0.00
             var index = 1
-            
+            print("flkdjasldas")
+            let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == false" + tagFilterPredicateString, -1)
+            for transaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+                let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? -1))
+                let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+                if isIncome {
+                    balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                } else {
+                    balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                }
+            }
+            print(balance)
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
-            lineChartEntries.append(LineChartEntry(value: 0.00, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
+            lineChartEntries.append(LineChartEntry(value: balance, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
             for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
@@ -926,6 +947,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         if lineChartEntriesExpenses.count > 0 {
             lineChartEntriesExpenses.sort { $0.dateTime < $1.dateTime }
         }
+        print(lineChartEntries)
     }
     
     func getPieChartData()-> ([PieChartDataEntry],[UIColor], Double, [String]) {
@@ -1122,7 +1144,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func setInitialToFromMaxDates(scrollToId: Int = -1, reload: Bool = false) {
         //if fromDateMax == nil || toDateMax == nil || reload {
             let dateSortHighestFirst = NSSortDescriptor(key: "dateTime", ascending: false)
-            let highestDate = loadBulkSorted(entitie: "Transactions", sort: [dateSortHighestFirst])
+            let highestDate = loadBulkQueriedSorted(entitie: "Transactions", sort: [dateSortHighestFirst], query: NSPredicate(format: "dateTime != nil"))
             if highestDate.count <= 0 {
                 toDateMax = Date()
             } else {
@@ -1139,22 +1161,24 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
             }
             let dateSortLowestFirst = NSSortDescriptor(key: "dateTime", ascending: true)
-            let lowestDate = loadBulkSorted(entitie: "Transactions", sort: [dateSortLowestFirst])
+            let lowestDate = loadBulkQueriedSorted(entitie: "Transactions", sort: [dateSortLowestFirst], query: NSPredicate(format: "dateTime != nil"))
             if lowestDate.count <= 0 {
                 fromDateMax = Date()
             } else {
                 for i in 0...(lowestDate.count-1) {
                     if Int(lowestDate[i].value(forKey: "isSplit") as? Int16 ?? 0) > 0 {
                         if userPartOfSplit(dateTime: (lowestDate[i].value(forKey: "dateTime") as? Date ?? Date())) {
-                            fromDateMax = lowestDate[i].value(forKey: "dateTime") as? Date ?? Date()
+                            fromDateMax = (Calendar.current.date(byAdding: .minute, value: -1, to: (lowestDate[i].value(forKey: "dateTime") as? Date ?? Date()))!)
                             break
                         }
                     } else {
-                        fromDateMax = lowestDate[i].value(forKey: "dateTime") as? Date ?? Date()
+                        fromDateMax = (Calendar.current.date(byAdding: .minute, value: -1, to: (lowestDate[i].value(forKey: "dateTime") as? Date ?? Date()))!)
+//                        fromDateMax = lowestDate[i].value(forKey: "dateTime") as? Date ?? Date()
                         break
                     }
                 }
             }
+        fromDateMax = fromDateMax?.startOfMonth
             if fromDateShown == nil {
                 fromDateShown = Date()
             }
@@ -1371,6 +1395,27 @@ extension graphsVC {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
         fetchRequest.returnsObjectsAsFaults = false
         fetchRequest.sortDescriptors = sort
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
+    func loadBulkQueriedSorted(entitie:String, sort:[NSSortDescriptor], query:NSPredicate) -> [NSManagedObject] {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = sort
+        fetchRequest.predicate = query
+        
         do {
             let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
             if loadData.count > 0 {

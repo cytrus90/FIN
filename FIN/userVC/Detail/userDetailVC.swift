@@ -282,7 +282,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 self.performSegue(withIdentifier: "setCodeSeque", sender: nil)
             }
         } else if selectedRowForCells == 1 { // Category
-            if showAdds {
+            if !showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -1944,6 +1944,10 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
         fetchRequest.resultType = .dictionaryResultType
         fetchRequest.returnsObjectsAsFaults = false
+        
+        if entitie == "Transactions" {
+            fetchRequest.predicate = NSPredicate(format: "dateTime != nil")
+        }
         
         do {
             let loadData = try managedContext.fetch(fetchRequest)

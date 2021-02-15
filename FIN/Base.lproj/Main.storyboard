@@ -371,6 +371,7 @@
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="x8s-Vx-mE3"/>
                                     <constraint firstAttribute="width" constant="250" id="ycp-9z-YMg"/>
                                 </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="goButtonPressed:" destination="V4s-L8-0UD" eventType="touchUpInside" id="M15-Wn-f6v"/>

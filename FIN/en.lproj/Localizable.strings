@@ -21,8 +21,12 @@
 "thirdSecondDescriptionText" = "Beside the typical Expense & Income categories, you can also choose a Savings category.";
 "thirdDescriptionText" = "A Savings category is like a separate account for your invested/saved money, which reduces your immediate liquidity.";
 
+// Third Two (Initial value)
+"thirdTwoSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
+"thirdTwoDescriptionText" = "For every category you can set an initial amount.";
+
 // Fourth (Add Transaction)
-"fourthDescriptionText" = "To add a new transaction, simply press + in the tab: 'Overview'.";
+"fourthDescriptionText" = "To add a new transaction, simply press + in the tab: 'Overview' (or press the tab 2x).";
 
 // Final (Go)
 "welcomeLabelFinalText" = "Ready";
@@ -458,6 +462,10 @@
 "categorySegmentExpense" = "Expenses";
 "categorySegmentIncome" = "Income";
 "categorySegmentSave" = "Savings";
+
+"categoryInitialLabel" = "Start amount:";
+"categoryInitialInfoTitle" = "Info";
+"categoryInitialInfoText" = "You can use this to set a starting value or to correct your balance, if you cannot recall an expense. This amount is only used to calculate the overall balance and amount in savings accounts.";
 
 // #### CURRENCY ####
 // Country Names

@@ -252,6 +252,37 @@ class introVC: UIViewController {
             if light {
                 if langStr == "DE" || langStr == "de" {
                     if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_2")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_2")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_2")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_2")
+                    }
+                }
+            } else {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_2")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_2")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_2")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_2")
+                    }
+                }
+            }
+            break
+        case 4:
+            if light {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
                         firstImageView.image = UIImage(named: "DE_light_add_iPad")
                         secondImageView.image = UIImage(named: "light_add_overlay_iPad")
                     } else {
@@ -314,10 +345,13 @@ class introVC: UIViewController {
             break
         case 2:
             currentView = 3
-            threeToFourAnimation()
+            threeToFourthAnimation()
         case 3:
             currentView = 4
-            fourthToFinalAnimation()
+            fourthToFifthAnimation()
+        case 4:
+            currentView = 5
+            fifthToFinalAnimation()
         default:
             break
         }
@@ -335,10 +369,13 @@ class introVC: UIViewController {
             break
         case 2:
             currentView = 3
-            threeToFourAnimation()
+            threeToFourthAnimation()
         case 3:
             currentView = 4
-            fourthToFinalAnimation()
+            fourthToFifthAnimation()
+        case 4:
+            currentView = 5
+            fifthToFinalAnimation()
         default:
             break
         }
@@ -363,6 +400,7 @@ class introVC: UIViewController {
             UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: {
                 self.view.layoutIfNeeded()
                 self.welcomeLabel.transform = self.welcomeLabel.transform.scaledBy(x: 0.7, y: 0.7)
+                self.welcomeLabel.alpha = 0.0
             }, completion: { _ in
                 self.welcomeStackViewConstraint.isActive = false
                 self.welcomeImageYConstraint?.isActive = false
@@ -438,6 +476,7 @@ class introVC: UIViewController {
             UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
                 self.firstImageView.alpha = 0.0
                 self.thirdImageView.alpha = 1.0
+                self.welcomeLabel.alpha = 0.0
                 self.view.layoutIfNeeded()
             }, completion: { _ in
                 self.fourthImageView.isHidden = false
@@ -456,7 +495,30 @@ class introVC: UIViewController {
         })
     }
     
-    func threeToFourAnimation() {
+    func threeToFourthAnimation() {
+        swipeGesture.isEnabled = false
+        tabGesture.isEnabled = false
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+            self.descriptionLabel.alpha = 0.0
+            self.secondSubLabel.alpha = 0.0
+            self.fourthImageView.alpha = 0.0
+        }, completion: { _ in
+            self.secondSubLabel.text = NSLocalizedString("thirdTwoDescriptionText", comment: "Description")
+            self.descriptionLabel.text = NSLocalizedString("thirdTwoSecondDescriptionText", comment: "Subtext")
+            self.initImageViews()
+            UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.descriptionLabel.alpha = 1.0
+                self.secondSubLabel.alpha = 1.0
+                self.fourthImageView.alpha = 1.0
+            })
+        })
+        
+        swipeGesture.isEnabled = true
+        tabGesture.isEnabled = true
+    }
+    
+    func fourthToFifthAnimation() {
         swipeGesture.isEnabled = false
         tabGesture.isEnabled = false
         
@@ -474,7 +536,6 @@ class introVC: UIViewController {
             self.fourthImageView.alpha = 0.0
             self.secondSubLabel.alpha = 0.0
             self.descriptionLabel.alpha = 0.0
-            
             self.firstImageX2Constraint = self.firstImageView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: 20)
             self.firstImageX1Constraint = self.firstImageView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: (firstWidth+20))
             self.firstImageX1Constraint?.isActive = true
@@ -523,7 +584,7 @@ class introVC: UIViewController {
         })
     }
     
-    func fourthToFinalAnimation() {
+    func fifthToFinalAnimation() {
         swipeGesture.isEnabled = false
         tabGesture.isEnabled = false
         

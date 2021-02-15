@@ -21,8 +21,12 @@
 "thirdSecondDescriptionText" = "Neben den typischen Einnahmen & Ausgaben Kategorien, können Sie auch eine 'Spar' Kategorie ausgewählen.";
 "thirdDescriptionText" = "Eine 'Spar' Kategorie kann wie ein extra Konto für Ihr Erspartes gesehen werden, welches die sofort verfügbaren Mittel reduziert.";
 
+// Third Two (Initial value)
+"thirdTwoSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
+"thirdTwoDescriptionText" = "Für jede Kategorie kann ein Start Betrag definiert werden.";
+
 // Fourth (Add Transaction)
-"fourthDescriptionText" = "Zum Hinzugügen einer Transaktion einfach + in der 'Übersicht' drücken.";
+"fourthDescriptionText" = "Zum Hinzugügen einer Transaktion einfach + in der 'Übersicht' drücken (oder Tab 2x drücken).";
 
 // Final (Go)
 "welcomeLabelFinalText" = "Fertig";
@@ -459,6 +463,10 @@
 "categorySegmentExpense" = "Ausgaben";
 "categorySegmentIncome" = "Einkommen";
 "categorySegmentSave" = "Sparkonten";
+
+"categoryInitialLabel" = "Start Betrag:";
+"categoryInitialInfoTitle" = "Information";
+"categoryInitialInfoText" = "Sie können diesen Betrag verwenden, um eine ursprüngliche Kontohöhe zu definieren, oder um Ihr Saldo zu korrigieren. Dieser Wert wird nur zur Berechnung von Gesamtbeträgen verwendet.";
 
 // #### CURRENCY ####
 // Country Names

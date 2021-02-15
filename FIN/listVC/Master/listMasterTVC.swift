@@ -643,6 +643,10 @@ class listMasterTVC: UITableViewController {
             if fromDateShown == nil {
                 fromDateShown = Date()
             }
+        
+        print("fjsdljfldka")
+        print(fromDateMax)
+        print(toDateMax)
         //}
     }
     
@@ -1040,11 +1044,6 @@ class listMasterTVC: UITableViewController {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePerson == %@ AND createDatePerson > %@ AND createDatePerson < %@", (dateMinus as NSDate), (datePlus as NSDate), ((nameUser ?? "") as NSString), ((userDateMinus) as NSDate), ((userDatePlus) as NSDate))
         return loadBulkQueriedSortedUser(query: query)
-//        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
-//            return true
-//        } else {
-//            return false
-//        }
     }
     
     // MARK: -GET TRANSACTIONS
@@ -1075,7 +1074,7 @@ class listMasterTVC: UITableViewController {
 //        13: isAdd?
 
         for data in result {
-            if userPartOfSplit(dateTime: data.value(forKey: "dateTime") as? Date ?? Date()) || (data.value(forKey: "isSplit") as? Int16) == 0 {
+            if ((data.value(forKey: "isSplit") as? Int16) == 0) || userPartOfSplit(dateTime: data.value(forKey: "dateTime") as? Date ?? Date())  {
                 let categoryID = data.value(forKey: "categoryID") as? Int16 ?? 0
                 if categorySelectedForFilter(categoryID: categoryID) && tagIsSelectedInFilter(tag: (data.value(forKey: "tags") as? String ?? "-1y")) {
                     let categoryQuery = NSPredicate(format: "cID == \(categoryID)")
@@ -1223,6 +1222,7 @@ extension listMasterTVC {
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
         fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "dateTime != nil")
         fetchRequest.sortDescriptors = sort
         fetchRequest.fetchLimit = 1
         do {
@@ -1372,7 +1372,7 @@ extension listMasterTVC {
         var sumIncomes = 0.00
         
         if incomesCategories.count > 0 {
-            let incomePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime < %@" + tagFilterPredicateString), incomesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
+            let incomePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil" + tagFilterPredicateString), incomesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
             let dataIncome = loadDataSUM(entitie: "Transactions", query: incomePredicate)  as? [[String:Any]]
             if (dataIncome?.count ?? 0) > 0 {
                 for i in 0...((dataIncome?.count ?? 1)-1) {
@@ -1423,9 +1423,12 @@ extension listMasterTVC {
         var sumExpenses = 0.00
         
         if expensesCategories.count > 0 {
-            let expensePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime < %@" + tagFilterPredicateString), expensesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
+            let expensePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil" + tagFilterPredicateString), expensesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
             let dataExpenses = loadDataSUM(entitie: "Transactions", query: expensePredicate)  as? [[String:Any]]
+            print(loadBulkQueried(entitie: "Transactions", query: expensePredicate))
             if (dataExpenses?.count ?? 0) > 0 {
+                print("lfkdsjflasd")
+                print(dataExpenses)
                 for i in 0...((dataExpenses?.count ?? 1)-1) {
                     sumExpenses = (dataExpenses?[i]["sum"] as? Double ?? 0.00) + sumExpenses
                 }
@@ -1465,7 +1468,7 @@ extension listMasterTVC {
         var sumSavings = 0.00
         if savingsCategories.count > 0 {
             for data in savingsCategories {
-                let savePredicate = NSPredicate(format: ("categoryID == \(data) AND dateTime >= %@ AND dateTime < %@" + tagFilterPredicateString), fromDateShown! as NSDate, toDateShown! as NSDate)
+                let savePredicate = NSPredicate(format: ("categoryID == \(data) AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil" + tagFilterPredicateString), fromDateShown! as NSDate, toDateShown! as NSDate)
                 for savings in loadBulkQueried(entitie: "Transactions", query: savePredicate) {
 //                    if tagIsSelectedInFilter(tag: (savings.value(forKey: "tags") as? String ?? "-1y")) {
                         if (savings.value(forKey: "isSave") as? Bool ?? false) {

@@ -15,6 +15,9 @@ class categoryTVC: UITableViewController {
         
     var categoryData = [Int:Any]()
     
+    let amountFormatter = NumberFormatter()
+    let numberFormatter = NumberFormatter()
+    
     struct CategoryEntry {
         var cID:Int16
         var name:String
@@ -34,6 +37,16 @@ class categoryTVC: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
+        amountFormatter.locale = .current
+        amountFormatter.numberStyle = .currency
+        
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.usesGroupingSeparator = true
+        numberFormatter.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatter.groupingSize = 3
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
+        
         initView()
     }
     
@@ -48,7 +61,7 @@ class categoryTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
 
     
@@ -65,11 +78,16 @@ class categoryTVC: UITableViewController {
             cell.delegate = self
             return cell
         case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryInitial", for: indexPath) as! cellCategoryInitial
+            cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+            cell.delegate = self
+            return cell
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryColor", for: indexPath) as! cellCategoryColor
             cell.colorPickerView.preselectedIndex = Int(categoryData[3] as? Int16 ?? 0)
             cell.delegate = self
             return cell
-        case 3: // Add Button
+        case 4: // Add Button
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryAdd", for: indexPath) as! cellCategoryAdd
             if selectedCategoryDetail == -1 {
                 cell.addButton.setTitle(NSLocalizedString("categoryButtonAdd", comment: "Add Button Add"), for: .normal)
@@ -112,6 +130,7 @@ class categoryTVC: UITableViewController {
             categoryData[3] = Int16(0) // Color
             categoryData[4] = Date() // createDate
             categoryData[5] = Int16(-1)
+            categoryData[6] = 0.00
         } else {
             let categoryPredicate:NSPredicate = NSPredicate(format: "cID == \(selectedCategoryDetail)")
             let categoryLoaded = loadBulkDataWithQuery(entitie: "Categories", query: categoryPredicate)
@@ -121,6 +140,10 @@ class categoryTVC: UITableViewController {
             categoryData[3] = categoryLoaded[0].value(forKey: "color") as? Int16 ?? 0
             categoryData[4] = categoryLoaded[0].value(forKey: "createDate") as? Date ?? Date()
             categoryData[5] = categoryLoaded[0].value(forKey: "cID") as? Int16 ?? 0
+            
+            let queryInitialTransaction = NSPredicate(format: "dateTime == nil AND categoryID == \(selectedCategoryDetail)")
+            categoryData[6] = loadQueriedAttribute(entitie: "Transactions", attibute: "realAmount", query: queryInitialTransaction) as? Double ?? 0.00
+            
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteCategoryButton))
         }
     }
@@ -267,6 +290,9 @@ extension categoryTVC {
             } catch let error as NSError {
                 print("Could not save. \(error), \(error.userInfo)")
             }
+            
+            saveInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: nextID)
+            
             return true
         } else {
             let alert = UIAlertController(title: NSLocalizedString("noNameTitle", comment: "No Name Title"), message: NSLocalizedString("noNameText", comment: "No Name Text"), preferredStyle: .alert)
@@ -297,6 +323,8 @@ extension categoryTVC {
                 data.setValue(categoryData[3] as? Int16 ?? 0, forKey: "color")
                 
                 saveQueriedAttributeMultiple(entity: "Transactions", attribute: "isSave", query: queryTransactions, value: (categoryData[2] as? Bool ?? false))
+                
+                updateInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: selectedCategoryDetail)
             }
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
@@ -308,6 +336,74 @@ extension categoryTVC {
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
             return false
+        }
+    }
+    
+    func saveInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let transactionSave = Transactions(context: managedContext)
+        
+        transactionSave.amount = amount
+        transactionSave.realAmount = amount
+        transactionSave.categoryID = categoryID
+        transactionSave.currencyCode = Locale.current.currencyCode ?? "EUR"
+        transactionSave.dateTime = nil
+        transactionSave.descriptionNote = "Initial"
+        transactionSave.exchangeRate = 1.0
+        transactionSave.tags = ""
+        transactionSave.isSave = isSave
+        transactionSave.isSplit = 0
+        transactionSave.isLiquid = !isSave
+                
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+            return
+        }
+    }
+    
+    func updateInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Transactions")
+        fetchRequest.predicate = NSPredicate(format: "categoryID == \(selectedCategoryDetail) AND dateTime == nil")
+        
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest)
+            if fetchedData.count > 0 {
+                for transactionSave in fetchedData {
+                    transactionSave.setValue(amount, forKey: "amount")
+                    transactionSave.setValue(amount, forKey: "realAmount")
+                    transactionSave.setValue(categoryID, forKey: "categoryID")
+                    transactionSave.setValue((Locale.current.currencyCode ?? "EUR"), forKey: "currencyCode")
+                    transactionSave.setValue(nil, forKey: "dateTime")
+                    transactionSave.setValue("Initial", forKey: "descriptionNote")
+                    transactionSave.setValue(1.0, forKey: "exchangeRate")
+                    transactionSave.setValue("", forKey: "tags")
+                    transactionSave.setValue(isSave, forKey: "isSave")
+                    transactionSave.setValue(0, forKey: "isSplit")
+                    transactionSave.setValue(!isSave, forKey: "isLiquid")
+                }
+            } else {
+                saveInitialTransaction(amount: amount, isSave: isSave, categoryID: selectedCategoryDetail)
+            }
+            
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+            return
+        }
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+            return
         }
     }
     
@@ -344,6 +440,27 @@ extension categoryTVC {
             print("Could not fetch. \(error)")
         }
         return [NSManagedObject]()
+    }
+    
+    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    return data.value(forKey: attibute) ?? false
+                }
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
     }
     
     func loadNextCategoryID() -> Int16 {
@@ -442,6 +559,31 @@ extension categoryTVC {
     }
 }
 
+extension categoryTVC: cellCategoryInitialDelegate {
+    func infoButtonPressed() {
+        let infoText = NSLocalizedString("categoryInitialInfoText", comment: "Info Text")
+        let infoTitle = NSLocalizedString("categoryInitialInfoTitle", comment: "Info")
+        let infoPrompt = UIAlertController(title: infoTitle, message: infoText, preferredStyle: .alert)
+
+        infoPrompt.addAction(UIAlertAction(title: NSLocalizedString("forgotCodeOK", comment: "Ok"), style: .default, handler: nil))
+        
+        infoPrompt.popoverPresentationController?.sourceView = self.view
+        infoPrompt.popoverPresentationController?.sourceRect = self.view.bounds
+        
+        self.present(infoPrompt, animated: true)
+    }
+    
+    func textFieldEdited(text: String) {
+        let thSep:String = Locale.current.groupingSeparator ?? ","
+        let currencySymbol = Locale.current.currencySymbol ?? "€"
+        
+        categoryData[6] = numberFormatter.number(from: (text).replacingOccurrences(of: thSep, with: "").replacingOccurrences(of: currencySymbol, with: ""))
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+            cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+        }
+    }
+}
+
 extension categoryTVC: cellCategoryMainDelegate {
     func categoryTypeSegmentChanged(selectedSegment: Int) {
         if selectedSegment == 0 {
@@ -480,6 +622,11 @@ extension categoryTVC: cellCategoryColorDelegate {
 
 extension categoryTVC: cellCategoryAddDelegate {
     func addButtonPressed() {
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+            let thSep:String = Locale.current.groupingSeparator ?? ","
+            categoryData[6] = amountFormatter.number(from: (cell.textField.text)?.replacingOccurrences(of: thSep, with: "") ?? "0.00")
+        }
+        
         reloadAddView = true
         if selectedCategoryDetail == -1 {
             if saveNewCategory() {

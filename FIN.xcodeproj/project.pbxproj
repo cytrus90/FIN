@@ -117,6 +117,7 @@
 		17E085D6252F94A3006DFD68 /* cellSplitTransactionGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E085D5252F94A3006DFD68 /* cellSplitTransactionGeneral.swift */; };
 		17E085D9252F969B006DFD68 /* splitTransactionSelectTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E085D8252F969B006DFD68 /* splitTransactionSelectTVC.swift */; };
 		17EA04F524C23BBE00F316B1 /* Pods_FIN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 974A7B83D6D490B8865D8036 /* Pods_FIN.framework */; };
+		17EB5ED825D95E7A00F9281B /* cellCategoryInitial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17EB5ED725D95E7A00F9281B /* cellCategoryInitial.swift */; };
 		17F4278324B5AF6B008273BB /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F4278224B5AF6B008273BB /* CloudKit.framework */; };
 		17F4278524B5AF9B008273BB /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F4278424B5AF9B008273BB /* StoreKit.framework */; };
 		17F4278924B5B21A008273BB /* userMasterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F4278824B5B21A008273BB /* userMasterVC.swift */; };
@@ -264,6 +265,7 @@
 		17E085D8252F969B006DFD68 /* splitTransactionSelectTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = splitTransactionSelectTVC.swift; sourceTree = "<group>"; };
 		17EA04F824C23D2000F316B1 /* TagListView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TagListView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17EA04FC24C23D3800F316B1 /* TagListView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TagListView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		17EB5ED725D95E7A00F9281B /* cellCategoryInitial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellCategoryInitial.swift; sourceTree = "<group>"; };
 		17F4278224B5AF6B008273BB /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		17F4278424B5AF9B008273BB /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		17F4278824B5B21A008273BB /* userMasterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userMasterVC.swift; sourceTree = "<group>"; };
@@ -667,6 +669,7 @@
 				17F7D8F824D851EE009FF599 /* cellCategorySave.swift */,
 				17F7D8F424D3051C009FF599 /* cellCategoryColor.swift */,
 				17F7D8F224D2F906009FF599 /* cellCategoryAdd.swift */,
+				17EB5ED725D95E7A00F9281B /* cellCategoryInitial.swift */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -997,6 +1000,7 @@
 				173CDF1624D0BB25008E2E63 /* cellDetailCategory.swift in Sources */,
 				173AE5AF25A4A0B800D8F7D2 /* cellSplitTopOverview.swift in Sources */,
 				17CB2BD125A50D000015A85F /* categoryCarouselCell.swift in Sources */,
+				17EB5ED825D95E7A00F9281B /* cellCategoryInitial.swift in Sources */,
 				1732CD4A24CEF95900098E0A /* visAuthClass.swift in Sources */,
 				17DBF0C324FA7FDA00B9F2E5 /* listFilterTVC.swift in Sources */,
 			);

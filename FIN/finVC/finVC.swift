@@ -28,6 +28,12 @@ class finTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         (self.tabBarController as? tabController)?.previousIndex = 0
+        
+//        saveInitialTransaction(amount: 100.0, descriptionNote: "INITIAL BALANCE", isSave: false)
+        
+//        print("lfjsdlfjdsfds")
+//        print(loadBulkQueried(entitie: "Transactions", query: NSPredicate(format: "dateTime == nil")))
+        
         // Init Data
         initSettingsAndData()
         
@@ -369,7 +375,7 @@ class finTVC: UITableViewController {
         for expense in loadBulkQueried(entitie: "Categories", query: queryExpenses) {
             expensesIDsArray.append(expense.value(forKey: "cID") as? Int16 ?? 0)
         }
-        let queryExpensesSum = NSPredicate(format: "categoryID IN %@", expensesIDsArray)
+        let queryExpensesSum = NSPredicate(format: "categoryID IN %@ AND dateTime != nil", expensesIDsArray)
         let ramValueExpenses = (loadDataSUM(entitie: "Transactions", query: queryExpensesSum) as? [[String:Any]])
         if (ramValueExpenses?.count ?? 0) > 0 {
             balance = (ramValueExpenses?[0]["sum"] as? Double ?? 0.00)
@@ -382,7 +388,7 @@ class finTVC: UITableViewController {
         for income in loadBulkQueried(entitie: "Categories", query: queryIncome) {
             incomeIDsArray.append(income.value(forKey: "cID") as? Int16 ?? 0)
         }
-        let queryIncomeSum = NSPredicate(format: "categoryID IN %@", incomeIDsArray)
+        let queryIncomeSum = NSPredicate(format: "categoryID IN %@ AND dateTime != nil", incomeIDsArray)
         let ramValueIncome = (loadDataSUM(entitie: "Transactions", query: queryIncomeSum) as? [[String:Any]])
         if (ramValueIncome?.count ?? 0) > 0 {
             balance = (ramValueIncome?[0]["sum"] as? Double ?? 0.00) - balance
@@ -394,10 +400,25 @@ class finTVC: UITableViewController {
         for saving in loadBulkQueried(entitie: "Categories", query: querySavings) {
             savingsIDsArray.append(saving.value(forKey: "cID") as? Int16 ?? 0)
         }
-        let querySavingsSum = NSPredicate(format: "categoryID IN %@ AND isLiquid == %@", savingsIDsArray, NSNumber(value: true))
+        let querySavingsSum = NSPredicate(format: "categoryID IN %@ AND isLiquid == %@ AND dateTime != nil", savingsIDsArray, NSNumber(value: true))
         let ramValueSave = (loadDataSUM(entitie: "Transactions", query: querySavingsSum) as? [[String:Any]])
         if (ramValueSave?.count ?? 0) > 0 {
             balance = balance - (ramValueSave?[0]["sum"] as? Double ?? 0.00)
+        }
+        
+        // Get Initial Payments
+        let queryInitialExpense = NSPredicate(format: "dateTime == nil")
+        for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitialExpense) {
+            let queryCategory = NSPredicate(format: "cID == %i", (initialTransaction.value(forKey: "categoryID") as? Int16 ?? -1))
+            let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+            
+            if (initialTransaction.value(forKey: "isLiquid") as? Bool ?? false) {
+                if isIncome {
+                    balance = balance + (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                } else {
+                    balance = balance - (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                }
+            }
         }
         
         return balance
@@ -775,6 +796,37 @@ extension finTVC: UIContextMenuInteractionDelegate {
 
 // MARK: -DATA
 extension finTVC {
+    func saveInitialTransaction(amount: Double, descriptionNote: String?,isSave: Bool = false, isLiquid:Bool = true) -> Bool {
+        let currencyCodeSave = Locale.current.currencyCode ?? "EUR"
+        let isSplit:Int16 = 0
+
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let transactionSave = Transactions(context: managedContext)
+        
+        transactionSave.amount = amount
+        transactionSave.realAmount = amount
+        transactionSave.categoryID = 0
+        transactionSave.currencyCode = currencyCodeSave
+        transactionSave.dateTime = nil
+        transactionSave.descriptionNote = descriptionNote ?? ""
+        transactionSave.exchangeRate = 1.0
+        transactionSave.tags = ""
+        transactionSave.isSave = isSave
+        transactionSave.isSplit = isSplit
+        transactionSave.isLiquid = isLiquid
+                
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+            return false
+        }
+        return true
+    }
+    
     func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let managedContext = appDelegate!.persistentContainer.viewContext
@@ -852,6 +904,7 @@ extension finTVC {
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
         fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "dateTime != nil")
         fetchRequest.sortDescriptors = sort
         do {
             let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]

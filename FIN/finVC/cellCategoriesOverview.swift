@@ -23,6 +23,15 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     
     let alphaValue:CGFloat = 0.6
     
+    struct categoryEntry {
+        var name:String
+        var color:Int16
+        var sum:Double
+        var isSave:Bool
+        var isIncome:Bool
+        var order:Int16
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -60,22 +69,25 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         let fromDateTime = Date().startOfMonth
         let toDateTime = Date().endOfMonth
         
+        var categoryStructData = [categoryEntry]()
+        
         let monthInt = Calendar.current.component(.month, from: Date())
         let monthStr = Calendar.current.monthSymbols[monthInt-1]
         
-        let queryCategoryGroup = NSPredicate(format: "isSave == %@ AND dateTime >= %@ AND dateTime <= %@", NSNumber(value: false), fromDateTime as NSDate, toDateTime as NSDate)
+        let queryCategoryGroup = NSPredicate(format: "isSave == %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", NSNumber(value: false), fromDateTime as NSDate, toDateTime as NSDate)
         let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
         if (groupedData?.count ?? 0) > 0 {
+            print("flkdsjflaksd")
+            print(groupedData)
             for i in 0...(groupedData?.count ?? 0)-1 {
                 let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
-                let ramDict = [
-                    0:(loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "") + " (" + monthStr.prefix(1).uppercased() + ")",
-                    1:loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? "",
-                    2:(groupedData?[i]["sum"] as? Double ?? 0.00),
-                    3:loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false,
-                    4:loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
-                ] as [Int:Any]
-                categoryData.append(ramDict)
+                categoryStructData.append(categoryEntry(
+                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "") + " (" + monthStr.prefix(1).uppercased() + ")"),
+                        color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
+                        sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
+                        isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
+                        isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
+                        order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
             }
         }
         // Get sum grouped-by catID - isSave = true
@@ -85,16 +97,32 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         if (groupedSavingsData?.count ?? 0) > 0 {
             for i in 0...(groupedSavingsData?.count ?? 0)-1 {
                 let queryCategory = NSPredicate(format: "cID == %i", (groupedSavingsData?[i]["categoryID"] as? Int16 ?? 0))
-                let ramDict = [
-                    0:loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "",
-                    1:loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? "",
-                    2:(groupedSavingsData?[i]["sum"] as? Double ?? 0.00),
-                    3:loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false,
-                    4:loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
-                ] as [Int:Any]
-                categoryData.append(ramDict)
+                categoryStructData.append(categoryEntry(
+                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "") + " (" + monthStr.prefix(1).uppercased() + ")"),
+                        color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
+                        sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
+                        isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
+                        isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
+                        order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
             }
         }
+        
+        if categoryStructData.count > 0 { categoryStructData.sort { $0.order < $1.order } }
+        
+        print("flkadjflasdk")
+        print(categoryStructData)
+        
+        for category in categoryStructData {
+            let ramDict = [
+                0:category.name,
+                1:category.color,
+                2:category.sum,
+                3:category.isSave,
+                4:category.isIncome
+            ] as [Int:Any]
+            categoryData.append(ramDict)
+        }
+        
         collectionView.reloadData()
     }
     
@@ -209,7 +237,6 @@ extension cellCategoriesOverview {
         fetchRequest.resultType = .dictionaryResultType
         fetchRequest.returnsObjectsAsFaults = false
         fetchRequest.predicate = query
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateTime", ascending: false)]
         
         do {
             let loadData = try managedContext.fetch(fetchRequest)
