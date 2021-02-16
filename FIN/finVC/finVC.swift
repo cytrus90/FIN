@@ -24,6 +24,9 @@ class finTVC: UITableViewController {
     var mediumDate = DateFormatter()
     
     var initialView:Bool = true
+    
+    var selectedFirst = 0
+    var selectedSecond = 0
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +49,7 @@ class finTVC: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionDeleted"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionUpdated"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionAdded"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(categoyTimeRangeChanged(notification:)), name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil)
         
         mediumDate.dateStyle = .medium
         
@@ -63,47 +67,28 @@ class finTVC: UITableViewController {
             refreshView()
         }
         initialView = false
+        
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
+            cell.initSelectedCell(selectedIndex: selectedSecond)
+        }
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
+            cell.setLargeStackTrailingConstraint()
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         initView()
-        if let cell = finTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellTopOverview {
-            cell.pieChart.clear()
-            cell.pieChart.data?.dataSets.removeAll()
-            
-            let dataSet = PieChartDataSet(entries: (topOverviewCellData[1] as? [PieChartDataEntry]), label: "")
-            dataSet.colors = (topOverviewCellData[2] as? [UIColor] ?? [UIColor.red])
-            
-            let data = PieChartData(dataSet: dataSet)
-            
-            cell.pieChart.data = data
-            cell.pieChart.legend.enabled = false
-            cell.pieChart.drawEntryLabelsEnabled = false
-            cell.pieChart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0, easingOption: .easeInOutQuart)
-            cell.pieChart.data?.setDrawValues(false)
-            cell.pieChart.backgroundColor = .clear
-            cell.pieChart.holeColor = .clear
-            cell.pieChart.notifyDataSetChanged()
-
-            let monthInt = Calendar.current.component(.month, from: Date())
-            let monthStr = Calendar.current.monthSymbols[monthInt-1]
-            
-            var textColor = UIColor.white
-            let userInterfaceStyle = traitCollection.userInterfaceStyle
-            if userInterfaceStyle == .light {
-                textColor = UIColor.black
-            }
-            let centerTextText = monthStr.prefix(1).uppercased()
-            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
-            let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
-            
-            cell.pieChart.centerAttributedText = centerText
-            
-            let tabRecongnizerPie = UITapGestureRecognizer(target: self, action: #selector(switchToGraphs))
-            cell.pieChart.addGestureRecognizer(tabRecongnizerPie)
-            
-            cell.pieChart.notifyDataSetChanged()
+        refreshPieChart()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
+            cell.initSelectedCell(selectedIndex: selectedSecond)
+        }
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
+            cell.setLargeStackTrailingConstraint()
         }
     }
     
@@ -271,16 +256,57 @@ class finTVC: UITableViewController {
         return cell
     }
     
-    func getSubLabelCell(indexPath: IndexPath) -> subtitleCellTVC {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "subtitleCell", for: indexPath) as! subtitleCellTVC
+    func getSubLabelCell(indexPath: IndexPath) -> cellSubtitleStack {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellSubtitleStack", for: indexPath) as! cellSubtitleStack
+        
+        cell.stackView.removeFullyAllArrangedSubviews()
         
         if indexPath.row == 1 {
-            cell.subtitleLabel.text = NSLocalizedString("splitsSubLabel", comment: "Splits")
+            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .subheadline), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel]
+            let text = NSAttributedString(string: NSLocalizedString("splitsSubLabel", comment: "Splits"), attributes: textAttribute)
+            let label = UILabel()
+            label.attributedText = text
+            cell.stackView.addArrangedSubview(label)
+            
+            cell.tag = 1
         } else if indexPath.row == 3 {
-            let monthInt = Calendar.current.component(.month, from: Date())
-            let monthStr = Calendar.current.monthSymbols[monthInt-1]
-            cell.subtitleLabel.text = monthStr
-            // cell.subtitleLabel.text = NSLocalizedString("categoriesSubLabel", comment: "Categories")
+            for i in 0...2 {
+                var textString = ""
+                switch i {
+                case 1:
+                    let yearInt = Calendar.current.component(.year, from: Date())
+                    textString = String(yearInt)
+                    break
+                case 2:
+                    textString = NSLocalizedString("totalLabel", comment: "Total")
+                    break
+                default:
+                    let monthInt = Calendar.current.component(.month, from: Date())
+                    let monthStr = Calendar.current.monthSymbols[monthInt-1]
+                    textString = monthStr
+                    break
+                }
+                
+                let label = UILabel()
+                
+                label.text = textString
+                label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+                label.textColor = .label
+                label.textAlignment = .center
+//                label.heightAnchor.constraint(equalToConstant: label.bounds.size.height+20).isActive = true
+                label.numberOfLines = 0
+                
+                if i == selectedSecond {
+                    label.alpha = 1.0
+                } else {
+                    label.alpha = 0.3
+                }
+                label.tag = i
+                
+                cell.stackView.addArrangedSubview(label)
+            }
+            cell.tag = 3
+            cell.initCells()
         }
         return cell
     }
@@ -430,8 +456,8 @@ class finTVC: UITableViewController {
         var entries = [PieChartDataEntry]()
         var colors = [UIColor]()
         
-        let fromDate = Date().startOfMonth
-        let toDate = Date().endOfMonth
+        var fromDate = Date().startOfMonth
+        var toDate = Date().endOfMonth
         
         var expensesIDsArray = [Int16]()
         let queryExpenses = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: false))
@@ -439,7 +465,15 @@ class finTVC: UITableViewController {
             expensesIDsArray.append(expense.value(forKey: "cID") as? Int16 ?? 0)
         }
         
-        let queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
+        var queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
+        
+        if selectedSecond == 1 {
+            fromDate = Date().startOfYear
+            toDate = Date().endOfYear
+            queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
+        } else if selectedSecond == 2 {
+            queryPieChart = NSPredicate(format: "categoryID IN %@", expensesIDsArray)
+        }
         
         let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
         if (data?.count ?? 0) > 0 {
@@ -574,6 +608,74 @@ class finTVC: UITableViewController {
         
         (self.tabBarController as? tabController)?.previousIndex = 1
         self.tabBarController?.selectedIndex = 1
+    }
+    
+    func refreshPieChart() {
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellTopOverview {
+            cell.pieChart.clear()
+            cell.pieChart.data?.dataSets.removeAll()
+            
+            let dataSet = PieChartDataSet(entries: (topOverviewCellData[1] as? [PieChartDataEntry]), label: "")
+            dataSet.colors = (topOverviewCellData[2] as? [UIColor] ?? [UIColor.red])
+            
+            let data = PieChartData(dataSet: dataSet)
+            
+            cell.pieChart.data = data
+            cell.pieChart.legend.enabled = false
+            cell.pieChart.drawEntryLabelsEnabled = false
+            cell.pieChart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0, easingOption: .easeInOutQuart)
+            cell.pieChart.data?.setDrawValues(false)
+            cell.pieChart.backgroundColor = .clear
+            cell.pieChart.holeColor = .clear
+            cell.pieChart.notifyDataSetChanged()
+
+            var centerText:NSAttributedString?
+            var textColor = UIColor.white
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .light {
+                textColor = UIColor.black
+            }
+            if selectedSecond == 0 {
+                let monthInt = Calendar.current.component(.month, from: Date())
+                let monthStr = Calendar.current.monthSymbols[monthInt-1]
+                let centerTextText = monthStr.prefix(1).uppercased()
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+            } else if selectedSecond == 1 {
+                let centerTextText = NSLocalizedString("yearOneDigit", comment: "Y")
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+            } else if selectedSecond == 2 {
+                let centerTextText = NSLocalizedString("totalLabel", comment: "Total").prefix(1).uppercased()
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+            }
+            
+            cell.pieChart.centerAttributedText = centerText
+            
+            let tabRecongnizerPie = UITapGestureRecognizer(target: self, action: #selector(switchToGraphs))
+            cell.pieChart.addGestureRecognizer(tabRecongnizerPie)
+            
+            cell.pieChart.notifyDataSetChanged()
+        }
+    }
+    
+    @objc func categoyTimeRangeChanged(notification: Notification) {
+        if let userInfo = notification.userInfo, let selectedNew = userInfo["selectedLabel"] as? Int {
+            if let selectedCell = userInfo["selectedCell"] as? Int {
+                if selectedCell == 1 {
+                    selectedFirst = selectedNew
+                } else {
+                    selectedSecond = selectedNew
+                    
+                    let newPieChartData = getPieChartDate()
+                    topOverviewCellData[1] = newPieChartData.0
+                    topOverviewCellData[2] = newPieChartData.1
+                    
+                    refreshPieChart()
+                }
+            }
+        }
     }
     
     @objc func switchToGraphs() {

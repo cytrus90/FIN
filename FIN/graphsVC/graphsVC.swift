@@ -626,10 +626,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             lineChartRealValues.removeAll()
             var selected = lineChartEntries.filter { $0.dateTime >= fromDate && $0.dateTime <= toDate }
             
-            print("flksdjflksd")
-            print(fromDate)
-            print(toDate)
-            
             if selected.count == 1 {
                 let value = selected[0].value
                 let selecteRAM = selected[0]
@@ -900,7 +896,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             
             var balance:Double = 0.00
             var index = 1
-            print("flkdjasldas")
             let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == false" + tagFilterPredicateString, -1)
             for transaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
                 let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? -1))
@@ -911,7 +906,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                 }
             }
-            print(balance)
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
             lineChartEntries.append(LineChartEntry(value: balance, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
@@ -947,7 +941,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         if lineChartEntriesExpenses.count > 0 {
             lineChartEntriesExpenses.sort { $0.dateTime < $1.dateTime }
         }
-        print(lineChartEntries)
     }
     
     func getPieChartData()-> ([PieChartDataEntry],[UIColor], Double, [String]) {

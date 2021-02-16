@@ -15,16 +15,16 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Z9T-us-5SZ">
-                    <rect key="frame" x="10" y="5" width="159" height="101"/>
+                    <rect key="frame" x="10" y="0.0" width="159" height="110"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Household" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RLO-0L-GdZ">
-                            <rect key="frame" x="0.0" y="0.0" width="159" height="45.5"/>
+                            <rect key="frame" x="0.0" y="0.0" width="159" height="50"/>
                             <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100.00 €" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8HM-FP-aru">
-                            <rect key="frame" x="0.0" y="55.5" width="159" height="45.5"/>
+                            <rect key="frame" x="0.0" y="60" width="159" height="50"/>
                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -32,15 +32,14 @@
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="width" constant="159" id="PM8-lL-FJQ"/>
-                        <constraint firstAttribute="height" constant="101" id="yCM-GG-72l"/>
                     </constraints>
                 </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemTealColor"/>
             <constraints>
-                <constraint firstItem="Z9T-us-5SZ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="5" id="ESg-jl-8zg"/>
-                <constraint firstAttribute="bottom" secondItem="Z9T-us-5SZ" secondAttribute="bottom" constant="5" id="QS9-6M-iuw"/>
+                <constraint firstItem="Z9T-us-5SZ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="ESg-jl-8zg"/>
+                <constraint firstAttribute="bottom" secondItem="Z9T-us-5SZ" secondAttribute="bottom" constant="1" id="QS9-6M-iuw"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Z9T-us-5SZ" secondAttribute="trailing" constant="10" id="Y9Z-y9-tFA"/>
                 <constraint firstItem="Z9T-us-5SZ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="fy6-4g-alJ"/>
             </constraints>

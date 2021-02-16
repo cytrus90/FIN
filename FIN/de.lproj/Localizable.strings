@@ -86,6 +86,9 @@
 "splitsSubLabel" = "Splits";
 "categoriesSubLabel" = "Kategorien";
 
+"totalLabel" = "Gesamt";
+"yearOneDigit" = "J";
+
 // #### Add VC ####
 "createCategoriesTitle" = "Kategorien erstellen?";
 "createCategoriesText" = "Es sind noch keine Kategorien vorhanden. FIN kann ein paar gebräuchliche Kategorien für Sie anlegen.";

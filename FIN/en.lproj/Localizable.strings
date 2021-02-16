@@ -86,6 +86,8 @@
 "splitsSubLabel" = "Splits";
 "categoriesSubLabel" = "Categories";
 
+"totalLabel" = "Total";
+"yearOneDigit" = "Y";
 
 // #### Add VC ####
 "createCategoriesTitle" = "Create categories?";

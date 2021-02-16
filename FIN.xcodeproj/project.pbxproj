@@ -53,6 +53,7 @@
 		17434D4A24C6D0A6005FC5E8 /* categoryPickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17434D4924C6D0A6005FC5E8 /* categoryPickerView.xib */; };
 		17434D4C24C6D0D0005FC5E8 /* categoryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17434D4B24C6D0D0005FC5E8 /* categoryPickerView.swift */; };
 		1749721E24BD81850087031F /* cellUserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1749721D24BD81850087031F /* cellUserSettings.swift */; };
+		174A879225DB9F3A009AD6EF /* cellSubtitleStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174A879125DB9F3A009AD6EF /* cellSubtitleStack.swift */; };
 		174F94F124E42DA000E66659 /* listCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174F94EF24E42DA000E66659 /* listCollectionViewCell.swift */; };
 		174F94F224E42DA000E66659 /* listCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 174F94F024E42DA000E66659 /* listCollectionViewCell.xib */; };
 		175F082724DDD59F00028DF9 /* listSplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175F082624DDD59F00028DF9 /* listSplitVC.swift */; };
@@ -196,6 +197,7 @@
 		17434D4924C6D0A6005FC5E8 /* categoryPickerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = categoryPickerView.xib; sourceTree = "<group>"; };
 		17434D4B24C6D0D0005FC5E8 /* categoryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = categoryPickerView.swift; sourceTree = "<group>"; };
 		1749721D24BD81850087031F /* cellUserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellUserSettings.swift; sourceTree = "<group>"; };
+		174A879125DB9F3A009AD6EF /* cellSubtitleStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellSubtitleStack.swift; sourceTree = "<group>"; };
 		174F94EF24E42DA000E66659 /* listCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listCollectionViewCell.swift; sourceTree = "<group>"; };
 		174F94F024E42DA000E66659 /* listCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = listCollectionViewCell.xib; sourceTree = "<group>"; };
 		175F082624DDD59F00028DF9 /* listSplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listSplitVC.swift; sourceTree = "<group>"; };
@@ -698,6 +700,7 @@
 				173AE5AE25A4A0B800D8F7D2 /* cellSplitTopOverview.swift */,
 				173AE5B225A4A18F00D8F7D2 /* cellCategoriesOverview.swift */,
 				17CB2BDB25A5DA860015A85F /* cellSavingsOverview.swift */,
+				174A879125DB9F3A009AD6EF /* cellSubtitleStack.swift */,
 				17F4278724B5B1AB008273BB /* addVC */,
 				172D998C253B555500766DED /* XIBs */,
 			);
@@ -916,6 +919,7 @@
 				175F082B24DDD92D00028DF9 /* listMasterTVC.swift in Sources */,
 				17F4278B24B5B3E7008273BB /* userTVCell.swift in Sources */,
 				17A4B3F92520905600EBEBDB /* splitBottomBar.swift in Sources */,
+				174A879225DB9F3A009AD6EF /* cellSubtitleStack.swift in Sources */,
 				17F7D8F924D851EE009FF599 /* cellCategorySave.swift in Sources */,
 				17434D4824C6BF02005FC5E8 /* cellCategoryTVC.swift in Sources */,
 				1731FCC42521A9EA00E4C9FE /* cellSplitAddSelectPersonsGroup.swift in Sources */,

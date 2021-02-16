@@ -23,6 +23,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     
     let alphaValue:CGFloat = 0.6
     
+    var selectedCategoryTimeRange = 0
+    
     struct categoryEntry {
         var name:String
         var color:Int16
@@ -40,7 +42,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionDeleted"), object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionUpdated"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("transactionAdded"), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(categoyTimeRangeChanged(notification:)), name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil)
         
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
@@ -50,6 +52,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         setCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
         
         getCategoryData()
+        collectionView.reloadData()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -66,39 +69,27 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     func getCategoryData() {
         // Get sum grouped-by catID - isSave = false
         // for each entry, get category color & name and add to array
-        let fromDateTime = Date().startOfMonth
-        let toDateTime = Date().endOfMonth
+        var fromDateTime = Date().startOfMonth
+        var toDateTime = Date().endOfMonth
         
         var categoryStructData = [categoryEntry]()
         
-        let monthInt = Calendar.current.component(.month, from: Date())
-        let monthStr = Calendar.current.monthSymbols[monthInt-1]
+        var queryCategoryGroup = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", fromDateTime as NSDate, toDateTime as NSDate)
         
-        let queryCategoryGroup = NSPredicate(format: "isSave == %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", NSNumber(value: false), fromDateTime as NSDate, toDateTime as NSDate)
+        if selectedCategoryTimeRange == 1 {
+            fromDateTime = Date().startOfYear
+            toDateTime = Date().endOfYear
+            queryCategoryGroup = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", fromDateTime as NSDate, toDateTime as NSDate)
+        } else if selectedCategoryTimeRange == 2 {
+            queryCategoryGroup = NSPredicate(format: "categoryID != nil", fromDateTime as NSDate, toDateTime as NSDate)
+        }
+        
         let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
         if (groupedData?.count ?? 0) > 0 {
-            print("flkdsjflaksd")
-            print(groupedData)
             for i in 0...(groupedData?.count ?? 0)-1 {
                 let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
                 categoryStructData.append(categoryEntry(
-                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "") + " (" + monthStr.prefix(1).uppercased() + ")"),
-                        color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
-                        sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
-                        isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
-                        isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
-                        order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
-            }
-        }
-        // Get sum grouped-by catID - isSave = true
-        // for each entry, get category color & name and add to array
-        let querySavingsGroup = NSPredicate(format: "isSave == %@", NSNumber(value: true))
-        let groupedSavingsData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySavingsGroup) as? [[String:Any]]
-        if (groupedSavingsData?.count ?? 0) > 0 {
-            for i in 0...(groupedSavingsData?.count ?? 0)-1 {
-                let queryCategory = NSPredicate(format: "cID == %i", (groupedSavingsData?[i]["categoryID"] as? Int16 ?? 0))
-                categoryStructData.append(categoryEntry(
-                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "") + " (" + monthStr.prefix(1).uppercased() + ")"),
+                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")),// + " (" + monthStr.prefix(1).uppercased() + ")"),
                         color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
                         sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
                         isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
@@ -109,9 +100,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         
         if categoryStructData.count > 0 { categoryStructData.sort { $0.order < $1.order } }
         
-        print("flkadjflasdk")
-        print(categoryStructData)
-        
+        categoryData.removeAll()
         for category in categoryStructData {
             let ramDict = [
                 0:category.name,
@@ -122,8 +111,18 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
             ] as [Int:Any]
             categoryData.append(ramDict)
         }
-        
-        collectionView.reloadData()
+    }
+    
+    @objc func categoyTimeRangeChanged(notification: Notification) {
+        if let userInfo = notification.userInfo, let selectedNew = userInfo["selectedLabel"] as? Int {
+            if let selectedCell = userInfo["selectedCell"] as? Int {
+                if selectedCell == 3 {
+                    selectedCategoryTimeRange = selectedNew
+                    getCategoryData()
+                    collectionView.reloadSections(IndexSet(integer: 0))
+                }
+            }
+        }
     }
     
     func setCollectionViewDataSourceDelegate(dataSourceDelegate: UICollectionViewDataSource & UICollectionViewDelegate, forRow row: Int) {
@@ -266,5 +265,25 @@ extension cellCategoriesOverview {
             print("Could not fetch. \(error)")
         }
         return false
+    }
+    
+    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = sort
+        fetchRequest.predicate = query
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
     }
 }

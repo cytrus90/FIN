@@ -643,10 +643,6 @@ class listMasterTVC: UITableViewController {
             if fromDateShown == nil {
                 fromDateShown = Date()
             }
-        
-        print("fjsdljfldka")
-        print(fromDateMax)
-        print(toDateMax)
         //}
     }
     
@@ -1425,10 +1421,7 @@ extension listMasterTVC {
         if expensesCategories.count > 0 {
             let expensePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil" + tagFilterPredicateString), expensesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
             let dataExpenses = loadDataSUM(entitie: "Transactions", query: expensePredicate)  as? [[String:Any]]
-            print(loadBulkQueried(entitie: "Transactions", query: expensePredicate))
             if (dataExpenses?.count ?? 0) > 0 {
-                print("lfkdsjflasd")
-                print(dataExpenses)
                 for i in 0...((dataExpenses?.count ?? 1)-1) {
                     sumExpenses = (dataExpenses?[i]["sum"] as? Double ?? 0.00) + sumExpenses
                 }
