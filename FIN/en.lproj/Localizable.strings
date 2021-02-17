@@ -481,7 +481,13 @@
 "categorySegmentIncome" = "Income";
 "categorySegmentSave" = "Savings";
 
-"categoryInitialLabel" = "Start amount:";
+"incomeBudgetLabel" = "Expected";
+"savingsBudgetLabel" = "Planned";
+"budgetLabel" = "Budget";
+
+"categoryBudgetInfo" = "Here you can define your goal for this category for each month. The placeholder value is a suggestion based on your past expenses in this category, if enough data is available.";
+
+"categoryInitialLabel" = "Start amount";
 "categoryInitialInfoTitle" = "Info";
 "categoryInitialInfoText" = "You can use this to set a starting value or to correct your balance, if you cannot recall an expense. This amount is only used to calculate the overall balance and amount in savings accounts.";
 

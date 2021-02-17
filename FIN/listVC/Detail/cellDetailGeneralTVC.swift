@@ -53,7 +53,7 @@ class cellDetailGeneralTVC: UITableViewCell {
         circleView.layer.cornerRadius = circleView.bounds.size.width/2
         circleView.clipsToBounds = true
         
-        circleView.layer.borderWidth = 5.0
+        circleView.layer.borderWidth = 1
     }
 
 }

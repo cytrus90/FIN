@@ -483,7 +483,13 @@
 "categorySegmentIncome" = "Einkommen";
 "categorySegmentSave" = "Sparkonten";
 
-"categoryInitialLabel" = "Start Betrag:";
+"incomeBudgetLabel" = "Erwartet";
+"savingsBudgetLabel" = "Geplant";
+"budgetLabel" = "Budget";
+
+"categoryBudgetInfo" = "Hier können Sie ihr Ziel für jedes Monat definieren. Der Platzhalter ist ein Vorschlag basierend auf Ihren vergangenen Transaktionen, falls genügend Werte vorhanden sind.";
+
+"categoryInitialLabel" = "Start Betrag";
 "categoryInitialInfoTitle" = "Information";
 "categoryInitialInfoText" = "Sie können diesen Betrag verwenden, um eine ursprüngliche Kontohöhe zu definieren, oder um Ihr Saldo zu korrigieren. Dieser Wert wird nur zur Berechnung von Gesamtbeträgen verwendet.";
 

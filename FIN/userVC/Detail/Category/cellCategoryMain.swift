@@ -14,6 +14,9 @@ class cellCategoryMain: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var categoryTypeSegmentControl: UISegmentedControl!
     @IBOutlet weak var outlineView: UIView!
     
+    @IBOutlet weak var circleView: UIView!
+    @IBOutlet weak var circleLabel: UILabel!
+    
     weak var delegate: cellCategoryMainDelegate?
     
     override func awakeFromNib() {
@@ -50,7 +53,10 @@ class cellCategoryMain: UITableViewCell, UITextFieldDelegate {
         categoryTypeSegmentControl.setTitle(NSLocalizedString("categoryExpenseSegmentTitle", comment: "Expense"), forSegmentAt: 0)
         categoryTypeSegmentControl.setTitle(NSLocalizedString("categoryIncomeSegmentTitle", comment: "Income"), forSegmentAt: 1)
         
+        circleView.layer.cornerRadius = circleView.bounds.size.width/2
+        circleView.clipsToBounds = true
         
+        circleView.layer.borderWidth = 1
     }
 
     @IBAction func categoryTypeSegmentChanged(_ sender: Any) {

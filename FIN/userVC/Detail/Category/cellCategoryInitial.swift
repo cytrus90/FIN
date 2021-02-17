@@ -14,6 +14,8 @@ class cellCategoryInitial: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var textField: UITextField!
     
+    @IBOutlet weak var infoButton: UIButton!
+    
     weak var delegate: cellCategoryInitialDelegate?
     
     override func awakeFromNib() {
@@ -46,26 +48,26 @@ class cellCategoryInitial: UITableViewCell, UITextFieldDelegate {
             outlineView.backgroundColor = .black
             outlineView.layer.borderColor = UIColor.black.cgColor
         }
-        label.text = NSLocalizedString("categoryInitialLabel", comment: "Initial amount")
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        self.delegate?.textFieldEdited(text: textField.text ?? "")
+        self.delegate?.textFieldEdited(text: textField.text ?? "", textFieldTag: textField.tag)
         return true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         textField.resignFirstResponder()
-        self.delegate?.textFieldEdited(text: textField.text ?? "")
+        self.delegate?.textFieldEdited(text: textField.text ?? "", textFieldTag: textField.tag)
     }
     
     @IBAction func infoPressed(_ sender: Any) {
-        self.delegate?.infoButtonPressed()
+        self.delegate?.infoButtonPressed(textFieldTag: textField.tag)
     }
 }
 
 protocol cellCategoryInitialDelegate: AnyObject {
-    func infoButtonPressed()
-    func textFieldEdited(text: String)
+    func infoButtonPressed(textFieldTag:Int)
+    func textFieldEdited(text: String, textFieldTag:Int)
 }

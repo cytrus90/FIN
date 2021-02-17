@@ -54,6 +54,6 @@ class cellSplitTransactionGeneral: UITableViewCell {
         circleView.clipsToBounds = true
         
 //        circleView.layer.borderColor = UIColor.secondarySystemBackground.cgColor
-        circleView.layer.borderWidth = 5.0
+        circleView.layer.borderWidth = 1
     }
 }

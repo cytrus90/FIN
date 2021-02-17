@@ -282,24 +282,26 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 self.performSegue(withIdentifier: "setCodeSeque", sender: nil)
             }
         } else if selectedRowForCells == 1 { // Category
-            if showAdds {
-                let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
-                let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-                let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+            if userDetailTable.cellForRow(at: indexPath) as? cellDetailCategory != nil {
+                if !showAdds {
+                    let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+                    let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+                    let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
 
-                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                    self.purchaseButtonPressed()
-                }))
-                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-                
-                purchasePrompt.popoverPresentationController?.sourceView = self.view
-                purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-                
-                self.present(purchasePrompt, animated: true)
-            } else {
-                selectedCategoryDetail = (userDetailCells[indexPath.row] as? [Int:Any])?[0] as? Int16 ?? -1
-                DispatchQueue.main.async {
-                    self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
+                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+                        self.purchaseButtonPressed()
+                    }))
+                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+                    
+                    purchasePrompt.popoverPresentationController?.sourceView = self.view
+                    purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+                    
+                    self.present(purchasePrompt, animated: true)
+                } else {
+                    selectedCategoryDetail = (userDetailCells[indexPath.row] as? [Int:Any])?[0] as? Int16 ?? -1
+                    DispatchQueue.main.async {
+                        self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
+                    }
                 }
             }
         }

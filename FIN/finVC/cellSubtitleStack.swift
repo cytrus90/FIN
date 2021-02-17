@@ -19,6 +19,8 @@ class cellSubtitleStack: UITableViewCell {
 //    var width:NSLayoutConstraint?
     var centerX:NSLayoutConstraint?
     var centerY:NSLayoutConstraint?
+    var trailingConstraint:NSLayoutConstraint?
+    var leadingConstraint:NSLayoutConstraint?
     
     @IBOutlet weak var stackViewTrailingConstraint: NSLayoutConstraint!
     
@@ -63,7 +65,7 @@ class cellSubtitleStack: UITableViewCell {
     }
     
     func initSelectedCell(selectedIndex: Int = 0) {
-        var maxWidth:CGFloat = 0
+        var maxWidth:CGFloat = 0//(stackView.frame.width / CGFloat(stackView.arrangedSubviews.count)) - CGFloat(10*(stackView.arrangedSubviews.count-1))
         for view in stackView.arrangedSubviews {
             if view.frame.width > maxWidth {
                 maxWidth = view.frame.width
@@ -74,20 +76,32 @@ class cellSubtitleStack: UITableViewCell {
             self.contentView.addSubview(selectedView)
                 
             selectedView.heightAnchor.constraint(equalToConstant: max((view.frame.height+10),30)).isActive = true
-            selectedView.widthAnchor.constraint(equalToConstant: maxWidth+10).isActive = true
+//            selectedView.widthAnchor.constraint(equalToConstant: maxWidth).isActive = true
                 
-            centerX?.isActive = false
-            centerX = selectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0)
-            centerX?.isActive = true
+//            centerX?.isActive = false
+//            centerX = selectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0)
+//            centerX?.isActive = true
             
             centerY?.isActive = false
             centerY = selectedView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0)
             centerY?.isActive = true
             
+            trailingConstraint?.isActive = false
+            trailingConstraint = selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
+            trailingConstraint?.isActive = true
+            
+            leadingConstraint?.isActive = false
+            leadingConstraint = selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0)
+            leadingConstraint?.isActive = true
+            
             selectedView.backgroundColor = .systemBackground
             selectedView.layer.borderWidth = 1
             selectedView.layer.cornerRadius = 10
             selectedView.layer.borderColor = UIColor.systemBackground.cgColor
+            
+            selectedLabel = selectedIndex
+            
+            stackView.arrangedSubviews[selectedLabel].alpha = 1.0
             
             self.contentView.sendSubviewToBack(selectedView)
         }
@@ -99,13 +113,21 @@ class cellSubtitleStack: UITableViewCell {
             if let label = stackView.arrangedSubviews[selectedTag ?? 0] as? UILabel {
                 nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": selectedTag ?? 0, "selectedCell": self.tag])
                 
-                centerX?.isActive = false
-                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
-                centerX?.isActive = true
+//                centerX?.isActive = false
+//                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
+//                centerX?.isActive = true
                 
                 centerY?.isActive = false
                 centerY = selectedView.centerYAnchor.constraint(equalTo: label.centerYAnchor, constant: 0)
                 centerY?.isActive = true
+                
+                trailingConstraint?.isActive = false
+                trailingConstraint = selectedView.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: 0)
+                trailingConstraint?.isActive = true
+                
+                leadingConstraint?.isActive = false
+                leadingConstraint = selectedView.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: 0)
+                leadingConstraint?.isActive = true
                 
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: {
                     self.stackView.arrangedSubviews[self.selectedLabel].alpha = 0.3
@@ -124,13 +146,21 @@ class cellSubtitleStack: UITableViewCell {
             if let label = stackView.arrangedSubviews[selectedNew] as? UILabel {
                 nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": selectedNew, "selectedCell": self.tag])
                 
-                centerX?.isActive = false
-                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
-                centerX?.isActive = true
-                
+//                centerX?.isActive = false
+//                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
+//                centerX?.isActive = true
+//
                 centerY?.isActive = false
                 centerY = selectedView.centerYAnchor.constraint(equalTo: label.centerYAnchor, constant: 0)
                 centerY?.isActive = true
+                
+                trailingConstraint?.isActive = false
+                trailingConstraint = selectedView.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: 0)
+                trailingConstraint?.isActive = true
+                
+                leadingConstraint?.isActive = false
+                leadingConstraint = selectedView.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: 0)
+                leadingConstraint?.isActive = true
                 
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: {
                     self.stackView.arrangedSubviews[self.selectedLabel].alpha = 0.3
@@ -149,13 +179,21 @@ class cellSubtitleStack: UITableViewCell {
             if let label = stackView.arrangedSubviews[selectedNew] as? UILabel {
                 nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": selectedNew, "selectedCell": self.tag])
                 
-                centerX?.isActive = false
-                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
-                centerX?.isActive = true
+//                centerX?.isActive = false
+//                centerX = selectedView.centerXAnchor.constraint(equalTo: label.centerXAnchor, constant: 0)
+//                centerX?.isActive = true
                 
                 centerY?.isActive = false
                 centerY = selectedView.centerYAnchor.constraint(equalTo: label.centerYAnchor, constant: 0)
                 centerY?.isActive = true
+                
+                trailingConstraint?.isActive = false
+                trailingConstraint = selectedView.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: 0)
+                trailingConstraint?.isActive = true
+                
+                leadingConstraint?.isActive = false
+                leadingConstraint = selectedView.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: 0)
+                leadingConstraint?.isActive = true
                 
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: {
                     self.stackView.arrangedSubviews[self.selectedLabel].alpha = 0.3

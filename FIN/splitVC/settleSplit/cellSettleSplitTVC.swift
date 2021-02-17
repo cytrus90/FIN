@@ -87,12 +87,12 @@ class cellSettleSplitTVC: UITableViewCell, UITextFieldDelegate {
         leftCircleView.layer.cornerRadius = leftCircleView.bounds.size.width/2
         leftCircleView.clipsToBounds = true
         
-        leftCircleView.layer.borderWidth = 5.0
+        leftCircleView.layer.borderWidth = 1
         
         rightCircleView.layer.cornerRadius = leftCircleView.bounds.size.width/2
         rightCircleView.clipsToBounds = true
         
-        rightCircleView.layer.borderWidth = 5.0
+        rightCircleView.layer.borderWidth = 1
     }
     
     func initCurrencyButton() {

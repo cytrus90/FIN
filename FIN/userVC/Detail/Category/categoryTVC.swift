@@ -61,7 +61,7 @@ class categoryTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 6
     }
 
     
@@ -77,17 +77,45 @@ class categoryTVC: UITableViewController {
             cell.saveLabel.text = NSLocalizedString("categorySaveSegmentTitle", comment: "isSaveLabel")
             cell.delegate = self
             return cell
-        case 2:
+        case 2: // Budget
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryInitial", for: indexPath) as! cellCategoryInitial
-            cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+            cell.infoButton.setImage(UIImage(named: "budgetIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            cell.infoButton.isUserInteractionEnabled = true
+            if (categoryData[1] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("incomeBudgetLabel", comment: "Expected")
+            } else if (categoryData[2] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("savingsBudgetLabel", comment: "Planned")
+            } else {
+                cell.label.text = NSLocalizedString("budgetLabel", comment: "Budget")
+            }
+            
+            cell.textField.placeholder = amountFormatter.string(from: NSNumber(value: categoryData[8] as? Double ?? 0.00))
+            
+            if (categoryData[7] as? Double ?? 0.00) != 0.00 {
+                cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[7] as? Double ?? 0.00))
+            }
+            
+            cell.textField.tag = indexPath.row
             cell.delegate = self
             return cell
-        case 3:
+        case 3: // Initial
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryInitial", for: indexPath) as! cellCategoryInitial
+            cell.infoButton.setImage(UIImage(systemName: "info.circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            cell.infoButton.isUserInteractionEnabled = true
+            cell.label.text = NSLocalizedString("categoryInitialLabel", comment: "Initial amount")
+            cell.textField.placeholder = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+            if (categoryData[6] as? Double ?? 0.00) != 0.00 {
+                cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+            }
+            cell.textField.tag = indexPath.row
+            cell.delegate = self
+            return cell
+        case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryColor", for: indexPath) as! cellCategoryColor
             cell.colorPickerView.preselectedIndex = Int(categoryData[3] as? Int16 ?? 0)
             cell.delegate = self
             return cell
-        case 4: // Add Button
+        case 5: // Add Button
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryAdd", for: indexPath) as! cellCategoryAdd
             if selectedCategoryDetail == -1 {
                 cell.addButton.setTitle(NSLocalizedString("categoryButtonAdd", comment: "Add Button Add"), for: .normal)
@@ -110,6 +138,19 @@ class categoryTVC: UITableViewController {
             } else {
                 cell.categoryTypeSegmentControl.isHidden = false
             }
+            
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: false, light: false)
+            cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
+            
+            if (categoryData[0] as? String ?? "").count > 2 {
+                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(2).uppercased()
+            } else if (categoryData[0] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = "CA"
+            }
+            cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: true, light: false)
+            
             cell.delegate = self
             return cell
         }
@@ -130,7 +171,9 @@ class categoryTVC: UITableViewController {
             categoryData[3] = Int16(0) // Color
             categoryData[4] = Date() // createDate
             categoryData[5] = Int16(-1)
-            categoryData[6] = 0.00
+            categoryData[6] = 0.00 // Initial
+            categoryData[7] = 0.00 // Budget
+            categoryData[8] = 0.00 // Budget Suggestion
         } else {
             let categoryPredicate:NSPredicate = NSPredicate(format: "cID == \(selectedCategoryDetail)")
             let categoryLoaded = loadBulkDataWithQuery(entitie: "Categories", query: categoryPredicate)
@@ -144,8 +187,30 @@ class categoryTVC: UITableViewController {
             let queryInitialTransaction = NSPredicate(format: "dateTime == nil AND categoryID == \(selectedCategoryDetail)")
             categoryData[6] = loadQueriedAttribute(entitie: "Transactions", attibute: "realAmount", query: queryInitialTransaction) as? Double ?? 0.00
             
+            categoryData[7] = categoryLoaded[0].value(forKey: "budget") as? Double ?? 0.00
+            categoryData[8] = getBudgetSuggestion()
+            
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteCategoryButton))
         }
+    }
+    
+    func getBudgetSuggestion() -> Double {
+        // Get last 12 Month
+        // Get Summs ordered by last 12 Month
+        var pastValue = [Double]()
+        for i in 1...12 {
+            let pastDate = Calendar.current.date(byAdding: .month, value: -i, to: Date()) ?? Date()
+            let querySUM = NSPredicate(format: "categoryID == \(selectedCategoryDetail) AND dateTime <= %@ AND dateTime >= %@", pastDate.endOfMonth as NSDate, pastDate.startOfMonth as NSDate)
+            let loadedSUM = (loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySUM) as? [[String:Any]])
+            if (loadedSUM?.count ?? 0) > 0 {
+                pastValue.append((loadedSUM?[0]["sum"] as? Double ?? 0.00))
+            }
+        }
+        // Calculate & return Median from this values
+        if pastValue.count > 1 {
+            return pastValue.median()
+        }
+        return 0.00
     }
     
     @objc func dismissViewController() {
@@ -285,6 +350,10 @@ extension categoryTVC {
             categorySave.createDate = Date()
             categorySave.order = nextID
             
+            if (categoryData[7] as? Double ?? 0.00) > 0.00 {
+                categorySave.budget = (categoryData[7] as? Double ?? 0.00)
+            }
+            
             do {
                 try managedContext.save()
             } catch let error as NSError {
@@ -322,6 +391,11 @@ extension categoryTVC {
                 data.setValue(categoryData[2] as? Bool ?? false, forKey: "isSave")
                 data.setValue(categoryData[3] as? Int16 ?? 0, forKey: "color")
                 
+                if (categoryData[7] as? Double ?? 0.00) > 0.00 {
+                    data.setValue((categoryData[7] as? Double ?? 0.00), forKey: "budget")
+                } else {
+                    data.setValue(nil, forKey: "budget")
+                }
                 saveQueriedAttributeMultiple(entity: "Transactions", attribute: "isSave", query: queryTransactions, value: (categoryData[2] as? Bool ?? false))
                 
                 updateInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: selectedCategoryDetail)
@@ -535,6 +609,45 @@ extension categoryTVC {
         }
     }
     
+    func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        
+        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
+        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
+        
+        let sumDesc = NSExpressionDescription()
+        sumDesc.expression = expression1
+        sumDesc.name = "sum"
+        sumDesc.expressionResultType = .doubleAttributeType
+        
+        let keypathExp2 = NSExpression(forKeyPath: groupByColumn) // can be any column
+        let expression2 = NSExpression(forFunction: "count:", arguments: [keypathExp2])
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression2
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer64AttributeType
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.propertiesToGroupBy = [groupByColumn]
+        fetchRequest.propertiesToFetch = [groupByColumn, countDesc ,sumDesc]
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest)
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
     // MARK: DELETE
     func deleteData(entity: String, query: NSPredicate) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
@@ -560,8 +673,11 @@ extension categoryTVC {
 }
 
 extension categoryTVC: cellCategoryInitialDelegate {
-    func infoButtonPressed() {
-        let infoText = NSLocalizedString("categoryInitialInfoText", comment: "Info Text")
+    func infoButtonPressed(textFieldTag:Int) {
+        var infoText = NSLocalizedString("categoryInitialInfoText", comment: "Info Text")
+        if textFieldTag == 2 { // Budget
+            infoText = NSLocalizedString("categoryBudgetInfo", comment: "Info Text")
+        }
         let infoTitle = NSLocalizedString("categoryInitialInfoTitle", comment: "Info")
         let infoPrompt = UIAlertController(title: infoTitle, message: infoText, preferredStyle: .alert)
 
@@ -573,13 +689,23 @@ extension categoryTVC: cellCategoryInitialDelegate {
         self.present(infoPrompt, animated: true)
     }
     
-    func textFieldEdited(text: String) {
-        let thSep:String = Locale.current.groupingSeparator ?? ","
-        let currencySymbol = Locale.current.currencySymbol ?? "€"
-        
-        categoryData[6] = numberFormatter.number(from: (text).replacingOccurrences(of: thSep, with: "").replacingOccurrences(of: currencySymbol, with: ""))
-        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
-            cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+    func textFieldEdited(text: String, textFieldTag:Int) {
+        if textFieldTag == 3 { // Initial
+            let thSep:String = Locale.current.groupingSeparator ?? ","
+            let currencySymbol = Locale.current.currencySymbol ?? "€"
+            
+            categoryData[6] = numberFormatter.number(from: (text).replacingOccurrences(of: thSep, with: "").replacingOccurrences(of: currencySymbol, with: ""))
+            if let cell = categoryTable.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellCategoryInitial {
+                cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[6] as? Double ?? 0.00))
+            }
+        } else if textFieldTag == 2 { // Budget
+            let thSep:String = Locale.current.groupingSeparator ?? ","
+            let currencySymbol = Locale.current.currencySymbol ?? "€"
+            
+            categoryData[7] = numberFormatter.number(from: (text).replacingOccurrences(of: thSep, with: "").replacingOccurrences(of: currencySymbol, with: ""))
+            if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+                cell.textField.text = amountFormatter.string(from: NSNumber(value: categoryData[7] as? Double ?? 0.00))
+            }
         }
     }
 }
@@ -590,6 +716,15 @@ extension categoryTVC: cellCategoryMainDelegate {
             categoryData[1] = false
         } else {
             categoryData[1] = true
+        }
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+            if (categoryData[1] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("incomeBudgetLabel", comment: "Expected")
+            } else if (categoryData[2] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("savingsBudgetLabel", comment: "Planned")
+            } else {
+                cell.label.text = NSLocalizedString("budgetLabel", comment: "Budget")
+            }
         }
     }
     
@@ -611,22 +746,47 @@ extension categoryTVC: cellCategorySaveDelegate {
                 categoryTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .fade)
             }
         }
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+            if (categoryData[1] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("incomeBudgetLabel", comment: "Expected")
+            } else if (categoryData[2] as? Bool ?? false) {
+                cell.label.text = NSLocalizedString("savingsBudgetLabel", comment: "Planned")
+            } else {
+                cell.label.text = NSLocalizedString("budgetLabel", comment: "Budget")
+            }
+        }
     }
 }
 
 extension categoryTVC: cellCategoryColorDelegate {
     func colorChanged(newColor: Int16) {
         categoryData[3] = newColor
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellCategoryMain {
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: false, light: false)
+            cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
+            
+            if (categoryData[0] as? String ?? "").count > 2 {
+                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(2).uppercased()
+            } else if (categoryData[0] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = "CA"
+            }
+            cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: true, light: false)
+        }
     }
 }
 
 extension categoryTVC: cellCategoryAddDelegate {
     func addButtonPressed() {
-        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellCategoryInitial {
             let thSep:String = Locale.current.groupingSeparator ?? ","
             categoryData[6] = amountFormatter.number(from: (cell.textField.text)?.replacingOccurrences(of: thSep, with: "") ?? "0.00")
         }
-        
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 2, section: 0)) as? cellCategoryInitial {
+            let thSep:String = Locale.current.groupingSeparator ?? ","
+            categoryData[7] = amountFormatter.number(from: (cell.textField.text)?.replacingOccurrences(of: thSep, with: "") ?? "0.00")
+        }
         reloadAddView = true
         if selectedCategoryDetail == -1 {
             if saveNewCategory() {
@@ -646,5 +806,16 @@ extension categoryTVC: cellCategoryAddDelegate {
         reloadListView = true
         reloadFinView = true
         reloadGraphView = true
+    }
+}
+
+extension Array where Element == Double {
+    func median() -> Double {
+        let sortedArray = sorted()
+        if count % 2 != 0 {
+            return Double(sortedArray[count / 2])
+        } else {
+            return Double(sortedArray[count / 2] + sortedArray[count / 2 - 1]) / 2.0
+        }
     }
 }

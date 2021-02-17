@@ -34,6 +34,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         var order:Int16
     }
     
+    var activeBudget = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -46,6 +48,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
+        
+        activeBudget = loadIfBudget()
         
         let nib = UINib(nibName: "categoryCarouselCell", bundle: nil)
         collectionView.register(nib, forCellWithReuseIdentifier: "categoryCarouselCell")
@@ -76,24 +80,45 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         
         var queryCategoryGroup = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", fromDateTime as NSDate, toDateTime as NSDate)
         
-        if selectedCategoryTimeRange == 1 {
+        if (selectedCategoryTimeRange == 1 && !activeBudget) || (selectedCategoryTimeRange == 2 && activeBudget) {
             fromDateTime = Date().startOfYear
             toDateTime = Date().endOfYear
             queryCategoryGroup = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil", fromDateTime as NSDate, toDateTime as NSDate)
-        } else if selectedCategoryTimeRange == 2 {
+        } else if (selectedCategoryTimeRange == 2 && !activeBudget) || (selectedCategoryTimeRange == 3 && activeBudget) {
             queryCategoryGroup = NSPredicate(format: "categoryID != nil", fromDateTime as NSDate, toDateTime as NSDate)
         }
         
         let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
         if (groupedData?.count ?? 0) > 0 {
+            print(groupedData)
             for i in 0...(groupedData?.count ?? 0)-1 {
                 let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
+                
+                let isIncome = (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false)
+                let isSave = (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false)
+                
+                var sum = (groupedData?[i]["sum"] as? Double ?? 0.00)
+                if selectedCategoryTimeRange == 0 && activeBudget {
+                    let budget = loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00
+                    print("fldskjfald")
+                    print(budget)
+                    print(loadBulkQueriedSorted(entitie: "Categories", query: queryCategory, sort: [NSSortDescriptor(key: "cID", ascending: true)]))
+                    if abs(budget) > 0.00 {
+                        if isSave || isIncome {
+                            sum = sum - budget
+                        } else {
+                            sum = budget - sum
+                        }
+                    } else {
+                        continue
+                    }
+                }
                 categoryStructData.append(categoryEntry(
                         name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")),// + " (" + monthStr.prefix(1).uppercased() + ")"),
                         color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
-                        sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
-                        isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
-                        isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
+                        sum: sum,
+                        isSave: isSave,
+                        isIncome: isIncome,
                         order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
             }
         }
@@ -285,5 +310,27 @@ extension cellCategoriesOverview {
             print("Could not fetch. \(error)")
         }
         return [NSManagedObject]()
+    }
+    
+    func loadIfBudget() -> Bool {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+        fetchRequest.fetchLimit = 1
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return true
+            } else {
+                return false
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
     }
 }

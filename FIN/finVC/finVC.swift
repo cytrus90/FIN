@@ -27,7 +27,8 @@ class finTVC: UITableViewController {
     
     var selectedFirst = 0
     var selectedSecond = 0
-        
+    var activeBudget = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         (self.tabBarController as? tabController)?.previousIndex = 0
@@ -56,6 +57,8 @@ class finTVC: UITableViewController {
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
         
+        activeBudget = loadIfBudget()
+        
         initView()
         initData()
     }
@@ -82,10 +85,83 @@ class finTVC: UITableViewController {
         refreshPieChart()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            if let cell = self.finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
+                var numberSegments = 2
+                if (self.activeBudget && (self.view.frame.height < self.view.frame.width)) || !UIDevice().model.contains("iPhone") {
+                    numberSegments = 3
+                } else if self.selectedSecond >= 3 {
+                    self.selectedSecond = 2
+                    let nc = NotificationCenter.default
+                    nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": self.selectedSecond, "selectedCell": 3])
+                }
+                
+                if numberSegments == 2 && cell.stackView.arrangedSubviews.count == 4 {
+    //                print(cell.stackView.arrangedSubviews)
+                    cell.stackView.arrangedSubviews[3].removeFromSuperview()
+    //                print(cell.stackView.arrangedSubviews)
+                } else if numberSegments == 3 && cell.stackView.arrangedSubviews.count == 3 {
+                    let label = UILabel()
+                    
+                    label.text = NSLocalizedString("totalLabel", comment: "Total")
+                    label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+                    label.textColor = .label
+                    label.textAlignment = .center
+                    label.numberOfLines = 0
+                    
+                    if self.selectedSecond == 3 {
+                        label.alpha = 1.0
+                    } else {
+                        label.alpha = 0.3
+                    }
+                    label.tag = 3
+                    print("fljsdafjsdljlksa")
+                    cell.stackView.addArrangedSubview(label)
+                }
+//                cell.initSelectedCell(selectedIndex: self.selectedSecond)
+                print(cell.stackView.arrangedSubviews)
+                print("fdfjfjjfjfjjjjjjjj")
+                cell.initSelectedCell(selectedIndex: self.selectedSecond)
+            }
+        }
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let cell = finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
-            cell.initSelectedCell(selectedIndex: selectedSecond)
+            var numberSegments = 2
+            if (activeBudget && (view.frame.height < view.frame.width)) || !UIDevice().model.contains("iPhone") {
+                numberSegments = 3
+            } else if selectedSecond >= 3 {
+                selectedSecond = 2
+            }
+            
+            if numberSegments == 2 && cell.stackView.arrangedSubviews.count == 4 {
+//                print(cell.stackView.arrangedSubviews)
+                cell.stackView.arrangedSubviews[3].removeFromSuperview()
+//                print(cell.stackView.arrangedSubviews)
+            } else if numberSegments == 3 && cell.stackView.arrangedSubviews.count == 3 {
+                let label = UILabel()
+                
+                label.text = NSLocalizedString("totalLabel", comment: "Total")
+                label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+                label.textColor = .label
+                label.textAlignment = .center
+                label.numberOfLines = 0
+                
+                if selectedSecond == 3 {
+                    label.alpha = 1.0
+                } else {
+                    label.alpha = 0.3
+                }
+                label.tag = 3
+                print("fljsdafjsdljlksa")
+                cell.stackView.addArrangedSubview(label)
+            }
+            cell.initSelectedCell(selectedIndex: self.selectedSecond)
+            print(cell.stackView.arrangedSubviews)
         }
         if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
             cell.setLargeStackTrailingConstraint()
@@ -149,17 +225,31 @@ class finTVC: UITableViewController {
         cell.pieChart.holeColor = .clear
         cell.pieChart.notifyDataSetChanged()
         
-        let monthInt = Calendar.current.component(.month, from: Date())
-        let monthStr = Calendar.current.monthSymbols[monthInt-1]
-        
+        var centerText:NSAttributedString?
         var textColor = UIColor.white
         let userInterfaceStyle = traitCollection.userInterfaceStyle
         if userInterfaceStyle == .light {
             textColor = UIColor.black
         }
-        let centerTextText = monthStr.prefix(1).uppercased()
-        let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
-        let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        if selectedSecond == 0 && activeBudget {
+            let centerTextText = NSLocalizedString("budgetLabel", comment: "Budget").prefix(1).uppercased()
+            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+            centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        } else if (selectedSecond == 0 && !activeBudget) || (selectedSecond == 1 && activeBudget) {
+            let monthInt = Calendar.current.component(.month, from: Date())
+            let monthStr = Calendar.current.monthSymbols[monthInt-1]
+            let centerTextText = monthStr.prefix(1).uppercased()
+            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+            centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        } else if (selectedSecond == 1 && !activeBudget) || (selectedSecond == 2 && activeBudget) {
+            let centerTextText = NSLocalizedString("yearOneDigit", comment: "Y")
+            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+            centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        } else if (selectedSecond == 2 && !activeBudget) || (selectedSecond == 3 && activeBudget) {
+            let centerTextText = NSLocalizedString("totalLabel", comment: "Total").prefix(1).uppercased()
+            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+            centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        }
         
         cell.pieChart.centerAttributedText = centerText
         
@@ -270,21 +360,50 @@ class finTVC: UITableViewController {
             
             cell.tag = 1
         } else if indexPath.row == 3 {
-            for i in 0...2 {
+            var numberSegments = 2
+            if (activeBudget && (view.frame.height < view.frame.width)) || !UIDevice().model.contains("iPhone") {
+                numberSegments = 3
+            } else if selectedSecond >= 3 {
+                selectedSecond = 2
+            }
+            
+            print("ljksdafjdsöfdjsfö")
+            
+            for i in 0...numberSegments {
                 var textString = ""
-                switch i {
-                case 1:
-                    let yearInt = Calendar.current.component(.year, from: Date())
-                    textString = String(yearInt)
-                    break
-                case 2:
-                    textString = NSLocalizedString("totalLabel", comment: "Total")
-                    break
-                default:
-                    let monthInt = Calendar.current.component(.month, from: Date())
-                    let monthStr = Calendar.current.monthSymbols[monthInt-1]
-                    textString = monthStr
-                    break
+                if activeBudget {
+                    switch i {
+                    case 1:
+                        let monthInt = Calendar.current.component(.month, from: Date())
+                        let monthStr = Calendar.current.monthSymbols[monthInt-1]
+                        textString = monthStr
+                        break
+                    case 2:
+                        let yearInt = Calendar.current.component(.year, from: Date())
+                        textString = String(yearInt)
+                        break
+                    case 3:
+                        textString = NSLocalizedString("totalLabel", comment: "Total")
+                        break
+                    default:
+                        textString = NSLocalizedString("budgetLabel", comment: "Budget")
+                        break
+                    }
+                } else {
+                    switch i {
+                    case 1:
+                        let yearInt = Calendar.current.component(.year, from: Date())
+                        textString = String(yearInt)
+                        break
+                    case 2:
+                        textString = NSLocalizedString("totalLabel", comment: "Total")
+                        break
+                    default:
+                        let monthInt = Calendar.current.component(.month, from: Date())
+                        let monthStr = Calendar.current.monthSymbols[monthInt-1]
+                        textString = monthStr
+                        break
+                    }
                 }
                 
                 let label = UILabel()
@@ -466,22 +585,39 @@ class finTVC: UITableViewController {
         }
         
         var queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
-        
-        if selectedSecond == 1 {
+        if selectedSecond == 0 && activeBudget { // Budget
+  
+        } else if (selectedSecond == 1 && !activeBudget) || (selectedSecond == 2 && activeBudget) { // Year
             fromDate = Date().startOfYear
             toDate = Date().endOfYear
             queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
-        } else if selectedSecond == 2 {
+        } else if (selectedSecond == 2 && !activeBudget) || (selectedSecond == 3 && activeBudget) { // Total
             queryPieChart = NSPredicate(format: "categoryID IN %@", expensesIDsArray)
         }
+        
+        var sumBudget = 0.00
+        var sumSpent = 0.00
         
         let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
         if (data?.count ?? 0) > 0 {
             for i in 0...((data?.count ?? 1)-1) {
                 let queryCategory = NSPredicate(format: "cID == %i", (data?[i]["categoryID"] as? Int16 ?? 0))
-                entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                if selectedSecond == 0 && activeBudget {
+                    if !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false) {
+                        sumSpent = sumSpent + (data?[i]["sum"] as? Double ?? 0.00)
+                        sumBudget = sumBudget + (loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00)
+                    }
+                } else {
+                    entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                    colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                }
             }
+        }
+        if selectedSecond == 0 && activeBudget {
+            entries.append(PieChartDataEntry(value: sumSpent, label: "Spent"))
+            colors.append(.red)
+            entries.append(PieChartDataEntry(value: max(0,(sumBudget-sumSpent)), label: "Left"))
+            colors.append(UIColor(red: 0/255, green: 204/255, blue: 68/255, alpha: 0.8))
         }
         return (entries,colors)
     }
@@ -635,17 +771,21 @@ class finTVC: UITableViewController {
             if userInterfaceStyle == .light {
                 textColor = UIColor.black
             }
-            if selectedSecond == 0 {
+            if selectedSecond == 0 && activeBudget {
+                let centerTextText = NSLocalizedString("budgetLabel", comment: "Budget").prefix(1).uppercased()
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+            } else if (selectedSecond == 0 && !activeBudget) || (selectedSecond == 1 && activeBudget) {
                 let monthInt = Calendar.current.component(.month, from: Date())
                 let monthStr = Calendar.current.monthSymbols[monthInt-1]
                 let centerTextText = monthStr.prefix(1).uppercased()
                 let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
                 centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
-            } else if selectedSecond == 1 {
+            } else if (selectedSecond == 1 && !activeBudget) || (selectedSecond == 2 && activeBudget) {
                 let centerTextText = NSLocalizedString("yearOneDigit", comment: "Y")
                 let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
                 centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
-            } else if selectedSecond == 2 {
+            } else if (selectedSecond == 2 && !activeBudget) || (selectedSecond == 3 && activeBudget) {
                 let centerTextText = NSLocalizedString("totalLabel", comment: "Total").prefix(1).uppercased()
                 let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
                 centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
@@ -1074,6 +1214,28 @@ extension finTVC {
         do {
             let loadData = try managedContext.fetch(fetchRequest)
             return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
+    func loadIfBudget() -> Bool {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+        fetchRequest.fetchLimit = 1
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return true
+            } else {
+                return false
+            }
         } catch {
             print("Could not fetch. \(error)")
         }
