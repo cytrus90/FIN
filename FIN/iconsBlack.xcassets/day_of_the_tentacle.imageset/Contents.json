@@ -1,0 +1,23 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "day_of_the_tentacle@1x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "day_of_the_tentacle@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "day_of_the_tentacle@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

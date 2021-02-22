@@ -1,0 +1,23 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "islandonwater@1x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "islandonwater@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "islandonwater@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

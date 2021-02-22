@@ -20,6 +20,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     var categoryData = [[Int:Any]]()
     
     var numberFormatter = NumberFormatter()
+    var numberFormatterPercent = NumberFormatter()
     
     let alphaValue:CGFloat = 0.6
     
@@ -29,6 +30,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         var name:String
         var color:Int16
         var sum:Double
+        var budget:Double?
         var isSave:Bool
         var isIncome:Bool
         var order:Int16
@@ -48,6 +50,13 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
+        
+        numberFormatterPercent.numberStyle = .decimal
+        numberFormatterPercent.usesGroupingSeparator = true
+        numberFormatterPercent.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatterPercent.groupingSize = 3
+        numberFormatterPercent.minimumFractionDigits = 2
+        numberFormatterPercent.maximumFractionDigits = 2
         
         activeBudget = loadIfBudget()
         
@@ -88,38 +97,48 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
             queryCategoryGroup = NSPredicate(format: "categoryID != nil", fromDateTime as NSDate, toDateTime as NSDate)
         }
         
-        let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
-        if (groupedData?.count ?? 0) > 0 {
-            print(groupedData)
-            for i in 0...(groupedData?.count ?? 0)-1 {
-                let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
+        if selectedCategoryTimeRange == 0 && activeBudget {
+            let queryCategoryBudget = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+            for category in loadBulkQueriedSorted(entitie: "Categories", query: queryCategoryBudget, sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
+                var sum = 0.00
+                let budget = (category.value(forKey: "budget") as? Double ?? 0.00)
+                let isIncome = category.value(forKey: "isIncome") as? Bool ?? false
+                let isSave = category.value(forKey: "isSave") as? Bool ?? false
                 
-                let isIncome = (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false)
-                let isSave = (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false)
-                
-                var sum = (groupedData?[i]["sum"] as? Double ?? 0.00)
-                if selectedCategoryTimeRange == 0 && activeBudget {
-                    let budget = loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00
-                    print("fldskjfald")
-                    print(budget)
-                    print(loadBulkQueriedSorted(entitie: "Categories", query: queryCategory, sort: [NSSortDescriptor(key: "cID", ascending: true)]))
-                    if abs(budget) > 0.00 {
-                        if isSave || isIncome {
-                            sum = sum - budget
-                        } else {
-                            sum = budget - sum
-                        }
-                    } else {
-                        continue
+                let querySum = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil AND categoryID == %i AND isLiquid == true", fromDateTime as NSDate, toDateTime as NSDate, category.value(forKey: "cID") as? Int16 ?? -2)
+                let groupedSUM = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySum) as? [[String:Any]]
+                if (groupedSUM?.count ?? 0) > 0 {
+                    for i in 0...(groupedSUM?.count ?? 1)-1 {
+                        sum = (groupedSUM?[i]["sum"] as? Double ?? 0.00)
+//                        if isIncome || isSave {
+//                            sum = (groupedSUM?[i]["sum"] as? Double ?? 0.00) - budget
+//                        } else {
+//                            sum = budget - (groupedSUM?[i]["sum"] as? Double ?? 0.00)
+//                        }
                     }
                 }
                 categoryStructData.append(categoryEntry(
-                        name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")),// + " (" + monthStr.prefix(1).uppercased() + ")"),
-                        color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
-                        sum: sum,
-                        isSave: isSave,
-                        isIncome: isIncome,
-                        order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
+                                            name: category.value(forKey: "name") as? String ?? "",
+                                            color: category.value(forKey: "color") as? Int16 ?? 0,
+                                            sum: sum,
+                                            budget: budget,
+                                            isSave: isSave,
+                                            isIncome: isIncome,
+                                            order: category.value(forKey: "order") as? Int16 ?? 0))
+            }
+        } else {
+            let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
+            if (groupedData?.count ?? 0) > 0 {
+                for i in 0...(groupedData?.count ?? 1)-1 {
+                    let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
+                    categoryStructData.append(categoryEntry(
+                            name: ((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")),// + " (" + monthStr.prefix(1).uppercased() + ")"),
+                            color: (loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0),
+                            sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
+                            isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
+                            isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
+                            order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
+                }
             }
         }
         
@@ -132,7 +151,9 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 1:category.color,
                 2:category.sum,
                 3:category.isSave,
-                4:category.isIncome
+                4:category.isIncome,
+                5:category.budget ?? 0.00,
+                6:true // Show percent
             ] as [Int:Any]
             categoryData.append(ramDict)
         }
@@ -144,7 +165,11 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 if selectedCell == 3 {
                     selectedCategoryTimeRange = selectedNew
                     getCategoryData()
-                    collectionView.reloadSections(IndexSet(integer: 0))
+                    collectionView.performBatchUpdates({
+                        collectionView.reloadData()
+                        // collectionView.reloadSections(IndexSet(integer: 0))
+                    }, completion: nil)
+                    // collectionView.layoutIfNeeded()
                 }
             }
         }
@@ -164,11 +189,32 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCarouselCell", for: indexPath) as! categoryCarouselCell
-        
+        cell.amountLabel.isHidden = false
         cell.subLabel.text = (categoryData[indexPath.row][0] as? String ?? "")
         cell.outlineView.backgroundColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue)
         cell.outlineView.layer.borderColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue).cgColor
-        cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][2] as? Double ?? 0.00))
+        cell.outlineView.layer.borderWidth = 1.0
+        if selectedCategoryTimeRange == 0 && activeBudget {
+            if categoryData[indexPath.row][6] as? Bool ?? false {
+                let amount = ((categoryData[indexPath.row][2] as? Double ?? 0.00) / (categoryData[indexPath.row][5] as? Double ?? 0.00)) * 100
+                cell.amountLabel.text = (numberFormatterPercent.string(from: NSNumber(value: amount)) ?? "") + " %"
+            } else {
+                cell.amountLabel.text = (numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][2] as? Double ?? 0.00)) ?? "") + " / " + (numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][5] as? Double ?? 0.00)) ?? "")
+            }
+            if (!(categoryData[indexPath.row][3] as? Bool ?? false) && !(categoryData[indexPath.row][4] as? Bool ?? false)) && ((categoryData[indexPath.row][2] as? Double ?? 0.00) > (categoryData[indexPath.row][5] as? Double ?? 0.00)) {
+                cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body).bold()
+                cell.outlineView.layer.borderWidth = 2.0
+            } else if ((categoryData[indexPath.row][3] as? Bool ?? false) || (categoryData[indexPath.row][4] as? Bool ?? false)) && (categoryData[indexPath.row][2] as? Double ?? 0.00) < (categoryData[indexPath.row][5] as? Double ?? 0.00) {
+                cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body).bold()
+                cell.outlineView.layer.borderWidth = 2.0
+            } else {
+                cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
+            }
+        } else {
+            cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][2] as? Double ?? 0.00))
+            cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        }
+        
         
         let userInterfaceStyle = traitCollection.userInterfaceStyle
         if userInterfaceStyle == .light {
@@ -208,16 +254,70 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) as? categoryCarouselCell {
-            UIView.animate(withDuration: 0.1, animations: {
-                cell.transform = self.transform.scaledBy(x: 0.92, y: 0.92)
-                }, completion: { _ in
-                  // Step 2
-                  UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform.identity
-                  }, completion: { _ in
-                    self.Delegate?.switchToListPressed()
-                  })
-                })
+            if selectedCategoryTimeRange == 0 && activeBudget {
+                self.categoryData[indexPath.row][6] = !(self.categoryData[indexPath.row][6] as? Bool ?? false)
+                
+                var reload = [IndexPath]()
+                for i in 0...categoryData.count-1 {
+                    reload.append(IndexPath(row: i, section: 0))
+                }
+                
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = self.transform.scaledBy(x: 0.92, y: 0.92)
+                    }, completion: { _ in
+                      // Step 2
+                      UIView.animate(withDuration: 0.1, animations: {
+                        cell.transform = CGAffineTransform.identity
+                      }, completion: { _ in
+                        cell.amountLabel.isHidden = true
+                        //self.collectionView.performBatchUpdates({
+                        // self.collectionView.reloadData()
+                        // self.collectionView.reloadSections(IndexSet(integer: 0))
+                        UIView.animate(withDuration: 0.01, delay: 0.0, options: .curveLinear, animations: {
+                            self.collectionView.alpha = 0.99
+                            self.collectionView.performBatchUpdates({
+                                self.collectionView.reloadItems(at: reload)
+                            }, completion: {_ in
+                                UIView.animate(withDuration: 0.01, delay: 0.0, options: .curveLinear, animations: {
+                                    self.collectionView.alpha = 1.0
+                                }, completion: {_ in
+                                    self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+                                })
+//                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: {
+//
+//                                })
+                            })
+                        })
+                        
+                        
+                            // self.collectionView.reloadItems(at: [indexPath])
+                            // DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: {
+                            //    self.collectionView.reloadItems(at: [indexPath])
+                            // })
+                            // self.collectionView.reloadData()
+                            // if self.categoryData[indexPath.row][6] as? Bool ?? false {
+                            //    let amount = ((self.categoryData[indexPath.row][2] as? Double ?? 0.00) / (self.categoryData[indexPath.row][5] as? Double ?? 0.00)) * 100
+                            //    cell.amountLabel.text = (self.numberFormatterPercent.string(from: NSNumber(value: amount)) ?? "") + " %"
+                            // } else {
+                            //    cell.amountLabel.text = (self.numberFormatter.string(from: NSNumber(value: self.categoryData[indexPath.row][2] as? Double ?? 0.00)) ?? "") + " / " + (self.numberFormatter.string(from: NSNumber(value: self.categoryData[indexPath.row][5] as? Double ?? 0.00)) ?? "")
+                            // }
+                        // cell.amountLabel.isHidden = false
+                        // self.collectionView.layoutIfNeeded()
+                        //})
+                      })
+                    })
+            } else {
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = self.transform.scaledBy(x: 0.92, y: 0.92)
+                    }, completion: { _ in
+                      // Step 2
+                      UIView.animate(withDuration: 0.1, animations: {
+                        cell.transform = CGAffineTransform.identity
+                      }, completion: { _ in
+                        self.Delegate?.switchToListPressed()
+                      })
+                    })
+            }
         }
     }
     
@@ -332,5 +432,20 @@ extension cellCategoriesOverview {
             print("Could not fetch. \(error)")
         }
         return false
+    }
+}
+
+extension UIFont {
+    func withTraits(traits:UIFontDescriptor.SymbolicTraits) -> UIFont {
+        let descriptor = fontDescriptor.withSymbolicTraits(traits)
+        return UIFont(descriptor: descriptor!, size: 0) //size 0 means keep the size as it is
+    }
+
+    func bold() -> UIFont {
+        return withTraits(traits: .traitBold)
+    }
+
+    func italic() -> UIFont {
+        return withTraits(traits: .traitItalic)
     }
 }

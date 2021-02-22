@@ -33,11 +33,6 @@ class finTVC: UITableViewController {
         super.viewDidLoad()
         (self.tabBarController as? tabController)?.previousIndex = 0
         
-//        saveInitialTransaction(amount: 100.0, descriptionNote: "INITIAL BALANCE", isSave: false)
-        
-//        print("lfjsdlfjdsfds")
-//        print(loadBulkQueried(entitie: "Transactions", query: NSPredicate(format: "dateTime == nil")))
-        
         // Init Data
         initSettingsAndData()
         
@@ -99,9 +94,7 @@ class finTVC: UITableViewController {
                 }
                 
                 if numberSegments == 2 && cell.stackView.arrangedSubviews.count == 4 {
-    //                print(cell.stackView.arrangedSubviews)
                     cell.stackView.arrangedSubviews[3].removeFromSuperview()
-    //                print(cell.stackView.arrangedSubviews)
                 } else if numberSegments == 3 && cell.stackView.arrangedSubviews.count == 3 {
                     let label = UILabel()
                     
@@ -117,12 +110,8 @@ class finTVC: UITableViewController {
                         label.alpha = 0.3
                     }
                     label.tag = 3
-                    print("fljsdafjsdljlksa")
                     cell.stackView.addArrangedSubview(label)
                 }
-//                cell.initSelectedCell(selectedIndex: self.selectedSecond)
-                print(cell.stackView.arrangedSubviews)
-                print("fdfjfjjfjfjjjjjjjj")
                 cell.initSelectedCell(selectedIndex: self.selectedSecond)
             }
         }
@@ -136,12 +125,12 @@ class finTVC: UITableViewController {
                 numberSegments = 3
             } else if selectedSecond >= 3 {
                 selectedSecond = 2
+                let nc = NotificationCenter.default
+                nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": self.selectedSecond, "selectedCell": 3])
             }
             
             if numberSegments == 2 && cell.stackView.arrangedSubviews.count == 4 {
-//                print(cell.stackView.arrangedSubviews)
                 cell.stackView.arrangedSubviews[3].removeFromSuperview()
-//                print(cell.stackView.arrangedSubviews)
             } else if numberSegments == 3 && cell.stackView.arrangedSubviews.count == 3 {
                 let label = UILabel()
                 
@@ -157,11 +146,9 @@ class finTVC: UITableViewController {
                     label.alpha = 0.3
                 }
                 label.tag = 3
-                print("fljsdafjsdljlksa")
                 cell.stackView.addArrangedSubview(label)
             }
             cell.initSelectedCell(selectedIndex: self.selectedSecond)
-            print(cell.stackView.arrangedSubviews)
         }
         if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
             cell.setLargeStackTrailingConstraint()
@@ -312,6 +299,8 @@ class finTVC: UITableViewController {
             cell.latestTransactionStackView.addGestureRecognizer(tabRecongnizer)
         }
         
+        //cell.outlineView.dropShadow()
+        
         return cell
     }
     
@@ -366,9 +355,7 @@ class finTVC: UITableViewController {
             } else if selectedSecond >= 3 {
                 selectedSecond = 2
             }
-            
-            print("ljksdafjdsöfdjsfö")
-            
+                        
             for i in 0...numberSegments {
                 var textString = ""
                 if activeBudget {
@@ -584,13 +571,13 @@ class finTVC: UITableViewController {
             expensesIDsArray.append(expense.value(forKey: "cID") as? Int16 ?? 0)
         }
         
-        var queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
+        var queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND isLiquid == true AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
         if selectedSecond == 0 && activeBudget { // Budget
   
         } else if (selectedSecond == 1 && !activeBudget) || (selectedSecond == 2 && activeBudget) { // Year
             fromDate = Date().startOfYear
             toDate = Date().endOfYear
-            queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
+            queryPieChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@ AND isLiquid == true AND categoryID IN %@", fromDate as NSDate, toDate as NSDate, expensesIDsArray)
         } else if (selectedSecond == 2 && !activeBudget) || (selectedSecond == 3 && activeBudget) { // Total
             queryPieChart = NSPredicate(format: "categoryID IN %@", expensesIDsArray)
         }
@@ -603,9 +590,11 @@ class finTVC: UITableViewController {
             for i in 0...((data?.count ?? 1)-1) {
                 let queryCategory = NSPredicate(format: "cID == %i", (data?[i]["categoryID"] as? Int16 ?? 0))
                 if selectedSecond == 0 && activeBudget {
-                    if !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false) {
+                    if !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false) && (loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00 > 0.00) {
                         sumSpent = sumSpent + (data?[i]["sum"] as? Double ?? 0.00)
                         sumBudget = sumBudget + (loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00)
+                    } else {
+                        continue
                     }
                 } else {
                     entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
@@ -613,6 +602,7 @@ class finTVC: UITableViewController {
                 }
             }
         }
+        
         if selectedSecond == 0 && activeBudget {
             entries.append(PieChartDataEntry(value: sumSpent, label: "Spent"))
             colors.append(.red)
@@ -1555,5 +1545,17 @@ extension finTVC {
             print("Could not fetch. \(error)")
         }
         return [NSManagedObject]()
+    }
+}
+
+extension UIView {
+    func dropShadow(scale: Bool = true) {
+        layer.masksToBounds = false
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.2
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 1
+        layer.shouldRasterize = true
+        layer.rasterizationScale = scale ? UIScreen.main.scale : 1
     }
 }

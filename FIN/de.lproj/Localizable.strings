@@ -493,6 +493,12 @@
 "categoryInitialInfoTitle" = "Information";
 "categoryInitialInfoText" = "Sie können diesen Betrag verwenden, um eine ursprüngliche Kontohöhe zu definieren, oder um Ihr Saldo zu korrigieren. Dieser Wert wird nur zur Berechnung von Gesamtbeträgen verwendet.";
 
+// Set Icon
+"setIcon" = "Icon festlegen";
+"previewIcon" = "Vorschau";
+"lightColorIcon" = "hell";
+"setIconButton" = "Fertig";
+
 // #### CURRENCY ####
 // Country Names
 "AF"="Afghanistan";

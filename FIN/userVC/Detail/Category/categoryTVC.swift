@@ -151,6 +151,9 @@ class categoryTVC: UITableViewController {
             }
             cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: true, light: false)
             
+            let tabRecongnizer = UITapGestureRecognizer(target: self, action: #selector(openIconPicker))
+            cell.circleView.addGestureRecognizer(tabRecongnizer)
+            
             cell.delegate = self
             return cell
         }
@@ -314,6 +317,24 @@ class categoryTVC: UITableViewController {
             
             let querySave = NSPredicate(format: "cID == %i", savingsSorted[i].cID)
             saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
+        }
+    }
+    
+    @objc func openIconPicker() {
+        if let cell = categoryTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellCategoryMain {
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.circleView.transform = cell.circleView.transform.scaledBy(x: 0.96, y: 0.96)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.1, animations: {
+                    cell.circleView.transform = CGAffineTransform.identity
+                }, completion: { _ in
+                    let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
+                    let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
+                
+                    let navigationVC = UINavigationController(rootViewController: iconTVC)
+                    self.present(navigationVC, animated: true, completion: nil)
+                })
+            })
         }
     }
     

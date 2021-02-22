@@ -53,7 +53,7 @@ class cellCategoryMain: UITableViewCell, UITextFieldDelegate {
         categoryTypeSegmentControl.setTitle(NSLocalizedString("categoryExpenseSegmentTitle", comment: "Expense"), forSegmentAt: 0)
         categoryTypeSegmentControl.setTitle(NSLocalizedString("categoryIncomeSegmentTitle", comment: "Income"), forSegmentAt: 1)
         
-        circleView.layer.cornerRadius = circleView.bounds.size.width/2
+        circleView.layer.cornerRadius = 10//circleView.bounds.size.width/2
         circleView.clipsToBounds = true
         
         circleView.layer.borderWidth = 1

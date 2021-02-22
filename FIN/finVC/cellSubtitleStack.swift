@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class cellSubtitleStack: UITableViewCell {
 
@@ -26,9 +27,11 @@ class cellSubtitleStack: UITableViewCell {
     
     let nc = NotificationCenter.default
     
+    var activeBudget = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        activeBudget = loadIfBudget()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -174,7 +177,7 @@ class cellSubtitleStack: UITableViewCell {
     }
     
     @objc func handleRightSwipe() {
-        if selectedLabel < 2 {
+        if (!activeBudget && selectedLabel < 2) || (activeBudget && selectedLabel < 3) {
             let selectedNew = selectedLabel + 1
             if let label = stackView.arrangedSubviews[selectedNew] as? UILabel {
                 nc.post(name: Notification.Name("finVCCategoyTimeRangeChanged"), object: nil, userInfo: ["selectedLabel": selectedNew, "selectedCell": self.tag])
@@ -204,5 +207,28 @@ class cellSubtitleStack: UITableViewCell {
                 })
             }
         }
+    }
+    
+    // -MARK: Data
+    func loadIfBudget() -> Bool {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let managedContext = appDelegate!.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+        fetchRequest.fetchLimit = 1
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return true
+            } else {
+                return false
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
     }
 }

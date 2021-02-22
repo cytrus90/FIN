@@ -62,6 +62,12 @@
 		175F082F24DDDCDD00028DF9 /* searchBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 175F082E24DDDCDD00028DF9 /* searchBar.xib */; };
 		175F083124DDDEBE00028DF9 /* searchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175F083024DDDEBE00028DF9 /* searchBar.swift */; };
 		17625E2A25A1CAE8002CAF2F /* localNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17625E2925A1CAE8002CAF2F /* localNotificationManager.swift */; };
+		17686ADF25DFCAE1007ACD53 /* iconPickerTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17686ADE25DFCAE1007ACD53 /* iconPickerTVC.swift */; };
+		17686AE325DFCB3C007ACD53 /* cellCategoryIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17686AE225DFCB3C007ACD53 /* cellCategoryIcons.swift */; };
+		17686AE625DFCC5A007ACD53 /* iconCarouselCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17686AE525DFCC5A007ACD53 /* iconCarouselCell.xib */; };
+		17686AE925DFCD30007ACD53 /* iconCarouselCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17686AE825DFCD30007ACD53 /* iconCarouselCell.swift */; };
+		17686AED25E40FBF007ACD53 /* iconsBlack.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17686AEC25E40FBF007ACD53 /* iconsBlack.xcassets */; };
+		17686AF025E40FD0007ACD53 /* iconsWhite.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17686AEF25E40FD0007ACD53 /* iconsWhite.xcassets */; };
 		1783A7D825921481005F64BE /* cellImportOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1783A7D725921481005F64BE /* cellImportOptions.swift */; };
 		1786C4AF24A103B000FE36E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1786C4AE24A103B000FE36E5 /* AppDelegate.swift */; };
 		1786C4B124A103B000FE36E5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1786C4B024A103B000FE36E5 /* SceneDelegate.swift */; };
@@ -207,6 +213,12 @@
 		175F083024DDDEBE00028DF9 /* searchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchBar.swift; sourceTree = "<group>"; };
 		17620DAC24C239F00088DCC5 /* libTagListView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libTagListView.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17625E2925A1CAE8002CAF2F /* localNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = localNotificationManager.swift; sourceTree = "<group>"; };
+		17686ADE25DFCAE1007ACD53 /* iconPickerTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconPickerTVC.swift; sourceTree = "<group>"; };
+		17686AE225DFCB3C007ACD53 /* cellCategoryIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellCategoryIcons.swift; sourceTree = "<group>"; };
+		17686AE525DFCC5A007ACD53 /* iconCarouselCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = iconCarouselCell.xib; sourceTree = "<group>"; };
+		17686AE825DFCD30007ACD53 /* iconCarouselCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconCarouselCell.swift; sourceTree = "<group>"; };
+		17686AEC25E40FBF007ACD53 /* iconsBlack.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iconsBlack.xcassets; sourceTree = "<group>"; };
+		17686AEF25E40FD0007ACD53 /* iconsWhite.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iconsWhite.xcassets; sourceTree = "<group>"; };
 		1783A7D725921481005F64BE /* cellImportOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellImportOptions.swift; sourceTree = "<group>"; };
 		1786C4AB24A103B000FE36E5 /* FIN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FIN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1786C4AE24A103B000FE36E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -411,6 +423,7 @@
 				17F7D8ED24D2F886009FF599 /* Category */,
 				17AF201924BE45EE00223931 /* Passcode */,
 				17CA4502258F713F007525DC /* Import+Export */,
+				17686ADC25DFCAAC007ACD53 /* IconPicker */,
 				17B3E05625D503F7007A4182 /* XIBs */,
 			);
 			path = Detail;
@@ -436,6 +449,15 @@
 				17117DE325751D2C001A143E /* cellDetailGeneralTVC.swift */,
 			);
 			path = Detail;
+			sourceTree = "<group>";
+		};
+		17686ADC25DFCAAC007ACD53 /* IconPicker */ = {
+			isa = PBXGroup;
+			children = (
+				17686ADE25DFCAE1007ACD53 /* iconPickerTVC.swift */,
+				17686AE225DFCB3C007ACD53 /* cellCategoryIcons.swift */,
+			);
+			path = IconPicker;
 			sourceTree = "<group>";
 		};
 		1786C4A224A103B000FE36E5 = {
@@ -475,6 +497,8 @@
 				1706D62424B7A0DC0053A91A /* XIBs */,
 				171338A524A5C6B40075189B /* Localizable.strings */,
 				1786C4BA24A103B100FE36E5 /* Assets.xcassets */,
+				17686AEC25E40FBF007ACD53 /* iconsBlack.xcassets */,
+				17686AEF25E40FD0007ACD53 /* iconsWhite.xcassets */,
 				1786C4BC24A103B100FE36E5 /* LaunchScreen.storyboard */,
 				1786C4BF24A103B100FE36E5 /* Info.plist */,
 				1786C4B724A103B000FE36E5 /* FIN.xcdatamodeld */,
@@ -560,6 +584,8 @@
 		17B3E05625D503F7007A4182 /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
+				17686AE525DFCC5A007ACD53 /* iconCarouselCell.xib */,
+				17686AE825DFCD30007ACD53 /* iconCarouselCell.swift */,
 				17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */,
 				17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */,
 			);
@@ -825,12 +851,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				17BA4A5E24C713D200AB800A /* finTSB.storyboard in Resources */,
+				17686AF025E40FD0007ACD53 /* iconsWhite.xcassets in Resources */,
 				17C30A0424CC0CAB00573E19 /* currencies.csv in Resources */,
 				17B3E05825D5048E007A4182 /* categoriesBottomBar.xib in Resources */,
 				1786C4BE24A103B100FE36E5 /* LaunchScreen.storyboard in Resources */,
 				173779D624B71C9C00BED279 /* headerView.xib in Resources */,
+				17686AE625DFCC5A007ACD53 /* iconCarouselCell.xib in Resources */,
 				17F6BCBE2596299A006A4B38 /* graphsTSB.storyboard in Resources */,
 				171338A324A5C6B40075189B /* Localizable.strings in Resources */,
+				17686AED25E40FBF007ACD53 /* iconsBlack.xcassets in Resources */,
 				17A8CDFE24BB4753003A2E39 /* userTSB.storyboard in Resources */,
 				17FD186024CF3F3000E727D0 /* currency_table.csv in Resources */,
 				17F7D90024DAFFA8009FF599 /* listTSB.storyboard in Resources */,
@@ -963,6 +992,7 @@
 				173C1402257E0C25002BAE68 /* cellSettleSplitTVC.swift in Sources */,
 				17F6BD632597B6AA006A4B38 /* graphSettingsTVC.swift in Sources */,
 				17F7D8F524D3051C009FF599 /* cellCategoryColor.swift in Sources */,
+				17686AE325DFCB3C007ACD53 /* cellCategoryIcons.swift in Sources */,
 				171338A024A5C2990075189B /* tabControllerVC.swift in Sources */,
 				17A4B40D2520EF5F00EBEBDB /* cellSplitAddNewSelect.swift in Sources */,
 				171ADE172593BA6200382710 /* timer.swift in Sources */,
@@ -978,6 +1008,7 @@
 				173AE5AB25A49A9E00D8F7D2 /* cellTopOverview.swift in Sources */,
 				17AF202224C01DBB00223931 /* balanceView.swift in Sources */,
 				1797D29525BED6EC00D6E42D /* introVC.swift in Sources */,
+				17686ADF25DFCAE1007ACD53 /* iconPickerTVC.swift in Sources */,
 				17ACD20825B0936E0018BC38 /* PKIAHandler.swift in Sources */,
 				17A4B40A2520EF4000EBEBDB /* cellSplitAddNewMain.swift in Sources */,
 				1722B17D2500BE5800DE302C /* cellListDetail.swift in Sources */,
@@ -992,6 +1023,7 @@
 				1786C4B124A103B000FE36E5 /* SceneDelegate.swift in Sources */,
 				17A4B4062520EF1A00EBEBDB /* splitAddNewTVC.swift in Sources */,
 				17CA450B258F8E66007525DC /* cellImportStartButton.swift in Sources */,
+				17686AE925DFCD30007ACD53 /* iconCarouselCell.swift in Sources */,
 				17A5DC0124E0825B001D0494 /* cellListEntry.swift in Sources */,
 				17F7D8F324D2F906009FF599 /* cellCategoryAdd.swift in Sources */,
 				1783A7D825921481005F64BE /* cellImportOptions.swift in Sources */,

@@ -491,6 +491,12 @@
 "categoryInitialInfoTitle" = "Info";
 "categoryInitialInfoText" = "You can use this to set a starting value or to correct your balance, if you cannot recall an expense. This amount is only used to calculate the overall balance and amount in savings accounts.";
 
+// Set Icon
+"setIcon" = "Set icon";
+"previewIcon" = "Preview";
+"lightColorIcon" = "Light";
+"setIconButton" = "Set";
+
 // #### CURRENCY ####
 // Country Names
 "AF"="Afghanistan";

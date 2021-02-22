@@ -15,6 +15,8 @@ class cellListEntry: UITableViewCell {
     @IBOutlet weak var circleView: UIView!
     @IBOutlet weak var circleLabel: UILabel!
     
+    @IBOutlet weak var circleImage: UIImageView!
+    
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var amountLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
@@ -50,7 +52,7 @@ class cellListEntry: UITableViewCell {
             outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
         
-        circleView.layer.cornerRadius = circleView.bounds.size.width/2
+        circleView.layer.cornerRadius = 10//circleView.bounds.size.width/2
         circleView.clipsToBounds = true
         
         circleView.layer.borderWidth = 1

@@ -84,12 +84,12 @@ class cellSettleSplitTVC: UITableViewCell, UITextFieldDelegate {
             currencyButton.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 0.6)
         }
         
-        leftCircleView.layer.cornerRadius = leftCircleView.bounds.size.width/2
+        leftCircleView.layer.cornerRadius = 10//leftCircleView.bounds.size.width/2
         leftCircleView.clipsToBounds = true
         
         leftCircleView.layer.borderWidth = 1
         
-        rightCircleView.layer.cornerRadius = leftCircleView.bounds.size.width/2
+        rightCircleView.layer.cornerRadius = 10//leftCircleView.bounds.size.width/2
         rightCircleView.clipsToBounds = true
         
         rightCircleView.layer.borderWidth = 1
