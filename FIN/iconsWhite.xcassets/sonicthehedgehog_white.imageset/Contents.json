@@ -1,0 +1,23 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "sonicthehedgehog_white@1x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "sonicthehedgehog_white@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "sonicthehedgehog_white@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

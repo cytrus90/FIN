@@ -22,15 +22,23 @@ class iconPickerTVC: UITableViewController {
     var viewDisappear = false
     
     var selectedColor:Int16 = 1
-    var selectedIcon:String = "alpakaLogoWhite"
+    var selectedIcon:String = ""
     var selectedLabelText = NSLocalizedString("previewIcon", comment: "Preview")
-    var light = false
+    var light = true
+    
+    var selectedType = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.title = ""
         
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
+        
+        selectedIcon = selectedIcon.replacingOccurrences(of: "_white", with: "")
+        if light {
+            selectedIcon = selectedIcon + "_white"
+        }
         initView()
     }
     
@@ -93,8 +101,9 @@ class iconPickerTVC: UITableViewController {
         case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as! cellAddTVC
             cell.addButton.setTitle(NSLocalizedString("setIconButton", comment: "setIcon"), for: .normal)
+            cell.delegate = self
             return cell
-        case 3:
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategorySave", for: indexPath) as! cellCategorySave
             cell.saveLabel.text = NSLocalizedString("lightColorIcon", comment: "light")
             cell.saveSwitch.isOn = light
@@ -102,18 +111,22 @@ class iconPickerTVC: UITableViewController {
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryIcons", for: indexPath) as! cellCategoryIcons
+            cell.selectedLabelText = selectedLabelText
+            cell.setSelectedIcon(selectedIconToSet:selectedIcon)
+            cell.initView()
             cell.delegate = self
             return cell
-        case 1:
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryColor", for: indexPath) as! cellCategoryColor
             cell.colorPickerView.preselectedIndex = Int(selectedColor)
             cell.delegate = self
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellListEntry", for: indexPath) as! cellListEntry
-            cell.descriptionLabel.text = NSLocalizedString("previewIcon", comment: "Preview")
             
-            if selectedLabelText.count <= 0 {
+            cell.descriptionLabel.text = selectedLabelText
+            
+            if selectedIcon.count > 0 {
                 cell.circleLabel.isHidden = true
                 cell.circleImage.isHidden = false
                 cell.circleImage.image = UIImage(named: selectedIcon)
@@ -124,6 +137,11 @@ class iconPickerTVC: UITableViewController {
                     cell.circleLabel.text = selectedLabelText.prefix(1).uppercased()
                 } else {
                     cell.circleLabel.text = selectedLabelText.prefix(2).uppercased()
+                }
+                if light {
+                    cell.circleLabel.textColor = .white
+                } else {
+                    cell.circleLabel.textColor = .black
                 }
             }
             
@@ -176,6 +194,10 @@ class iconPickerTVC: UITableViewController {
         )
     }
     
+    @objc func dismissViewController() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     /*
     // MARK: - Navigation
 
@@ -186,6 +208,20 @@ class iconPickerTVC: UITableViewController {
     }
     */
 
+}
+
+extension iconPickerTVC: cellAddPressedDelegate {
+    func addPressed() {
+        let nc = NotificationCenter.default
+        switch selectedType {
+        case 1:
+            break
+        default: // 0: Category
+            nc.post(name: Notification.Name("categoryIconChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light])
+            break
+        }
+        dismissViewController()
+    }
 }
 
 extension iconPickerTVC: cellCategoryColorDelegate {
@@ -201,13 +237,24 @@ extension iconPickerTVC: cellCategoryColorDelegate {
 extension iconPickerTVC: cellCategorySaveDelegate {
     func saveSwitchChanged(newState:Bool) {
         light = newState
+        selectedIcon = selectedIcon.replacingOccurrences(of: "_white", with: "")
+        if light && selectedIcon.count > 0 {
+            selectedIcon = selectedIcon + "_white"
+        }
+        iconTable.beginUpdates()
+        iconTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        iconTable.endUpdates()
     }
 }
 
 extension iconPickerTVC: cellCategoryIconsDelegate {
     func iconSelected(selectedName:String) {
-        if selectedName.count > 0 {
-            selectedIcon = selectedName
+        let selectedNameEdited = selectedName.replacingOccurrences(of: "_white", with: "")
+        if selectedNameEdited.count > 0 {
+            selectedIcon = selectedNameEdited
+            if light && selectedIcon.count > 0 {
+                selectedIcon = selectedIcon + "_white"
+            }
             if let cell = iconTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellListEntry {
                 cell.circleImage.image = UIImage(named: selectedIcon)
                 cell.circleImage.isHidden = false
@@ -222,6 +269,11 @@ extension iconPickerTVC: cellCategoryIconsDelegate {
                     cell.circleLabel.text = selectedLabelText.prefix(1).uppercased()
                 } else {
                     cell.circleLabel.text = selectedLabelText.prefix(2).uppercased()
+                }
+                if light {
+                    cell.circleLabel.textColor = .white
+                } else {
+                    cell.circleLabel.textColor = .black
                 }
             }
         }

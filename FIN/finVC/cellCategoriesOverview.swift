@@ -34,6 +34,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         var isSave:Bool
         var isIncome:Bool
         var order:Int16
+        var icon:String
+        var light:Bool
     }
     
     var activeBudget = false
@@ -105,6 +107,9 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 let isIncome = category.value(forKey: "isIncome") as? Bool ?? false
                 let isSave = category.value(forKey: "isSave") as? Bool ?? false
                 
+                let icon = category.value(forKey: "icon") as? String ?? ""
+                let light = category.value(forKey: "iconLight") as? Bool ?? true
+                
                 let querySum = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@ AND dateTime != nil AND categoryID == %i AND isLiquid == true", fromDateTime as NSDate, toDateTime as NSDate, category.value(forKey: "cID") as? Int16 ?? -2)
                 let groupedSUM = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySum) as? [[String:Any]]
                 if (groupedSUM?.count ?? 0) > 0 {
@@ -117,14 +122,18 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
 //                        }
                     }
                 }
+                
                 categoryStructData.append(categoryEntry(
-                                            name: category.value(forKey: "name") as? String ?? "",
-                                            color: category.value(forKey: "color") as? Int16 ?? 0,
+                                            name: (category.value(forKey: "name") as? String ?? ""),
+                                            color: (category.value(forKey: "color") as? Int16 ?? 0),
                                             sum: sum,
                                             budget: budget,
                                             isSave: isSave,
                                             isIncome: isIncome,
-                                            order: category.value(forKey: "order") as? Int16 ?? 0))
+                                            order: (category.value(forKey: "order") as? Int16 ?? 0),
+                                            icon: icon,
+                                            light: light
+                                          ))
             }
         } else {
             let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
@@ -137,7 +146,9 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                             sum: (groupedData?[i]["sum"] as? Double ?? 0.00),
                             isSave: (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false),
                             isIncome: (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false),
-                            order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0)))
+                            order: (loadQueriedAttribute(entitie: "Categories", attibute: "order", query: queryCategory) as? Int16 ?? 0),
+                            icon: ((loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? "")),
+                            light: (loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? false)))
                 }
             }
         }
@@ -153,7 +164,9 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 3:category.isSave,
                 4:category.isIncome,
                 5:category.budget ?? 0.00,
-                6:true // Show percent
+                6:true, // Show percent
+                7:category.icon,
+                8:category.light
             ] as [Int:Any]
             categoryData.append(ramDict)
         }
@@ -215,40 +228,42 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
             cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
         }
         
-        
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        if userInterfaceStyle == .light {
-            cell.amountLabel.textColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: true, light: false)
-            cell.subLabel.textColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: true, light: false)
-        } else {
+        if (categoryData[indexPath.row][8] as? Bool ?? true) {
             cell.amountLabel.textColor = .white
             cell.subLabel.textColor = .white
+        } else {
+            cell.amountLabel.textColor = .black
+            cell.subLabel.textColor = .black
+        }
+
+        if (categoryData[indexPath.row][7] as? String ?? "").count > 0 {
+            var selectedIcon = (categoryData[indexPath.row][7] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (categoryData[indexPath.row][8] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            cell.icon.image = UIImage(named: selectedIcon)
+        } else {
+            if (categoryData[indexPath.row][3] as? Bool ?? false) { // isSave
+                if !(categoryData[indexPath.row][8] as? Bool ?? true) {
+                    cell.icon.image = UIImage(named: "safeBlack")
+                } else {
+                    cell.icon.image = UIImage(named: "safeWhite")
+                }
+            } else if (categoryData[indexPath.row][4] as? Bool ?? false) { // isIncome
+                if !(categoryData[indexPath.row][8] as? Bool ?? true) {
+                    cell.icon.image = UIImage(named: "iconPlusBlack")
+                } else {
+                    cell.icon.image = UIImage(named: "iconPlusWhite")
+                }
+            } else { // isExpense
+                if !(categoryData[indexPath.row][8] as? Bool ?? true) {
+                    cell.icon.image = UIImage(named: "iconMinusBlack")
+                } else {
+                    cell.icon.image = UIImage(named: "iconMinusWhite")
+                }
+            }
         }
         
-        var iconBlack:Bool = true
-        if UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: true, light: false) == .white || userInterfaceStyle == .dark {
-            iconBlack = false
-        }
-        
-        if (categoryData[indexPath.row][3] as? Bool ?? false) { // isSave
-            if iconBlack {
-                cell.icon.image = UIImage(named: "safeBlack")
-            } else {
-                cell.icon.image = UIImage(named: "safeWhite")
-            }
-        } else if (categoryData[indexPath.row][4] as? Bool ?? false) { // isIncome
-            if iconBlack {
-                cell.icon.image = UIImage(named: "iconPlusBlack")
-            } else {
-                cell.icon.image = UIImage(named: "iconPlusWhite")
-            }
-        } else { // isExpense
-            if iconBlack {
-                cell.icon.image = UIImage(named: "iconMinusBlack")
-            } else {
-                cell.icon.image = UIImage(named: "iconMinusWhite")
-            }
-        }
         return cell
     }
     

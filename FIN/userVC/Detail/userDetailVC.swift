@@ -498,7 +498,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         4:expense.value(forKey: "isIncome") as? Bool ?? false,
                         5:expense.value(forKey: "isSave") as? Bool ?? false,
                         6:j,
-                        7:i
+                        7:i,
+                        8:expense.value(forKey: "icon") as? String ?? "",
+                        10:expense.value(forKey: "iconLight") as? Bool ?? true
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
@@ -539,7 +541,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         4:income.value(forKey: "isIncome") as? Bool ?? true,
                         5:income.value(forKey: "isSave") as? Bool ?? false,
                         6:j,
-                        7:i
+                        7:i,
+                        8:income.value(forKey: "icon") as? String ?? "",
+                        10:income.value(forKey: "iconLight") as? Bool ?? true
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
@@ -580,7 +584,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         4:save.value(forKey: "isIncome") as? Bool ?? false,
                         5:save.value(forKey: "isSave") as? Bool ?? true,
                         6:j,
-                        7:i
+                        7:i,
+                        8:save.value(forKey: "icon") as? String ?? "",
+                        10:save.value(forKey: "iconLight") as? Bool ?? true
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
@@ -612,7 +618,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         4:save.value(forKey: "isIncome") as? Bool ?? false,
                         5:save.value(forKey: "isSave") as? Bool ?? true,
                         6:j,
-                        7:i
+                        7:i,
+                        8:save.value(forKey: "icon") as? String ?? "",
+                        10:save.value(forKey: "iconLight") as? Bool ?? true
                     ] as [Int : Any]
                     userDetailCells[i] = dictRAM
                     i = i + 1
@@ -831,22 +839,44 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         if dict?[5] as? Bool ?? false {
             cell.cellBottomIcon.isHidden = true
-//            cell.cellTopIcon.image = UIImage(named: "safe")?.withRenderingMode(.alwaysTemplate)
-//            if dict?[4] as? Bool ?? false {
-//                cell.cellBottomIcon.image = UIImage(systemName: "arrow.down")
-//            } else {
-//                cell.cellBottomIcon.image = UIImage(systemName: "arrow.up")
-//            }
             if light {
                 cell.cellTopIcon.image = UIImage(named: "safeBlack")?.withRenderingMode(.alwaysTemplate)
             } else {
                 cell.cellTopIcon.image = UIImage(named: "safeWhite")?.withRenderingMode(.alwaysTemplate)
             }
-//            cell.cellTopIcon.image = UIImage(named: "safe")?.withRenderingMode(.alwaysTemplate)
         } else {
             cell.cellBottomIcon.isHidden = true
         }
-        cell.cellOutlineView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
+        // cell.cellOutlineView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
+         
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light)
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
+        
+        if (dict?[8] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIconString = (dict?[8] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (dict?[10] as? Bool ?? true) {
+                selectedIconString = selectedIconString + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIconString)
+        } else {
+            cell.circleImage.isHidden = true
+            cell.circleLabel.isHidden = false
+            
+            if (dict?[1] as? String)?.count == 1 {
+                cell.circleLabel.text = (dict?[1] as? String)?.prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = (dict?[1] as? String)?.prefix(2).uppercased()
+            }
+            if (dict?[10] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
+        }
         
         if !UIDevice().model.contains("iPad") {
             let interaction = UIContextMenuInteraction(delegate: self)
@@ -1134,7 +1164,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func addCategoryTabbed() {
-        if showAdds {
+        if !showAdds {
             let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)

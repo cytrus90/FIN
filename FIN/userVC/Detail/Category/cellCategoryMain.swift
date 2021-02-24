@@ -17,6 +17,8 @@ class cellCategoryMain: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var circleView: UIView!
     @IBOutlet weak var circleLabel: UILabel!
     
+    @IBOutlet weak var circleImage: UIImageView!
+    
     weak var delegate: cellCategoryMainDelegate?
     
     override func awakeFromNib() {

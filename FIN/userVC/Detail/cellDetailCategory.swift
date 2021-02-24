@@ -19,6 +19,10 @@ class cellDetailCategory: UITableViewCell {
     
     @IBOutlet weak var cellRightArrow: UIImageView!
     
+    @IBOutlet weak var circleView: UIView!
+    @IBOutlet weak var circleLabel: UILabel!
+    @IBOutlet weak var circleImage: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -40,9 +44,15 @@ class cellDetailCategory: UITableViewCell {
         if userInterfaceStyle == .light {
 //            self.backgroundColor = backgroundGeneralColor
             cellOutlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+            
         } else {
 //            backgroundColor = .secondarySystemBackground
             cellOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
+        
+        circleView.layer.cornerRadius = 10//circleView.bounds.size.width/2
+        circleView.clipsToBounds = true
+        
+        circleView.layer.borderWidth = 1
     }
 }

@@ -37,6 +37,8 @@ class categoryTVC: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
+        NotificationCenter.default.addObserver(self, selector: #selector(categoryIconChanges(notification:)), name: Notification.Name("categoryIconChanges"), object: nil)
+        
         amountFormatter.locale = .current
         amountFormatter.numberStyle = .currency
         
@@ -61,7 +63,7 @@ class categoryTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        return 5
     }
 
     
@@ -81,6 +83,7 @@ class categoryTVC: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryInitial", for: indexPath) as! cellCategoryInitial
             cell.infoButton.setImage(UIImage(named: "budgetIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
             cell.infoButton.isUserInteractionEnabled = true
+            
             if (categoryData[1] as? Bool ?? false) {
                 cell.label.text = NSLocalizedString("incomeBudgetLabel", comment: "Expected")
             } else if (categoryData[2] as? Bool ?? false) {
@@ -110,12 +113,12 @@ class categoryTVC: UITableViewController {
             cell.textField.tag = indexPath.row
             cell.delegate = self
             return cell
-        case 4:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryColor", for: indexPath) as! cellCategoryColor
-            cell.colorPickerView.preselectedIndex = Int(categoryData[3] as? Int16 ?? 0)
-            cell.delegate = self
-            return cell
-        case 5: // Add Button
+        //case 4:
+        //    let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryColor", for: indexPath) as! cellCategoryColor
+        //    cell.colorPickerView.preselectedIndex = Int(categoryData[3] as? Int16 ?? 0)
+        //    cell.delegate = self
+        //    return cell
+        case 4: // Add Button
             let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryAdd", for: indexPath) as! cellCategoryAdd
             if selectedCategoryDetail == -1 {
                 cell.addButton.setTitle(NSLocalizedString("categoryButtonAdd", comment: "Add Button Add"), for: .normal)
@@ -142,14 +145,34 @@ class categoryTVC: UITableViewController {
             cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: false, light: false)
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
             
-            if (categoryData[0] as? String ?? "").count > 2 {
-                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(2).uppercased()
-            } else if (categoryData[0] as? String ?? "").count > 1 {
-                cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(1).uppercased()
+            if (categoryData[9] as? String ?? "").count > 0 {
+                cell.circleLabel.isHidden = true
+                cell.circleImage.isHidden = false
+                
+                var selectedImage = categoryData[9] as? String ?? "alpaca"
+                selectedImage = selectedImage.replacingOccurrences(of: "_white", with: "")
+                if (categoryData[10] as? Bool ?? true) {
+                    selectedImage = selectedImage + "_white"
+                }
+                
+                cell.circleImage.image = UIImage(named: selectedImage)
             } else {
-                cell.circleLabel.text = "CA"
+                cell.circleLabel.isHidden = false
+                cell.circleImage.isHidden = true
+                
+                if (categoryData[0] as? String ?? "").count > 2 {
+                    cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(2).uppercased()
+                } else if (categoryData[0] as? String ?? "").count > 1 {
+                    cell.circleLabel.text = (categoryData[0] as? String ?? "").prefix(1).uppercased()
+                } else {
+                    cell.circleLabel.text = "CA"
+                }
+                if (categoryData[10] as? Bool ?? true) {
+                    cell.circleLabel.textColor = .white
+                } else {
+                    cell.circleLabel.textColor = .black
+                }
             }
-            cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: true, light: false)
             
             let tabRecongnizer = UITapGestureRecognizer(target: self, action: #selector(openIconPicker))
             cell.circleView.addGestureRecognizer(tabRecongnizer)
@@ -177,6 +200,8 @@ class categoryTVC: UITableViewController {
             categoryData[6] = 0.00 // Initial
             categoryData[7] = 0.00 // Budget
             categoryData[8] = 0.00 // Budget Suggestion
+            categoryData[9] = "alpaca" // Icon
+            categoryData[10] = true // Light?
         } else {
             let categoryPredicate:NSPredicate = NSPredicate(format: "cID == \(selectedCategoryDetail)")
             let categoryLoaded = loadBulkDataWithQuery(entitie: "Categories", query: categoryPredicate)
@@ -192,6 +217,9 @@ class categoryTVC: UITableViewController {
             
             categoryData[7] = categoryLoaded[0].value(forKey: "budget") as? Double ?? 0.00
             categoryData[8] = getBudgetSuggestion()
+            
+            categoryData[9] = categoryLoaded[0].value(forKey: "icon") as? String ?? ""
+            categoryData[10] = categoryLoaded[0].value(forKey: "iconLight") as? Bool ?? true
             
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteCategoryButton))
         }
@@ -331,10 +359,30 @@ class categoryTVC: UITableViewController {
                     let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
                     let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
                 
+                    iconTVC.selectedColor = self.categoryData[3] as? Int16 ?? 0
+                    iconTVC.selectedIcon = self.categoryData[9] as? String ?? ""
+                    if (self.categoryData[0] as? String ?? "").count > 0 {
+                        iconTVC.selectedLabelText = self.categoryData[0] as? String ?? ""
+                    } else {
+                        iconTVC.selectedLabelText = NSLocalizedString("previewIcon", comment: "Preview")
+                    }
+                    iconTVC.light = self.categoryData[10] as? Bool ?? true
+                    iconTVC.selectedType = 0
+                    
                     let navigationVC = UINavigationController(rootViewController: iconTVC)
                     self.present(navigationVC, animated: true, completion: nil)
                 })
             })
+        }
+    }
+    
+    @objc func categoryIconChanges(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            categoryData[3] = userInfo["selectedColor"] as? Int16 ?? categoryData[3] as? Int16 ?? 0
+            categoryData[9] = userInfo["selectedIcon"] as? String ?? categoryData[9] as? String ?? ""
+            categoryData[10] = userInfo["selectedLight"] as? Bool ?? categoryData[10] as? Bool ?? true
+                        
+            categoryTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
         }
     }
     
@@ -370,6 +418,8 @@ extension categoryTVC {
             categorySave.countEntries = 0
             categorySave.createDate = Date()
             categorySave.order = nextID
+            categorySave.iconLight = categoryData[10] as? Bool ?? true
+            categorySave.icon = categoryData[9] as? String ?? ""
             
             if (categoryData[7] as? Double ?? 0.00) > 0.00 {
                 categorySave.budget = (categoryData[7] as? Double ?? 0.00)
@@ -411,6 +461,8 @@ extension categoryTVC {
                 data.setValue(categoryData[1] as? Bool ?? false, forKey: "isIncome")
                 data.setValue(categoryData[2] as? Bool ?? false, forKey: "isSave")
                 data.setValue(categoryData[3] as? Int16 ?? 0, forKey: "color")
+                data.setValue(categoryData[9] as? String ?? "", forKey: "Icon")
+                data.setValue(categoryData[10] as? Bool ?? true, forKey: "iconLight")
                 
                 if (categoryData[7] as? Double ?? 0.00) > 0.00 {
                     data.setValue((categoryData[7] as? Double ?? 0.00), forKey: "budget")
