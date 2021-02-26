@@ -140,18 +140,17 @@ class cellCategoryIcons: UITableViewCell, UICollectionViewDataSource, UICollecti
             cellToDeselect?.iconImage.alpha = 1.0
             cellToDeselect?.label.alpha = 1.0
         }, completion: { _ in
+            if indexPath.row > 0 {
+                self.delegate?.iconSelected(selectedName: self.iconList[(indexPath.row-1)])
+            } else {
+                self.delegate?.iconSelected(selectedName: "")
+            }
             UIView.animate(withDuration: 0.1, animations: {
                 cellToSelect?.transform = CGAffineTransform.identity
                 cellToSelect?.iconImage.alpha = 0.4
                 cellToSelect?.label.alpha = 0.4
-            }, completion: { _ in
-                if indexPath.row > 0 {
-                    self.delegate?.iconSelected(selectedName: self.iconList[(indexPath.row-1)])
-                } else {
-                    self.delegate?.iconSelected(selectedName: "")
-                }
-              })
             })
+        })
         selectedIconInt = indexPath.row
     }
     

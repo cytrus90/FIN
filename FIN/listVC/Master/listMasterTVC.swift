@@ -293,8 +293,28 @@ class listMasterTVC: UITableViewController {
     func getEntryCell(indexPath: IndexPath) -> cellListEntry {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellListEntry", for: indexPath) as! cellListEntry
         
-        cell.circleLabel.text = transferData[(indexPath.row)]?[8] as? String ?? ""
-        cell.circleLabel.textColor = transferData[(indexPath.row)]?[10] as? UIColor ?? UIColor.blue
+        if (transferData[(indexPath.row)]?[14] as? String ?? "").count > 0 {
+            cell.circleImage.isHidden = false
+            cell.circleLabel.isHidden = true
+            
+            var selectedImage = (transferData[(indexPath.row)]?[14] as? String ?? "").replacingOccurrences(of: "_while", with: "")
+            if (transferData[(indexPath.row)]?[15] as? Bool ?? true) {
+                selectedImage = selectedImage + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedImage)
+        } else {
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            cell.circleLabel.text = transferData[(indexPath.row)]?[8] as? String ?? ""
+            if (transferData[(indexPath.row)]?[15] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
+        }
+        
         cell.circleView.backgroundColor = transferData[(indexPath.row)]?[9] as? UIColor ?? UIColor.blue
         cell.circleView.layer.borderColor = (transferData[(indexPath.row)]?[9] as? UIColor ?? UIColor.blue).cgColor
         
@@ -1067,7 +1087,9 @@ class listMasterTVC: UITableViewController {
 //        10: Text Color for Circle
 //        11: Date as Date
 //        12: isSplit?
-//        13: isAdd?
+//        13: isAdd?,
+//        14:icon,
+//        15:iconLight
 
         for data in result {
             if ((data.value(forKey: "isSplit") as? Int16) == 0) || userPartOfSplit(dateTime: data.value(forKey: "dateTime") as? Date ?? Date())  {
@@ -1089,7 +1111,9 @@ class listMasterTVC: UITableViewController {
                         10:UIColor.randomColor(color: Int(loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0), returnText: true, light: light),
                         11:data.value(forKey: "dateTime") as? Date ?? Date(),
                         12:Int((data.value(forKey: "isSplit") as? Int16 ?? 0)),
-                        13:false
+                        13:false,
+                        14:loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: categoryQuery) as? String ?? "",
+                        15:loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: categoryQuery) as? Bool ?? true
                     ]
                     i = i + 1
                 }

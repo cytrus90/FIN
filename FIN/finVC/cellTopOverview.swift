@@ -24,6 +24,7 @@ class cellTopOverview: UITableViewCell {
     
     @IBOutlet weak var circleView: UIView!
     @IBOutlet weak var circleLabel: UILabel!
+    @IBOutlet weak var circleImage: UIImageView!
     
     @IBOutlet weak var transactionDescriptionLabel: UILabel!
     @IBOutlet weak var transactionSubLabel: UILabel!
@@ -63,5 +64,4 @@ class cellTopOverview: UITableViewCell {
         
         circleView.layer.borderWidth = 1
     }
-
 }

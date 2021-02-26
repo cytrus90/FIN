@@ -12,6 +12,8 @@ class iconPickerTVC: UITableViewController {
 
     @IBOutlet var iconTable: UITableView!
     
+    let numberFormatter = NumberFormatter()
+    
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
         return nib.instantiate(withOwner: self, options: nil).first as! headerView
@@ -35,10 +37,18 @@ class iconPickerTVC: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.usesGroupingSeparator = true
+        numberFormatter.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatter.groupingSize = 3
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
+        
         selectedIcon = selectedIcon.replacingOccurrences(of: "_white", with: "")
-        if light {
+        if light && selectedIcon.count > 0 {
             selectedIcon = selectedIcon + "_white"
         }
+        
         initView()
     }
     
@@ -133,6 +143,7 @@ class iconPickerTVC: UITableViewController {
             } else {
                 cell.circleImage.isHidden = true
                 cell.circleLabel.isHidden = false
+                
                 if selectedLabelText.count == 1 {
                     cell.circleLabel.text = selectedLabelText.prefix(1).uppercased()
                 } else {
@@ -147,6 +158,22 @@ class iconPickerTVC: UITableViewController {
             
             cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(selectedColor), returnText: false, light: false)
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
+            
+            cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: 100.00))
+            
+            switch selectedType {
+            case 1: // Person
+                cell.splitIcon.isHidden = false
+                cell.splitIcon.image = UIImage(named: "tabPersonsSelected")?.withRenderingMode(.alwaysTemplate)
+                break
+            case 2:// Group
+                cell.splitIcon.isHidden = false
+                cell.splitIcon.image = UIImage(named: "tabPersonSelected")?.withRenderingMode(.alwaysTemplate)
+                break
+            default:
+                cell.splitIcon.isHidden = true
+                break
+            }
             
             return cell
         }
@@ -214,7 +241,8 @@ extension iconPickerTVC: cellAddPressedDelegate {
     func addPressed() {
         let nc = NotificationCenter.default
         switch selectedType {
-        case 1:
+        case 1,2: // 1, 2 Group & Person
+            nc.post(name: Notification.Name("groupPersonChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light])
             break
         default: // 0: Category
             nc.post(name: Notification.Name("categoryIconChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light])

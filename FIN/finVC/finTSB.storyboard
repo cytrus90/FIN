@@ -912,12 +912,19 @@
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jvI-1t-oor">
+                                                                            <rect key="frame" x="5" y="5" width="36" height="36"/>
+                                                                        </imageView>
                                                                     </subviews>
                                                                     <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                                                     <constraints>
+                                                                        <constraint firstAttribute="bottom" secondItem="jvI-1t-oor" secondAttribute="bottom" constant="5" id="7Dk-oC-93S"/>
                                                                         <constraint firstAttribute="height" constant="46" id="DUS-Lz-EPy"/>
                                                                         <constraint firstItem="Ijv-JP-YxY" firstAttribute="centerX" secondItem="hEX-GZ-chN" secondAttribute="centerX" id="ELX-ZK-IhE"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="jvI-1t-oor" secondAttribute="trailing" constant="5" id="G6v-C2-lpq"/>
                                                                         <constraint firstItem="Ijv-JP-YxY" firstAttribute="centerY" secondItem="hEX-GZ-chN" secondAttribute="centerY" id="VCA-Av-MQs"/>
+                                                                        <constraint firstItem="jvI-1t-oor" firstAttribute="leading" secondItem="hEX-GZ-chN" secondAttribute="leading" constant="5" id="cKm-SZ-k7Y"/>
+                                                                        <constraint firstItem="jvI-1t-oor" firstAttribute="top" secondItem="hEX-GZ-chN" secondAttribute="top" constant="5" id="oL5-gb-CYg"/>
                                                                         <constraint firstAttribute="width" constant="46" id="rdt-EY-K1a"/>
                                                                     </constraints>
                                                                 </view>
@@ -999,8 +1006,9 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
+                                    <outlet property="circleImage" destination="jvI-1t-oor" id="b2T-HO-Sz1"/>
                                     <outlet property="circleLabel" destination="Ijv-JP-YxY" id="2Fb-TH-OXD"/>
-                                    <outlet property="circleView" destination="hEX-GZ-chN" id="NFq-HB-lsK"/>
+                                    <outlet property="circleView" destination="hEX-GZ-chN" id="YLk-VF-HOx"/>
                                     <outlet property="latestTransactionStackView" destination="bak-rb-3J7" id="Scg-S0-oTv"/>
                                     <outlet property="mainLabel" destination="swY-2P-TMg" id="EBW-5t-zVA"/>
                                     <outlet property="outlineView" destination="pF9-fC-E6m" id="Yqa-ix-rPJ"/>
@@ -1584,13 +1592,13 @@
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="FUR-n6-KTM">
                                                             <rect key="frame" x="53" y="2.5" width="273" height="41.5"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Person/Group" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IXC-Kz-mAy">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Person/Group" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IXC-Kz-mAy">
                                                                     <rect key="frame" x="0.0" y="0.0" width="273" height="20.5"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NumberPersons" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kOu-4k-gjs">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="NumberPersons" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kOu-4k-gjs">
                                                                     <rect key="frame" x="0.0" y="25.5" width="273" height="16"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                                     <color key="textColor" systemColor="secondaryLabelColor"/>

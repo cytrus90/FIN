@@ -23,6 +23,9 @@ class splitAddNewTVC: UITableViewController {
     var inputText = "" // Input Text from Textfield for save
     var color: Int16?
     
+    var icon:String = ""
+    var iconLight:Bool = true
+    
     var update:Int?
     var updateGroupOrPersonName:String?
     var updateCreateDate:Date?
@@ -82,6 +85,7 @@ class splitAddNewTVC: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(addSegmentChanged(notification:)), name: Notification.Name("addSegmentChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(openDetailList), name: Notification.Name("openDetailList"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(selectedDictChanged), name: Notification.Name("selectedDictChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(groupPersonChanges(notification:)), name: Notification.Name("groupPersonChanges"), object: nil)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         
@@ -234,14 +238,38 @@ class splitAddNewTVC: UITableViewController {
         
         cell.nameTextField.text = textfieldText ?? ""
 
-        cell.circleLabel.text = labelText
         if color == nil {
-            color = Int16(Int.random(in: 0...35))
+            color = Int16(1)
         }
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(color ?? 0), returnText: true, light: false)
+        
+        if icon.count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedImage = icon.replacingOccurrences(of: "_white", with: "")
+            if iconLight {
+                selectedImage = selectedImage + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedImage)
+        } else {
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            cell.circleLabel.text = labelText
+            if iconLight {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
+        }
+        
+        let tabRecongnizer = UITapGestureRecognizer(target: self, action: #selector(openIconPicker))
+        cell.circleView.addGestureRecognizer(tabRecongnizer)
+        
         cell.delegate = self
         return cell
     }
@@ -317,10 +345,14 @@ class splitAddNewTVC: UITableViewController {
                 selection = 2
                 let query = NSPredicate(format: "createDate > %@ AND createDate < %@ AND nameGroup == %@", (updateCreateDateMinus as NSDate), (updateCreateDatePlus as NSDate), ((updateGroupOrPersonName ?? "") as NSString))
                 color = loadQueriedAttribute(entitie: "SplitGroups", attibute: "color", query: query) as? Int16 ?? 0
+                icon = loadQueriedAttribute(entitie: "SplitGroups", attibute: "icon", query: query) as? String ?? ""
+                iconLight = loadQueriedAttribute(entitie: "SplitGroups", attibute: "iconLight", query: query) as? Bool ?? true
             } else {
                 selection = 3
                 let query = NSPredicate(format: "createDate > %@ AND createDate < %@ AND namePerson == %@", (updateCreateDateMinus as NSDate), (updateCreateDatePlus as NSDate), ((updateGroupOrPersonName ?? "") as NSString))
                 color = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0
+                icon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: query) as? String ?? ""
+                iconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: query) as? Bool ?? true
             }
             
             textfieldText = updateGroupOrPersonName
@@ -637,6 +669,80 @@ class splitAddNewTVC: UITableViewController {
         alert.popoverPresentationController?.sourceView = self.view
         alert.popoverPresentationController?.sourceRect = self.view.bounds
         self.present(alert, animated: true)
+    }
+    
+    @objc func openIconPicker() {
+        if let cell = splitAddTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellSplitAddNewMain {
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.circleView.transform = cell.circleView.transform.scaledBy(x: 0.96, y: 0.96)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.1, animations: {
+                    cell.circleView.transform = CGAffineTransform.identity
+                }, completion: { _ in
+                    let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
+                    let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
+                
+                    iconTVC.selectedColor = self.color ?? 1
+                    iconTVC.selectedIcon = self.icon
+                    if self.inputText.count > 0 {
+                        iconTVC.selectedLabelText = self.inputText
+                    } else if (self.updateGroupOrPersonName ?? "").count > 0 {
+                        iconTVC.selectedLabelText = self.updateGroupOrPersonName ?? ""
+                    } else {
+                        if selection == 0 || selection == 2 {
+                            iconTVC.selectedLabelText = NSLocalizedString("bottomAddSegmentGroups", comment: "Group Label Text")
+                        } else {
+                            iconTVC.selectedLabelText = NSLocalizedString("bottomAddSegmentUsers", comment: "User Label Text")
+                        }
+                    }
+                    iconTVC.light = self.iconLight
+                    if selection == 2 || selection == 0 { // Group
+                        iconTVC.selectedType = 2
+                    } else { // Person
+                        iconTVC.selectedType = 1
+                    }
+                    
+                    let navigationVC = UINavigationController(rootViewController: iconTVC)
+                    self.present(navigationVC, animated: true, completion: nil)
+                })
+            })
+        }
+    }
+    
+    @objc func groupPersonChanges(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            color = userInfo["selectedColor"] as? Int16 ?? color ?? 1
+            icon = userInfo["selectedIcon"] as? String ?? icon
+            iconLight = userInfo["selectedLight"] as? Bool ?? iconLight
+            
+            if let cell = splitAddTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellSplitAddNewMain {
+                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
+                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
+                
+                if icon.count > 0 {
+                    cell.circleLabel.isHidden = true
+                    cell.circleImage.isHidden = false
+                    
+                    var selectedImage = icon.replacingOccurrences(of: "_white", with: "")
+                    if iconLight {
+                        selectedImage = selectedImage + "_white"
+                    }
+                    
+                    cell.circleImage.image = UIImage(named: selectedImage)
+                } else {
+                    cell.circleLabel.isHidden = false
+                    cell.circleImage.isHidden = true
+                    
+                    cell.circleLabel.text = labelText
+                    if iconLight {
+                        cell.circleLabel.textColor = .white
+                    } else {
+                        cell.circleLabel.textColor = .black
+                    }
+                }
+            }
+            //splitAddTableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+        }
     }
     
     func deleteGroup() {
@@ -1208,6 +1314,8 @@ extension splitAddNewTVC {
         personSave.isUser = isUser
         personSave.color = color
         personSave.createDate = Date()
+        personSave.icon = icon
+        personSave.iconLight = iconLight
         
         do {
             try managedContext.save()
@@ -1227,6 +1335,8 @@ extension splitAddNewTVC {
         groupSave.persons = persons
         groupSave.color = color
         groupSave.createDate = Date()
+        groupSave.icon = icon
+        groupSave.iconLight = iconLight
         
         do {
             try managedContext.save()
@@ -1498,6 +1608,9 @@ extension splitAddNewTVC {
                 if groupNameNew != nil {
                     fetchedData[0].setValue(groupNameNew, forKey: "nameGroup")
                 }
+                fetchedData[0].setValue(icon, forKey: "icon")
+                fetchedData[0].setValue(iconLight, forKey: "iconLight")
+                fetchedData[0].setValue(color, forKey: "color")
                 fetchedData[0].setValue(personsNew, forKey: "persons")
                 try managedContext.save()
             }
@@ -1532,6 +1645,9 @@ extension splitAddNewTVC {
             if fetchedData.count > 1 || fetchedData.count <= 0 {
             } else {
                 fetchedData[0].setValue(personNameNew, forKey: "namePerson")
+                fetchedData[0].setValue(icon, forKey: "icon")
+                fetchedData[0].setValue(iconLight, forKey: "iconLight")
+                fetchedData[0].setValue(color, forKey: "color")
                 try managedContext.save()
             }
         } catch {

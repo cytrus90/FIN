@@ -253,20 +253,40 @@ class finTVC: UITableViewController {
 //            6:categoryName,
 //            7:dateTime,
 //            8:isSave,
-//            9:isSplit
+//            9:isSplit,
+//            10:icon,
+//            11:isLight
 //        ]
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(topOverviewCellData[5] as? Int16 ?? 0), returnText: false, light: false)
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
-        if (topOverviewCellData[6] as? String ?? "").count > 2 {
-            cell.circleLabel.text = (topOverviewCellData[6] as? String ?? "").prefix(2).uppercased()
-        } else if (topOverviewCellData[6] as? String ?? "").count > 1 {
-            cell.circleLabel.text = (topOverviewCellData[6] as? String ?? "").prefix(1).uppercased()
+        if (topOverviewCellData[10] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (topOverviewCellData[10] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (topOverviewCellData[11] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = "CA"
+            cell.circleImage.isHidden = true
+            cell.circleLabel.isHidden = false
+            
+            if (topOverviewCellData[6] as? String ?? "").count > 2 {
+                cell.circleLabel.text = (topOverviewCellData[6] as? String ?? "").prefix(2).uppercased()
+            } else if (topOverviewCellData[6] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (topOverviewCellData[6] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = "CA"
+            }
+            if (topOverviewCellData[11] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(topOverviewCellData[5] as? Int16 ?? 0), returnText: true, light: false)
         
         cell.transactionDescriptionLabel.text = (topOverviewCellData[4] as? String ?? "")
         
@@ -457,6 +477,8 @@ class finTVC: UITableViewController {
         var dateTime:Date?
         var isSave:Bool = false
         var isSplit:Int16 = 2
+        var icon = ""
+        var isLight = true
         
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
         if let transaction = loadBulkSortedOneEntry(entitie: "Transactions", sort: [dateSort]) as? NSManagedObject {
@@ -472,6 +494,8 @@ class finTVC: UITableViewController {
             if !isSave && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                 realAmount = -realAmount
             }
+            icon = loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? ""
+            isLight = loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? true
         }
         
         topOverviewCellData = [
@@ -484,7 +508,9 @@ class finTVC: UITableViewController {
             6:categoryName,
             7:dateTime as Any,
             8:isSave,
-            9:isSplit
+            9:isSplit,
+            10:icon,
+            11:isLight
         ]
     }
     

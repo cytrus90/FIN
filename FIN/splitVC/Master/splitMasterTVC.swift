@@ -277,6 +277,8 @@ class splitMasterTVC: UITableViewController {
         
         cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0), returnText: false, light: false)
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
+        
+        
         cell.circleLabel.textColor = UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0), returnText: true, light: false)
         
         if (rowData[(indexPath.row-1)]?[0] as? String ?? "").count == 1 {

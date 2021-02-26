@@ -14,7 +14,6 @@ class cellListEntry: UITableViewCell {
     
     @IBOutlet weak var circleView: UIView!
     @IBOutlet weak var circleLabel: UILabel!
-    
     @IBOutlet weak var circleImage: UIImageView!
     
     @IBOutlet weak var descriptionLabel: UILabel!
