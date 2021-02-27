@@ -278,13 +278,30 @@ class splitMasterTVC: UITableViewController {
         cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0), returnText: false, light: false)
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
-        
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0), returnText: true, light: false)
-        
-        if (rowData[(indexPath.row-1)]?[0] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (rowData[(indexPath.row-1)]?[0] as? String ?? "").prefix(1).uppercased()
+        if (rowData[(indexPath.row-1)]?[6] as? String ?? "").count > 0 {
+            cell.circleImage.isHidden = false
+            cell.circleLabel.isHidden = true
+            
+            var selectedIcon = (rowData[(indexPath.row-1)]?[6] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (rowData[(indexPath.row-1)]?[7] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = (rowData[(indexPath.row-1)]?[0] as? String ?? "").prefix(2).uppercased()
+            cell.circleImage.isHidden = true
+            cell.circleLabel.isHidden = false
+            
+            if (rowData[(indexPath.row-1)]?[6] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (rowData[(indexPath.row-1)]?[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = (rowData[(indexPath.row-1)]?[0] as? String ?? "").prefix(2).uppercased()
+            }
+            if (rowData[(indexPath.row-1)]?[7] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         if isUser(createDate: (rowData[(indexPath.row-1)]?[4] as? Date ?? Date()), namePerson: (rowData[(indexPath.row-1)]?[0] as? String ?? "")) {
@@ -466,6 +483,8 @@ class splitMasterTVC: UITableViewController {
                     3:groupSumString ?? "",
                     4:createDateGroup,
                     5:0,
+                    6:data.value(forKey: "icon") as? String ?? "",
+                    7:data.value(forKey: "iconLight") as? Bool ?? true,
                     13:false
                 ]
                 i = i + 1
@@ -553,11 +572,15 @@ class splitMasterTVC: UITableViewController {
                     3:personSumString ?? "",
                     4:createDatePerson,
                     5:1,
+                    6:data.value(forKey: "icon") as? String ?? "",
+                    7:data.value(forKey: "iconLight") as? Bool ?? true,
                     13:false
                 ]
                 i = i + 1
             }
         }
+        print("fdlsafjaslöd")
+        print(rowData)
     }
     
     @objc func addNew() {

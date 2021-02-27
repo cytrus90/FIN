@@ -242,10 +242,13 @@ extension iconPickerTVC: cellAddPressedDelegate {
         let nc = NotificationCenter.default
         switch selectedType {
         case 1,2: // 1, 2 Group & Person
-            nc.post(name: Notification.Name("groupPersonChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light])
+            nc.post(name: Notification.Name("groupPersonChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light, "selectedType": selectedType])
+            break
+        case 3: // User
+            nc.post(name: Notification.Name("userIconColorChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light, "selectedType": selectedType])
             break
         default: // 0: Category
-            nc.post(name: Notification.Name("categoryIconChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light])
+            nc.post(name: Notification.Name("categoryIconChanges"), object: nil, userInfo: ["selectedColor": selectedColor, "selectedIcon": selectedIcon, "selectedLight": light, "selectedType": selectedType])
             break
         }
         dismissViewController()

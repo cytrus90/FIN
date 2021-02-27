@@ -239,7 +239,6 @@ class splitTransactionSelectTVC: UITableViewController {
     }
 
     // MARK: - Table view data source
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -265,17 +264,37 @@ class splitTransactionSelectTVC: UITableViewController {
             cell.subLabel.isHidden = true
         }
         
-        if (rowData[indexPath.row]?[0] as? String ?? "").count > 1 {
-            cell.circleLabel.text = (rowData[indexPath.row]?[0] as? String ?? "").prefix(2).uppercased()
-        } else if (rowData[indexPath.row]?[0] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (rowData[indexPath.row]?[0] as? String ?? "").prefix(1).uppercased()
+        if (rowData[indexPath.row]?[4] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (rowData[indexPath.row]?[4] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (rowData[indexPath.row]?[5] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = ""
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            if (rowData[indexPath.row]?[0] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (rowData[indexPath.row]?[0] as? String ?? "").prefix(2).uppercased()
+            } else if (rowData[indexPath.row]?[0] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (rowData[indexPath.row]?[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = ""
+            }
+            
+            if (rowData[indexPath.row]?[5] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[1] as? Int16 ?? 0), returnText: false, light: false)
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[1] as? Int16 ?? 0), returnText: true, light: false)
         
         if selectedSplitSegment != nil && selectedSplitRow.count != 0 {
             if selectedSplitSegment == selectedSplit && (selectedSplitRow[indexPath.row] ?? false) {
@@ -359,7 +378,9 @@ class splitTransactionSelectTVC: UITableViewController {
                     0:data.value(forKey: "nameGroup") as? String ?? "",
                     1:data.value(forKey: "color") as? Int16 ?? 0,
                     2:String(numPersons ?? 0),
-                    3:data.value(forKey: "createDate") as? Date ?? Date()
+                    3:data.value(forKey: "createDate") as? Date ?? Date(),
+                    4:data.value(forKey: "icon") as? String ?? "",
+                    5:data.value(forKey: "iconLight") as? Bool ?? true
                 ]
                 i = i + 1
             }
@@ -376,13 +397,17 @@ class splitTransactionSelectTVC: UITableViewController {
                     rowDataUser[0] = [
                         0:namePerson ?? "",
                         1:data.value(forKey: "color") as? Int16 ?? 0,
-                        3:data.value(forKey: "createDate") as? Date ?? Date()
+                        3:data.value(forKey: "createDate") as? Date ?? Date(),
+                        4:data.value(forKey: "icon") as? String ?? "",
+                        5:data.value(forKey: "iconLight") as? Bool ?? true
                     ]
                     if (selectedSplit == 2) && editSplit {
                         rowData[i] = [
                             0:namePerson ?? "",
                             1:data.value(forKey: "color") as? Int16 ?? 0,
-                            3:data.value(forKey: "createDate") as? Date ?? Date()
+                            3:data.value(forKey: "createDate") as? Date ?? Date(),
+                            4:data.value(forKey: "icon") as? String ?? "",
+                            5:data.value(forKey: "iconLight") as? Bool ?? true
                         ]
                         i = i + 1
                     }
@@ -391,7 +416,9 @@ class splitTransactionSelectTVC: UITableViewController {
                     rowData[i] = [
                         0:namePerson ?? "",
                         1:data.value(forKey: "color") as? Int16 ?? 0,
-                        3:data.value(forKey: "createDate") as? Date ?? Date()
+                        3:data.value(forKey: "createDate") as? Date ?? Date(),
+                        4:data.value(forKey: "icon") as? String ?? "",
+                        5:data.value(forKey: "iconLight") as? Bool ?? true
                     ]
                     i = i + 1
                 }

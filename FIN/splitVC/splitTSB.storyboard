@@ -285,6 +285,9 @@
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
+                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6g7-y3-hUo">
+                                                                    <rect key="frame" x="5" y="5" width="36" height="36"/>
+                                                                </imageView>
                                                             </subviews>
                                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                                             <constraints>
@@ -292,6 +295,10 @@
                                                                 <constraint firstAttribute="height" constant="46" id="DTa-Bz-P7i"/>
                                                                 <constraint firstAttribute="width" constant="46" id="FC7-A8-fRX"/>
                                                                 <constraint firstItem="HoD-6c-xx7" firstAttribute="centerX" secondItem="naW-Kb-L3Y" secondAttribute="centerX" id="ZD6-AL-Kco"/>
+                                                                <constraint firstAttribute="trailing" secondItem="6g7-y3-hUo" secondAttribute="trailing" constant="5" id="cPf-3p-ZWP"/>
+                                                                <constraint firstItem="6g7-y3-hUo" firstAttribute="top" secondItem="naW-Kb-L3Y" secondAttribute="top" constant="5" id="nPc-6N-FVI"/>
+                                                                <constraint firstAttribute="bottom" secondItem="6g7-y3-hUo" secondAttribute="bottom" constant="5" id="p7H-4i-Bqk"/>
+                                                                <constraint firstItem="6g7-y3-hUo" firstAttribute="leading" secondItem="naW-Kb-L3Y" secondAttribute="leading" constant="5" id="tOh-CU-cjI"/>
                                                             </constraints>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQh-5i-Tn5">
@@ -322,6 +329,7 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
+                                    <outlet property="circleImage" destination="6g7-y3-hUo" id="vO0-fb-H3r"/>
                                     <outlet property="circleLabel" destination="HoD-6c-xx7" id="OxU-V2-UhE"/>
                                     <outlet property="circleView" destination="naW-Kb-L3Y" id="7Fq-Gc-cNC"/>
                                     <outlet property="label" destination="fQh-5i-Tn5" id="ikh-G4-feL"/>

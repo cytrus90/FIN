@@ -98,13 +98,34 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
         } else {
             cell.mainLabel.text = (split[indexPath.row]?[0] as? String ?? "")
         }
-        
-        if (split[indexPath.row]?[0] as? String ?? "").count <= 0 {
-            cell.circleLabel.text = ""
-        } else if (split[indexPath.row]?[0] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (split[indexPath.row]?[0] as? String ?? "").prefix(1).uppercased()
+
+        if (split[indexPath.row]?[10] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (split[indexPath.row]?[10] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (split[indexPath.row]?[11] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = (split[indexPath.row]?[0] as? String ?? "").prefix(2).uppercased()
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            if (split[indexPath.row]?[0] as? String ?? "").count <= 0 {
+                cell.circleLabel.text = ""
+            } else if (split[indexPath.row]?[0] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (split[indexPath.row]?[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = (split[indexPath.row]?[0] as? String ?? "").prefix(2).uppercased()
+            }
+            
+            if (split[indexPath.row]?[11] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         let datePlusPerson = Calendar.current.date(byAdding: .second, value: 1, to: (split[indexPath.row]?[1] as? Date ?? Date()))!
@@ -116,7 +137,6 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt, returnText: false, light: false)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
-        cell.circleLabel.textColor = UIColor.randomColor(color: colorInt, returnText: true, light: false)
         
         return cell
     }

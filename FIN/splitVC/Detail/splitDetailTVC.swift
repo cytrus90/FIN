@@ -285,16 +285,35 @@ class splitDetailTVC: UITableViewController {
             }
         }
         
-        if (rowData[indexPath.row]?[3] as? String ?? "").count > 1 {
-            cell.circleLabel.text = (rowData[indexPath.row]?[3] as? String ?? "").prefix(2).uppercased()
-        } else if (rowData[indexPath.row]?[3] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (rowData[indexPath.row]?[3] as? String ?? "").prefix(1).uppercased()
+        if (rowData[indexPath.row]?[9] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (rowData[indexPath.row]?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = ""
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            if (rowData[indexPath.row]?[3] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (rowData[indexPath.row]?[3] as? String ?? "").prefix(2).uppercased()
+            } else if (rowData[indexPath.row]?[3] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (rowData[indexPath.row]?[3] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = ""
+            }
+            if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[4] as? Int16 ?? 0), returnText: false, light: false)
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[4] as? Int16 ?? 0), returnText: true, light: false)
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
         if (rowData[indexPath.row]?[8] as? Int ?? 0) == 1 {
@@ -481,6 +500,8 @@ class splitDetailTVC: UITableViewController {
                     let queryCategory = NSPredicate(format: "cID == %i", cID)
                     let categoryName = loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory)
                     let categoryColor = loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0
+                    let icon = loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? ""
+                    let iconLight = loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? true
 
                     var amountString = ""
                     let amountPerson = amount*ratio
@@ -510,6 +531,8 @@ class splitDetailTVC: UITableViewController {
                         6:(user ?? true),
                         7:(split.value(forKey: "dateTimeTransaction") as? Date ?? Date()),
                         8:isSplit(transactionDateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date())),
+                        9:icon,
+                        10:iconLight,
                         13:false
                     ]
                     i = i + 1
@@ -546,6 +569,8 @@ class splitDetailTVC: UITableViewController {
                     
                     let dateSort = NSSortDescriptor(key: "dateTimeTransaction", ascending: false)
                     let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+                    let icon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+                    let iconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
 
                     for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplits, sort: [dateSort]) {
                         let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
@@ -614,6 +639,8 @@ class splitDetailTVC: UITableViewController {
                             5:personCreateDate,
                             6:(user ?? false),
                             8:1,
+                            9:icon,
+                            10:iconLight,
                             13:false
                         ]
                         i = i + 1

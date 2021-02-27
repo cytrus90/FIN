@@ -79,6 +79,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         NotificationCenter.default.addObserver(self, selector: #selector(categoryChanged), name: Notification.Name("categoryChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(detailListDisappeared), name: Notification.Name("detailListDisappeared"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(userIconColorChanges(notification:)), name: Notification.Name("userIconColorChanges"), object: nil)
         
         if selectedRowForCells == 0 {
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addRegularPaymentTabbed))
@@ -236,7 +237,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             let navigationVC = UINavigationController(rootViewController: transactionVC)
             self.present(navigationVC, animated: true, completion: nil)
         } else if indexPath == exportIndexPath && selectedRowForCells == 2 { // Export
-            if showAdds {
+            if !showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -257,7 +258,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 }
             }
         } else if indexPath == importIndexPath && selectedRowForCells == 2 { // Import
-            if showAdds {
+            if !showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -402,6 +403,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 let categoryName = loadQueriedAttribute(entitie: "Categories", attibute: "name", query: categoryQuery) as? String ?? ""
                 let categoryColor = loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0
                 let categoryIsSave = loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: categoryQuery) as? Bool ?? false
+                let categoryIcon = loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: categoryQuery) as? String ?? ""
+                let categoryIconLight = loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: categoryQuery) as? Bool ?? false
                 
                 let datePlus = Calendar.current.date(byAdding: .second, value: 1, to: repeatingTransaction.value(forKey: "dateTimeNext") as? Date ?? Date())!
                 let dateMinus = Calendar.current.date(byAdding: .second, value: -1, to: repeatingTransaction.value(forKey: "dateTimeNext") as? Date ?? Date())!
@@ -439,7 +442,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                     6:categoryName,
                     7:categoryColor,
                     8:categoryIsSave,
-                    9:false
+                    9:false,
+                    10:categoryIcon,
+                    11:categoryIconLight
                 ] as [Int : Any]
                 userDetailCells[i] = dictRAM
                 i = i + 1
@@ -655,11 +660,20 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             } else {
                 codeIsSet = true
             }
+            
+            let queryUserPerson = NSPredicate(format: "isUser == true")
+            let iconUser = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryUserPerson) as? String ?? ""
+            let iconLightUser = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryUserPerson) as? Bool ?? true
+            let userColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryUserPerson) as? Int16 ?? 10
+            
             // Create Dictionary
             let dictRAM = [
                 0:userName,
                 1:recoveryMail,
-                2:loginEnabled
+                2:loginEnabled,
+                3:iconUser,
+                4:iconLightUser,
+                5:userColor
                 ] as [Int : Any]
             
             userDetailCells[0] = dictRAM
@@ -744,12 +758,32 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0), returnText: false, light: false)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0), returnText: false, light: false).cgColor
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0), returnText: true, light: false)
         
-        if ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").count == 1 {
-            cell.circleLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").prefix(1).uppercased()
+        if ((userDetailCells[indexPath.row] as? [Int:Any])?[10] as? String ?? "").count > 0 {
+            cell.circleImage.isHidden = false
+            cell.circleLabel.isHidden = true
+            
+            var selectedIcon = ((userDetailCells[indexPath.row] as? [Int:Any])?[10] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if ((userDetailCells[indexPath.row] as? [Int:Any])?[11] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").prefix(2).uppercased()
+            cell.circleImage.isHidden = true
+            cell.circleLabel.isHidden = false
+            
+            if ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").count == 1 {
+                cell.circleLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[6] as? String ?? "").prefix(2).uppercased()
+            }
+            
+            if ((userDetailCells[indexPath.row] as? [Int:Any])?[11] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         cell.amountLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[1] as? String ?? "") + " " + (numberFormatter.string(from: NSNumber(value: (userDetailCells[indexPath.row] as? [Int:Any])?[0] as? Double ?? 0.00)) ?? "0.00")
@@ -960,6 +994,41 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             cell.cellLoginSwitch.isOn = true
         }
         
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false)
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false).cgColor
+        
+        if (dict[3] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.cellUsernameIcon.isHidden = false
+            
+            var selectedIcon = (dict[3] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (dict[4] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.cellUsernameIcon.image = UIImage(named: selectedIcon)
+        } else {
+            cell.circleLabel.isHidden = false
+            cell.cellUsernameIcon.isHidden = true
+            
+            if (dict[0] as? String ?? "").count <= 0 {
+                cell.circleLabel.text = (NSLocalizedString("userTitle", comment: "User")).prefix(2).uppercased()
+            } else if (dict[0] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(2).uppercased()
+            }
+            
+            if (dict[4] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
+        }
+        
+        let tabRecongnizer = UITapGestureRecognizer(target: self, action: #selector(openIconPicker))
+        cell.circleView.addGestureRecognizer(tabRecongnizer)
+        
         cell.delegate = self
         
         return cell
@@ -1152,6 +1221,50 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         self.present(categoryPrompt, animated: true)
     }
     
+    @objc func openIconPicker() {
+        if !showAdds {
+            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+                self.purchaseButtonPressed()
+            }))
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+            
+            purchasePrompt.popoverPresentationController?.sourceView = self.view
+            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+            
+            self.present(purchasePrompt, animated: true)
+        } else {
+            if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.circleView.transform = cell.circleView.transform.scaledBy(x: 0.96, y: 0.96)
+                    }, completion: { _ in
+                        UIView.animate(withDuration: 0.1, animations: {
+                        cell.circleView.transform = CGAffineTransform.identity
+                    }, completion: { _ in
+                        let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
+                        let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
+                    
+                        iconTVC.selectedColor = (self.userDetailCells[0] as? [Int:Any])?[5] as? Int16 ?? 0
+                        iconTVC.selectedIcon = (self.userDetailCells[0] as? [Int:Any])?[3] as? String ?? ""
+                        if ((self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? "").count > 0 {
+                            iconTVC.selectedLabelText = (self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? ""
+                        } else {
+                            iconTVC.selectedLabelText = NSLocalizedString("previewIcon", comment: "Preview")
+                        }
+                        iconTVC.light = (self.userDetailCells[0] as? [Int:Any])?[4] as? Bool ?? true
+                        iconTVC.selectedType = 3
+                        
+                        let navigationVC = UINavigationController(rootViewController: iconTVC)
+                        self.present(navigationVC, animated: true, completion: nil)
+                    })
+                })
+            }
+        }
+    }
+    
     @objc func addRegularPaymentTabbed() {
         let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
         let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
@@ -1323,6 +1436,32 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         initCells(selectedRowForCells: selectedRowForCells ?? 0)
         initView(table: userDetailTable)
         userDetailTable.reloadData()
+    }
+    
+    @objc func userIconColorChanges(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            if (userInfo["selectedType"] as? Int ?? -1) == 3 {
+                var ramDict = (userDetailCells[0] as? [Int:Any])
+                
+                let colorNew = userInfo["selectedColor"] as? Int16 ?? (userDetailCells[0] as? [Int:Any])?[5] as? Int16 ?? 0
+                let iconNew = userInfo["selectedIcon"] as? String ?? (userDetailCells[0] as? [Int:Any])?[3] as? String ?? ""
+                let iconLightNew = userInfo["selectedLight"] as? Bool ?? (userDetailCells[0] as? [Int:Any])?[4] as? Bool ?? true
+                
+                ramDict?[5] = colorNew
+                ramDict?[3] = iconNew
+                ramDict?[4] = iconLightNew
+                
+                userDetailCells[0] = ramDict
+                
+                let queryUser = NSPredicate(format: "isUser == true")
+                
+                saveSingleData(entity: "SplitPersons", attibute: "icon", newValue: iconNew, query: queryUser)
+                saveSingleData(entity: "SplitPersons", attibute: "iconLight", newValue: iconLightNew, query: queryUser)
+                saveSingleData(entity: "SplitPersons", attibute: "color", newValue: colorNew, query: queryUser)
+                
+                userDetailTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
+        }
     }
     
     func checkSettingsDuplicates() {
@@ -2268,7 +2407,7 @@ extension userDetailVC: cellUserSettingsDelegate {
     
     // Settings - Set Username or Recovery Mail
     func updateText(newText: String, textFieldTag: Int) {
-        if showAdds {
+        if !showAdds {
             let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -2311,6 +2450,37 @@ extension userDetailVC: cellUserSettingsDelegate {
                     updateSplitsNewUser(newUserName: newText)
                     let nc = NotificationCenter.default
                     nc.post(name: Notification.Name("updateUserHeader"), object: nil)
+                    
+                    var ramDict = (userDetailCells[0] as? [Int:Any])
+                    ramDict?[0] = newText
+                    
+                    userDetailCells[0] = ramDict
+                    
+                    if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
+                        let dict = userDetailCells[0] as! [Int:Any]
+                        
+                        print("flsdkjflsdfa")
+                        print((dict[0] as? String ?? ""))
+                        
+                        if (dict[3] as? String ?? "").count <= 0 {
+                            cell.circleLabel.isHidden = false
+                            cell.cellUsernameIcon.isHidden = true
+                            
+                            if (dict[0] as? String ?? "").count <= 0 {
+                                cell.circleLabel.text = (NSLocalizedString("userTitle", comment: "User")).prefix(2).uppercased()
+                            } else if (dict[0] as? String ?? "").count == 1 {
+                                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(1).uppercased()
+                            } else {
+                                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(2).uppercased()
+                            }
+                            
+                            if (dict[4] as? Bool ?? true) {
+                                cell.circleLabel.textColor = .white
+                            } else {
+                                cell.circleLabel.textColor = .black
+                            }
+                        }
+                    }
                 }
                 break
             }

@@ -378,11 +378,13 @@ class categoryTVC: UITableViewController {
     
     @objc func categoryIconChanges(notification: Notification) {
         if let userInfo = notification.userInfo {
-            categoryData[3] = userInfo["selectedColor"] as? Int16 ?? categoryData[3] as? Int16 ?? 0
-            categoryData[9] = userInfo["selectedIcon"] as? String ?? categoryData[9] as? String ?? ""
-            categoryData[10] = userInfo["selectedLight"] as? Bool ?? categoryData[10] as? Bool ?? true
-                        
-            categoryTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            if (userInfo["selectedType"] as? Int ?? -1) == 1 {
+                categoryData[3] = userInfo["selectedColor"] as? Int16 ?? categoryData[3] as? Int16 ?? 0
+                categoryData[9] = userInfo["selectedIcon"] as? String ?? categoryData[9] as? String ?? ""
+                categoryData[10] = userInfo["selectedLight"] as? Bool ?? categoryData[10] as? Bool ?? true
+                            
+                categoryTable.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
         }
     }
     

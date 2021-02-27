@@ -177,21 +177,41 @@ class splitAddNewSelectTVC: UITableViewController {
             cell.label.text = (tableData[indexPath.row]?[1] as? String ?? "")
         }
         
-        if (tableData[indexPath.row]?[1] as? String ?? "").count > 1 {
-            cell.circleLabel.text = (tableData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
-        } else if (tableData[indexPath.row]?[1] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (tableData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
+        if (tableData[indexPath.row]?[4] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (tableData[indexPath.row]?[4] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (tableData[indexPath.row]?[5] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            if selection == 1 || selection == 3 {
-                cell.circleLabel.text = NSLocalizedString("bottomAddSegmentGroups", comment: "Group Label Text").prefix(2).uppercased()
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            if (tableData[indexPath.row]?[1] as? String ?? "").count > 1 {
+                cell.circleLabel.text = (tableData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
+            } else if (tableData[indexPath.row]?[1] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (tableData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
             } else {
-                cell.circleLabel.text = NSLocalizedString("bottomAddSegmentUsers", comment: "User Label Text").prefix(2).uppercased()
+                if selection == 1 || selection == 3 {
+                    cell.circleLabel.text = NSLocalizedString("bottomAddSegmentGroups", comment: "Group Label Text").prefix(2).uppercased()
+                } else {
+                    cell.circleLabel.text = NSLocalizedString("bottomAddSegmentUsers", comment: "User Label Text").prefix(2).uppercased()
+                }
+            }
+            
+            if (tableData[indexPath.row]?[5] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
             }
         }
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)), returnText: false, light: false)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)), returnText: false, light: false).cgColor
-        cell.circleLabel.textColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)), returnText: true, light: false)
         
         if (tableData[indexPath.row]?[3] as? Bool ?? false) == true {
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)

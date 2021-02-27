@@ -198,14 +198,34 @@ class splitTransactionTVC: UITableViewController {
                 
                 cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt, returnText: false, light: false)
                 cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
-                cell.circleLabel.textColor = UIColor.randomColor(color: colorInt, returnText: true, light: false)
                 
-                if (split[i]?[0] as? String ?? "").count == 1 {
-                    cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(1).uppercased()
-                } else if (split[i]?[0] as? String ?? "").count == 0 {
-                    cell.circleLabel.text = ""
+                if (split[i]?[10] as? String ?? "").count > 0 {
+                    cell.circleLabel.isHidden = true
+                    cell.circleImage.isHidden = false
+                    
+                    var selectedIcon = (split[i]?[10] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                    if (split[i]?[11] as? Bool ?? true) {
+                        selectedIcon = selectedIcon + "_white"
+                    }
+                    
+                    cell.circleImage.image = UIImage(named: selectedIcon)
                 } else {
-                    cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(2).uppercased()
+                    cell.circleLabel.isHidden = false
+                    cell.circleImage.isHidden = true
+                    
+                    if (split[i]?[0] as? String ?? "").count == 1 {
+                        cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(1).uppercased()
+                    } else if (split[i]?[0] as? String ?? "").count == 0 {
+                        cell.circleLabel.text = ""
+                    } else {
+                        cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(2).uppercased()
+                    }
+                    
+                    if (split[i]?[11] as? Bool ?? true) {
+                        cell.circleLabel.textColor = .white
+                    } else {
+                        cell.circleLabel.textColor = .black
+                    }
                 }
                 break
             }
@@ -364,10 +384,14 @@ class splitTransactionTVC: UITableViewController {
             
             var userName:String?
             var userCreateDate:Date?
+            var userIcon:String?
+            var userIconLight:Bool?
             
             for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                 userName = data.value(forKey: "namePerson") as? String ?? ""
                 userCreateDate = data.value(forKey: "createDate") as? Date ?? Date()
+                userIcon = data.value(forKey: "icon") as? String ?? ""
+                userIconLight = data.value(forKey: "iconLight") as? Bool ?? true
             }
             
             var paidByUser:Bool?
@@ -382,6 +406,8 @@ class splitTransactionTVC: UITableViewController {
             // 7: ratio
             // 8: settled
             // 9: isUser
+            // 10: icon
+            // 11: iconLight
             
             var i = 0
             switch selectedSplit {
@@ -401,6 +427,11 @@ class splitTransactionTVC: UITableViewController {
                     paidByUser = false
                 }
                 
+                let personDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: personCreateDate)!
+                let personDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
+                
+                let queryOtherPerson = NSPredicate(format: "createDate > %@ AND createDate < %@ AND namePerson == %@", personDateMinus as NSDate, personDatePlus as NSDate, personName as NSString)
+                
                 split[0] = [ // User
                     0:userName ?? "User",
                     1:userCreateDate ?? Date(),
@@ -409,7 +440,9 @@ class splitTransactionTVC: UITableViewController {
                     6:paidByUser ?? false,
                     7:0.5,
                     8:0.00,
-                    9:true
+                    9:true,
+                    10:userIcon ?? "",
+                    11:userIconLight ?? true
                 ]
                 
                 split[1] = [ // The other person
@@ -420,7 +453,9 @@ class splitTransactionTVC: UITableViewController {
                     6:paidByUser ?? false,
                     7:0.5,
                     8:0.00,
-                    9:false
+                    9:false,
+                    10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                    11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                 ]
                 break
             case 2: // Multiple Persons Split
@@ -465,6 +500,11 @@ class splitTransactionTVC: UITableViewController {
                         }
                     }
                     
+                    let personDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: personCreateDate)!
+                    let personDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
+                    
+                    let queryOtherPerson = NSPredicate(format: "createDate > %@ AND createDate < %@ AND namePerson == %@", personDateMinus as NSDate, personDatePlus as NSDate, personName as NSString)
+                    
                     split[i] = [ // Persons
                         0:personName,
                         1:personCreateDate,
@@ -473,7 +513,9 @@ class splitTransactionTVC: UITableViewController {
                         6:paidByUser ?? false,
                         7:(1.00 / Double(persons.count)),
                         8:0.00,
-                        9:isUserTag
+                        9:isUserTag,
+                        10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                        11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                     ]
                     missing = (missing ?? 0.00) - ((split[0]?[7] as? Double ?? 0.00)*(amount ?? 0.00))
                     
@@ -539,6 +581,11 @@ class splitTransactionTVC: UITableViewController {
                         }
                     }
                     
+                    let personDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: personCreateDate)!
+                    let personDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
+                    
+                    let queryOtherPerson = NSPredicate(format: "createDate > %@ AND createDate < %@ AND namePerson == %@", personDateMinus as NSDate, personDatePlus as NSDate, personName as NSString)
+                    
                     split[i] = [ // Persons
                         0:personName,
                         1:personCreateDate,
@@ -549,7 +596,9 @@ class splitTransactionTVC: UITableViewController {
                         6:paidByUser ?? false,
                         7:(1.00 / Double(persons.count)),
                         8:0.00,
-                        9:isUserTag
+                        9:isUserTag,
+                        10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                        11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                     ]
                     missing = (missing ?? 0.00) - ((split[0]?[7] as? Double ?? 0.00)*(amount ?? 0.00))
                     
@@ -572,6 +621,9 @@ class splitTransactionTVC: UITableViewController {
         if newlyCreatedSplit {
             segmentChanged(selected: selectedSplitType ?? 0)
         }
+        
+        print("fsaldöfsaldk")
+        print(split)
     }
     
     @objc func cancel() {
@@ -612,6 +664,7 @@ class splitTransactionTVC: UITableViewController {
                 let down = (split[i]?[5] as? Date ?? Date()).compare(dateMinusPerson) == .orderedDescending
                 
                 if ((split[i]?[0] as? String ?? "") == (split[i]?[4] as? String ?? "")) && up && down {
+
                     if (split[i]?[9] as? Bool ?? false) {
                         cell.mainLabel.text = (split[i]?[0] as? String ?? "") + " [" + NSLocalizedString("youTheUser", comment: "I") + "]"
                     } else {
@@ -628,14 +681,34 @@ class splitTransactionTVC: UITableViewController {
                     cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
                     cell.circleLabel.textColor = UIColor.randomColor(color: colorInt, returnText: true, light: false)
                     
-                    if (split[i]?[0] as? String ?? "").count == 1 {
-                        cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(1).uppercased()
-                    } else if (split[i]?[0] as? String ?? "").count == 0 {
-                        cell.circleLabel.text = ""
+                    if (split[i]?[10] as? String ?? "").count > 0 {
+                        cell.circleLabel.isHidden = true
+                        cell.circleImage.isHidden = false
+                        
+                        var selectedIcon = (split[i]?[10] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                        if (split[i]?[11] as? Bool ?? true) {
+                            selectedIcon = selectedIcon + "_white"
+                        }
+                        
+                        cell.circleImage.image = UIImage(named: selectedIcon)
                     } else {
-                        cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(2).uppercased()
+                        cell.circleLabel.isHidden = false
+                        cell.circleImage.isHidden = true
+                        
+                        if (split[i]?[0] as? String ?? "").count == 1 {
+                            cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(1).uppercased()
+                        } else if (split[i]?[0] as? String ?? "").count == 0 {
+                            cell.circleLabel.text = ""
+                        } else {
+                            cell.circleLabel.text = (split[i]?[0] as? String ?? "").prefix(2).uppercased()
+                        }
+                        
+                        if (split[i]?[11] as? Bool ?? true) {
+                            cell.circleLabel.textColor = .white
+                        } else {
+                            cell.circleLabel.textColor = .black
+                        }
                     }
-                    
                     break
                 }
             }

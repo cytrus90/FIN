@@ -16,7 +16,11 @@ class cellUserSettings: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var cellMainStackView: UIStackView!
     // Username
     @IBOutlet weak var cellUsernameStackview: UIStackView!
+    
+    @IBOutlet weak var circleView: UIView!
     @IBOutlet weak var cellUsernameIcon: UIImageView!
+    @IBOutlet weak var circleLabel: UILabel!
+    
     @IBOutlet weak var cellUsernameText: UITextField!
     // Recovery Mail
     @IBOutlet weak var cellRecoveryIcon: UIImageView!
@@ -45,6 +49,8 @@ class cellUserSettings: UITableViewCell, UITextFieldDelegate {
         }
         cellUsernameText.keyboardType = .namePhonePad
         cellRecoveryText.keyboardType = .emailAddress
+        
+        initView()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -63,6 +69,11 @@ class cellUserSettings: UITableViewCell, UITextFieldDelegate {
             cellOutlineView.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 6.6)
             cellOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
+        
+        circleView.layer.cornerRadius = 10//circleView.bounds.size.width/2
+        circleView.clipsToBounds = true
+        
+        circleView.layer.borderWidth = 1
     }
 
     @IBAction func toggleSwitch(_ sender: Any) {

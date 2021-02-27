@@ -255,12 +255,12 @@ class listDetailTVC: UITableViewController {
             cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0), returnText: false, light: false)
             cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0), returnText: false, light: false).cgColor
             
-            if ((rowData[1] as? [Int:Any])?[5] as? String ?? "").count > 0 {
+            if ((rowData[1] as? [Int:Any])?[9] as? String ?? "").count > 0 {
                 cell.circleImage.isHidden = false
                 cell.circleLabel.isHidden = true
                 
-                var selectedIcon = ((rowData[1] as? [Int:Any])?[5] as? String ?? "").replacingOccurrences(of: "_while", with: "")
-                if ((rowData[1] as? [Int:Any])?[6] as? Bool ?? true) {
+                var selectedIcon = ((rowData[1] as? [Int:Any])?[9] as? String ?? "").replacingOccurrences(of: "_while", with: "")
+                if ((rowData[1] as? [Int:Any])?[10] as? Bool ?? true) {
                     selectedIcon = selectedIcon + "_white"
                 }
                 
@@ -275,7 +275,7 @@ class listDetailTVC: UITableViewController {
                     cell.circleLabel.text = ((rowData[1] as? [Int:Any])?[0] as? String ?? "").prefix(2).uppercased()
                 }
                 
-                if ((rowData[1] as? [Int:Any])?[6] as? Bool ?? true) {
+                if ((rowData[1] as? [Int:Any])?[10] as? Bool ?? true) {
                     cell.circleLabel.textColor = .white
                 } else {
                     cell.circleLabel.textColor = .black
@@ -315,12 +315,32 @@ class listDetailTVC: UITableViewController {
                 
                 cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false)
                 cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false).cgColor
-                cell.circleLabel.textColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: true, light: false)
                 
-                if ((rowData[indexPath.row] as? [Int:Any])?[0] as? String ?? "").count == 1 {
-                    cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(1).uppercased()
+                if ((rowData[indexPath.row] as? [Int:Any])?[9] as? String ?? "").count > 0 {
+                    cell.circleImage.isHidden = false
+                    cell.circleLabel.isHidden = true
+                    
+                    var selectedIcon = ((rowData[indexPath.row] as? [Int:Any])?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                    if ((rowData[indexPath.row] as? [Int:Any])?[10] as? Bool ?? true) {
+                        selectedIcon = selectedIcon + "_white"
+                    }
+                    
+                    cell.circleImage.image = UIImage(named: selectedIcon)
                 } else {
-                    cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(2).uppercased()
+                    cell.circleLabel.isHidden = false
+                    cell.circleImage.isHidden = true
+                    
+                    if ((rowData[indexPath.row] as? [Int:Any])?[0] as? String ?? "").count == 1 {
+                        cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(1).uppercased()
+                    } else {
+                        cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(2).uppercased()
+                    }
+                    
+                    if ((rowData[indexPath.row] as? [Int:Any])?[10] as? Bool ?? true) {
+                        cell.circleLabel.textColor = .white
+                    } else {
+                        cell.circleLabel.textColor = .black
+                    }
                 }
                 
                 cell.amountLabel.isHidden = true
@@ -334,15 +354,35 @@ class listDetailTVC: UITableViewController {
                     cell.descriptionLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "")
                 }
                 
-                if ((rowData[indexPath.row] as? [Int:Any])?[0] as? String ?? "").count == 1 {
-                    cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(1).uppercased()
+                if ((rowData[indexPath.row] as? [Int:Any])?[9] as? String ?? "").count > 0 {
+                    cell.circleImage.isHidden = false
+                    cell.circleLabel.isHidden = true
+                    
+                    var selectedIcon = ((rowData[indexPath.row] as? [Int:Any])?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                    if ((rowData[indexPath.row] as? [Int:Any])?[10] as? Bool ?? true) {
+                        selectedIcon = selectedIcon + "_white"
+                    }
+                    
+                    cell.circleImage.image = UIImage(named: selectedIcon)
                 } else {
-                    cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(2).uppercased()
+                    cell.circleLabel.isHidden = false
+                    cell.circleImage.isHidden = true
+                    
+                    if ((rowData[indexPath.row] as? [Int:Any])?[0] as? String ?? "").count == 1 {
+                        cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(1).uppercased()
+                    } else {
+                        cell.circleLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "").prefix(2).uppercased()
+                    }
+                    
+                    if ((rowData[indexPath.row] as? [Int:Any])?[10] as? Bool ?? true) {
+                        cell.circleLabel.textColor = .white
+                    } else {
+                        cell.circleLabel.textColor = .black
+                    }
                 }
                 
                 cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false)
                 cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false).cgColor
-                cell.circleLabel.textColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: true, light: false)
                 
                 cell.amountLabel.text = (getSymbol(forCurrencyCode: ((rowData[indexPath.row] as? [Int:Any])?[7] as? String ?? "EUR")) ?? "€") + " " + (numberFormatter.string(from: NSNumber(value: ((rowData[indexPath.row] as? [Int:Any])?[5] as? Double ?? 0.00))) ?? "")
                 
@@ -533,8 +573,8 @@ class listDetailTVC: UITableViewController {
             2:isSave ?? false,
             3:isIncome ?? false,
             4:isLiquid ?? true,
-            5:icon ?? "",
-            6:iconLight ?? true
+            9:icon ?? "",
+            10:iconLight ?? true
         ] as [Int : Any]
         rowData[1] = ramDictCategory
         
@@ -556,6 +596,8 @@ class listDetailTVC: UITableViewController {
             if first && !((split.value(forKey: "nameGroup") as? String ?? "").count <= 0) {
                 var groupName:String?
                 var groupColor:Int16?
+                var groupIcon:String?
+                var groupIconLight:Bool?
                 
                 let createDateGroupPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDateGroup") as? Date ?? Date()))!
                 let createDateGroupMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDateGroup") as? Date ?? Date()))!
@@ -563,12 +605,16 @@ class listDetailTVC: UITableViewController {
                 for group in loadBulkQueried(entitie: "SplitGroups", query: queryGroup) {
                     groupName = group.value(forKey: "nameGroup") as? String ?? ""
                     groupColor = group.value(forKey: "color") as? Int16 ?? 0
+                    groupIcon = group.value(forKey: "icon") as? String ?? ""
+                    groupIconLight = group.value(forKey: "iconLight") as? Bool ?? true
                 }
                 let ramDict = [
                     0:true, // Is Group
                     1:groupName ?? "",
                     2:groupColor ?? 0,
-                    8:split.value(forKey: "createDateGroup") as Any
+                    8:split.value(forKey: "createDateGroup") as Any,
+                    9:groupIcon ?? "",
+                    10:groupIconLight ?? true,
                 ] as [Int : Any]
                 rowData[rowData.count] = "Group"
                 rowData[rowData.count] = ramDict
@@ -585,6 +631,9 @@ class listDetailTVC: UITableViewController {
             var personColor:Int16?
             var isUser:Bool?
             
+            var personIcon:String?
+            var personIconLight:Bool?
+            
             var amountPerson:Double?
             var amountPersonHomeCurrency:Double?
             var isPersonWhoPaid:Bool?
@@ -597,6 +646,8 @@ class listDetailTVC: UITableViewController {
                 personName = person.value(forKey: "namePerson") as? String ?? "Person"
                 personColor = person.value(forKey: "color") as? Int16 ?? 0
                 isUser = person.value(forKey: "isUser") as? Bool ?? false
+                personIcon = person.value(forKey: "icon") as? String ?? ""
+                personIconLight = person.value(forKey: "iconLight") as? Bool ?? true
             }
             
             let up = createDatePersonMinus.compare((split.value(forKey: "createDatePersonWhoPaid") as? Date ?? Date())) == .orderedAscending
@@ -631,7 +682,9 @@ class listDetailTVC: UITableViewController {
                 5:amountPerson ?? 0.00,
                 6:amountPersonHomeCurrency ?? 0.00,
                 7:currencyCode ?? "EUR",
-                8:split.value(forKey: "createDatePerson") as Any
+                8:split.value(forKey: "createDatePerson") as Any,
+                9:personIcon ?? "",
+                10:personIconLight ?? true
             ] as [Int : Any]
             rowData[rowData.count] = ramDict
         }

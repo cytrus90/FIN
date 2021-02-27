@@ -26,6 +26,12 @@ class splitAddNewTVC: UITableViewController {
     var icon:String = ""
     var iconLight:Bool = true
     
+    var iconInitial:String?
+    var iconLightInitial:Bool?
+    var colorInitial:Int16?
+    
+    var iconSelectedType:Int?
+    
     var update:Int?
     var updateGroupOrPersonName:String?
     var updateCreateDate:Date?
@@ -57,8 +63,11 @@ class splitAddNewTVC: UITableViewController {
         super.viewDidLoad()
         // DataCheck
         checkDoubleUser()
-        
         checkIfUpdate()
+        
+        iconInitial = icon
+        colorInitial = color
+        iconLightInitial = iconLight
         
         self.title = ""
         
@@ -442,7 +451,9 @@ class splitAddNewTVC: UITableViewController {
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
                         1:(data.value(forKey: "namePerson") as? String ?? ""),
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
-                        3:isSelected
+                        3:isSelected,
+                        4:(data.value(forKey: "icon") as? String ?? ""),
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
                     ]
                     i = i + 1
                 }
@@ -477,7 +488,9 @@ class splitAddNewTVC: UITableViewController {
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
                         1:(data.value(forKey: "nameGroup") as? String ?? ""),
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
-                        3:isSelected
+                        3:isSelected,
+                        4:(data.value(forKey: "icon") as? String ?? ""),
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
                     ]
                     i = i + 1
                 }
@@ -494,7 +507,9 @@ class splitAddNewTVC: UITableViewController {
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
                         1:(data.value(forKey: "namePerson") as? String ?? ""),
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
-                        3:user
+                        3:user,
+                        4:(data.value(forKey: "icon") as? String ?? ""),
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
                     ]
                     i = i + 1
                 }
@@ -504,7 +519,9 @@ class splitAddNewTVC: UITableViewController {
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
                         1:(data.value(forKey: attribute ?? "") as? String ?? ""),
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
-                        3:false
+                        3:false,
+                        4:(data.value(forKey: "icon") as? String ?? ""),
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
                     ]
                     i = i + 1
                 }
@@ -698,8 +715,10 @@ class splitAddNewTVC: UITableViewController {
                     iconTVC.light = self.iconLight
                     if selection == 2 || selection == 0 { // Group
                         iconTVC.selectedType = 2
+                        self.iconSelectedType = 2
                     } else { // Person
                         iconTVC.selectedType = 1
+                        self.iconSelectedType = 1
                     }
                     
                     let navigationVC = UINavigationController(rootViewController: iconTVC)
@@ -711,37 +730,43 @@ class splitAddNewTVC: UITableViewController {
     
     @objc func groupPersonChanges(notification: Notification) {
         if let userInfo = notification.userInfo {
-            color = userInfo["selectedColor"] as? Int16 ?? color ?? 1
-            icon = userInfo["selectedIcon"] as? String ?? icon
-            iconLight = userInfo["selectedLight"] as? Bool ?? iconLight
-            
-            if let cell = splitAddTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellSplitAddNewMain {
-                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
-                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
+            if iconSelectedType == userInfo["selectedType"] as? Int ?? 0 {
+                color = userInfo["selectedColor"] as? Int16 ?? color ?? 1
+                icon = userInfo["selectedIcon"] as? String ?? icon
+                iconLight = userInfo["selectedLight"] as? Bool ?? iconLight
                 
-                if icon.count > 0 {
-                    cell.circleLabel.isHidden = true
-                    cell.circleImage.isHidden = false
+                if let cell = splitAddTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellSplitAddNewMain {
+                    cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
+                    cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
                     
-                    var selectedImage = icon.replacingOccurrences(of: "_white", with: "")
-                    if iconLight {
-                        selectedImage = selectedImage + "_white"
-                    }
-                    
-                    cell.circleImage.image = UIImage(named: selectedImage)
-                } else {
-                    cell.circleLabel.isHidden = false
-                    cell.circleImage.isHidden = true
-                    
-                    cell.circleLabel.text = labelText
-                    if iconLight {
-                        cell.circleLabel.textColor = .white
+                    if icon.count > 0 {
+                        cell.circleLabel.isHidden = true
+                        cell.circleImage.isHidden = false
+                        
+                        var selectedImage = icon.replacingOccurrences(of: "_white", with: "")
+                        if iconLight {
+                            selectedImage = selectedImage + "_white"
+                        }
+                        
+                        cell.circleImage.image = UIImage(named: selectedImage)
                     } else {
-                        cell.circleLabel.textColor = .black
+                        cell.circleLabel.isHidden = false
+                        cell.circleImage.isHidden = true
+                        
+                        cell.circleLabel.text = labelText
+                        if iconLight {
+                            cell.circleLabel.textColor = .white
+                        } else {
+                            cell.circleLabel.textColor = .black
+                        }
                     }
                 }
+                
+                print("fkljasdjsa")
+                print(iconSelectedType)
+                print(icon)
+                print(selection)
             }
-            //splitAddTableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
         }
     }
     
@@ -1608,9 +1633,11 @@ extension splitAddNewTVC {
                 if groupNameNew != nil {
                     fetchedData[0].setValue(groupNameNew, forKey: "nameGroup")
                 }
-                fetchedData[0].setValue(icon, forKey: "icon")
-                fetchedData[0].setValue(iconLight, forKey: "iconLight")
-                fetchedData[0].setValue(color, forKey: "color")
+                if selection != 1 && selection != 3 {
+                    fetchedData[0].setValue(icon, forKey: "icon")
+                    fetchedData[0].setValue(iconLight, forKey: "iconLight")
+                    fetchedData[0].setValue(color, forKey: "color")
+                }
                 fetchedData[0].setValue(personsNew, forKey: "persons")
                 try managedContext.save()
             }
@@ -1751,18 +1778,22 @@ extension splitAddNewTVC: cellSplitAddNewMainDelegate {
 extension splitAddNewTVC: cellSplitAddNewAddDelegate {
     func addButtonPressed() {
         if isInputtextValid() {
+            print("wwwwwwww")
             switch selection {
-            case 1:
+            case 1: // New Person
+                print("1")
                 saveSplitPerson(namePerson: inputText, color: color ?? 0)
                 updateGroupsIfAny()
                 navTitle = NSLocalizedString("addSuccessNavlabelPerson", comment: "Person Added")
                 break
-            case 2:
+            case 2: // Update Group
+                print("2")
                 updateGroupSplits(nameGroup: updateGroupOrPersonName ?? "", createDateGroup: updateCreateDate ?? Date(), newGroupName: inputText)
                 updateSplitGroup(groupName: updateGroupOrPersonName ?? "", groupCreateDate: updateCreateDate ?? Date(), personsNew: createPersonsForGroup(), groupNameNew: inputText)
                 navTitle = NSLocalizedString("updateSuccessNavlabelGroup", comment: "Group Updated")
                 break
-            case 3:
+            case 3: // Update Person
+                print("3")
                 updatePersonSplits(namePerson: updateGroupOrPersonName ?? "", createDatePerson: updateCreateDate ?? Date(), newNamePerson: inputText)
                 updateSplitPerson(personName: updateGroupOrPersonName ?? "", personCreateDate: updateCreateDate ?? Date(), personNameNew: inputText)
                 if editUser {
@@ -1770,7 +1801,8 @@ extension splitAddNewTVC: cellSplitAddNewAddDelegate {
                 }
                 navTitle = NSLocalizedString("updateSuccessNavlabelPerson", comment: "Person Updated")
                 break
-            default:
+            default: // New Group
+                print("0")
                 saveSplitSplitGroup(nameGroup: inputText, persons: createPersonsForGroup(), color: color ?? 0)
                 navTitle = NSLocalizedString("addSuccessNavlabelGroup", comment: "Group Added")
                 break
@@ -1778,7 +1810,7 @@ extension splitAddNewTVC: cellSplitAddNewAddDelegate {
             headerView.headerLabel.text = navTitle
             
             if selection == 2 || selection == 3 {
-                if ((updateGroupOrPersonName ?? "") != inputText) && !postedchangeHeaderTitleNotification {
+                if (((updateGroupOrPersonName ?? "") != inputText) || iconInitial != icon || colorInitial != color || iconLightInitial != iconLight) && !postedchangeHeaderTitleNotification {
                     let nc = NotificationCenter.default
                     nc.post(name: Notification.Name("changeHeaderTitle"), object: nil, userInfo: ["newHeaderTitle": inputText,"oldName": (updateGroupOrPersonName ?? "")])
                     nc.post(name: Notification.Name("groupPersonUpdated"), object: nil)

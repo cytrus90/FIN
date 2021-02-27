@@ -148,12 +148,32 @@ class importPreviewTVC: UITableViewController {
 
         cell.circleView.backgroundColor =  rowData[(indexPath.row)]?[9] as? UIColor ?? UIColor.blue
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
-        cell.circleLabel.textColor = rowData[(indexPath.row)]?[10] as? UIColor ?? UIColor.blue
         
-        if (rowData[(indexPath.row)]?[8] as? String ?? "").count == 1 {
-            cell.circleLabel.text = (rowData[(indexPath.row)]?[8] as? String ?? "").prefix(1).uppercased()
+        if (rowData[(indexPath.row)]?[13] as? String ?? "").count > 0 {
+            cell.circleLabel.isHidden = true
+            cell.circleImage.isHidden = false
+            
+            var selectedIcon = (rowData[(indexPath.row)]?[13] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+            if (rowData[(indexPath.row)]?[14] as? Bool ?? true) {
+                selectedIcon = selectedIcon + "_white"
+            }
+            
+            cell.circleImage.image = UIImage(named: selectedIcon)
         } else {
-            cell.circleLabel.text = (rowData[(indexPath.row)]?[8] as? String ?? "").prefix(2).uppercased()
+            cell.circleLabel.isHidden = false
+            cell.circleImage.isHidden = true
+            
+            if (rowData[(indexPath.row)]?[8] as? String ?? "").count == 1 {
+                cell.circleLabel.text = (rowData[(indexPath.row)]?[8] as? String ?? "").prefix(1).uppercased()
+            } else {
+                cell.circleLabel.text = (rowData[(indexPath.row)]?[8] as? String ?? "").prefix(2).uppercased()
+            }
+            
+            if (rowData[(indexPath.row)]?[14] as? Bool ?? true) {
+                cell.circleLabel.textColor = .white
+            } else {
+                cell.circleLabel.textColor = .black
+            }
         }
         
         cell.descriptionLabel.text = rowData[(indexPath.row)]?[6] as? String ?? ""
@@ -286,6 +306,8 @@ class importPreviewTVC: UITableViewController {
         //        10: Text Color for Circle
         //        11: Date as Date
         //        12: Color Int16
+        //        13: categoryIcon
+        //        14: categoryIconLight
         
         var i = 0
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
@@ -298,11 +320,16 @@ class importPreviewTVC: UITableViewController {
             var color = Int16(Int.random(in: 0...35))
             var categoryID:Int16 = -1
             
+            var categoryIcon = ""
+            var categoryIconLight = true
+            
             if (importRAM.value(forKey: "categoryID") as? Int16 ?? -1) != -1 {
                 categoryID = (importRAM.value(forKey: "categoryID") as? Int16 ?? -1)
                 
                 let queryCategory = NSPredicate(format: "cID == %i", categoryID)
                 color = loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0
+                categoryIcon = loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? ""
+                categoryIconLight = loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? true
             }
             
             rowData[i] = [
@@ -314,7 +341,9 @@ class importPreviewTVC: UITableViewController {
                 9:UIColor.randomColor(color: Int(color), returnText: false, light: false),
                 10:UIColor.randomColor(color: Int(color), returnText: true, light: false),
                 11:(importRAM.value(forKey: "dateTime") as? Date ?? Date()),
-                12:color
+                12:color,
+                13:categoryIcon,
+                14:categoryIconLight
             ]
             i = i + 1
         }
@@ -372,7 +401,8 @@ class importPreviewTVC: UITableViewController {
                     
                     var categoryID:Int16 = -1
                     var isSave = false
-                    let queryCategory = NSPredicate(format: "name == %@", importedRecords[i][indexCategory ?? 0] as NSString)
+                    
+                    let queryCategory = NSPredicate(format: "name == %@", String(importedRecords[i][indexCategory ?? 0]) as NSString)
                     for category in loadBulkQueried(entitie: "Categories", query: queryCategory) {
                         categoryID = category.value(forKey: "cID") as? Int16 ?? -1
                         isSave = category.value(forKey: "isSave") as? Bool ?? false
