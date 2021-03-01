@@ -579,8 +579,6 @@ class splitMasterTVC: UITableViewController {
                 i = i + 1
             }
         }
-        print("fdlsafjaslöd")
-        print(rowData)
     }
     
     @objc func addNew() {

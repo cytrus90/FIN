@@ -167,6 +167,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func detailListDisappeared() {
+        print("lkjfsdjaflö")
         initRows(clearRows: true)
     }
 
@@ -237,7 +238,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             let navigationVC = UINavigationController(rootViewController: transactionVC)
             self.present(navigationVC, animated: true, completion: nil)
         } else if indexPath == exportIndexPath && selectedRowForCells == 2 { // Export
-            if !showAdds {
+            if showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -258,7 +259,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 }
             }
         } else if indexPath == importIndexPath && selectedRowForCells == 2 { // Import
-            if !showAdds {
+            if showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -284,25 +285,26 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             }
         } else if selectedRowForCells == 1 { // Category
             if userDetailTable.cellForRow(at: indexPath) as? cellDetailCategory != nil {
-                if !showAdds {
-                    let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
-                    let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-                    let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-
-                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                        self.purchaseButtonPressed()
-                    }))
-                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-                    
-                    purchasePrompt.popoverPresentationController?.sourceView = self.view
-                    purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-                    
-                    self.present(purchasePrompt, animated: true)
-                } else {
+//                if !showAdds {
+//                    let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+//                    let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+//                    let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+//
+//                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+//                        self.purchaseButtonPressed()
+//                    }))
+//                    purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+//
+//                    purchasePrompt.popoverPresentationController?.sourceView = self.view
+//                    purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+//
+//                    self.present(purchasePrompt, animated: true)
+//                } else {
+                    initRows(indexPathSelected: indexPath)
                     selectedCategoryDetail = (userDetailCells[indexPath.row] as? [Int:Any])?[0] as? Int16 ?? -1
                     DispatchQueue.main.async {
                         self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
-                    }
+//                    }
                 }
             }
         }
@@ -709,7 +711,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func initRows(indexPathSelected: IndexPath = IndexPath(row: 0, section: 0), clearRows: Bool = false) {
-        if selectedRowForCells == 0 {
+        print("flkjsdöfadsfalflösdajk")
+        if selectedRowForCells == 0 || selectedRowForCells == 1 {
             for (row, _) in userDetailCells {
                 let indexPathRAM: IndexPath = IndexPath(row: row, section: 0)
                 if let cell = userDetailTable.cellForRow(at: indexPathRAM) as? cellDetailGeneralTVC {
@@ -721,15 +724,29 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                         cell.cellOutlineView.backgroundColor = .black
                         cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
                     }
+                } else if let cell = userDetailTable.cellForRow(at: indexPathRAM) as? cellDetailCategory {
+                    let userInterfaceStyle = traitCollection.userInterfaceStyle
+                    if userInterfaceStyle == .light {
+                        cell.cellOutlineView.backgroundColor = .white
+                        cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+                    } else {
+                        cell.cellOutlineView.backgroundColor = .black
+                        cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
+                    }
                 }
             }
             if !clearRows {
+                print("fjlkdsaf")
                 if let cell = userDetailTable.cellForRow(at: indexPathSelected) as? cellDetailGeneralTVC {
+                    cell.cellOutlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                    cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                } else if let cell = userDetailTable.cellForRow(at: indexPathSelected) as? cellDetailCategory {
+                    print("fjjfjf")
                     cell.cellOutlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                     cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                 }
             }
-        } else if selectedRowForCells == 1 || selectedRowForCells == 2 || selectedRowForCells == 3 {
+        } else if selectedRowForCells == 2 || selectedRowForCells == 3 {
             for (row, _) in userDetailCells {
                 let indexPathRAM: IndexPath = IndexPath(row: row, section: 0)
                 if let cell = userDetailTable.cellForRow(at: indexPathRAM) as? cellDetailGeneral {
@@ -1222,7 +1239,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func openIconPicker() {
-        if !showAdds {
+        if showAdds {
             let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -1277,7 +1294,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func addCategoryTabbed() {
-        if !showAdds {
+        if showAdds {
             let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -1339,21 +1356,21 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func reorderCategories() {
-        if showAdds {
-            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
-            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                self.purchaseButtonPressed()
-            }))
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-            
-            purchasePrompt.popoverPresentationController?.sourceView = self.view
-            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-            
-            self.present(purchasePrompt, animated: true)
-        } else {
+//        if showAdds {
+//            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+//            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+//            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+//
+//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+//                self.purchaseButtonPressed()
+//            }))
+//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+//
+//            purchasePrompt.popoverPresentationController?.sourceView = self.view
+//            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+//
+//            self.present(purchasePrompt, animated: true)
+//        } else {
             removeIDs.removeAll()
             userDetailCellsTmp.removeAll()
             userDetailCellsTmp = userDetailCells
@@ -1368,7 +1385,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             
             navigationItem.rightBarButtonItems?.removeAll()
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(categoryReorderDone))
-        }
+//        }
     }
     
     func changeCategoriesForOrder(selectedType:Int, reloadTable:Bool) {
@@ -2407,7 +2424,7 @@ extension userDetailVC: cellUserSettingsDelegate {
     
     // Settings - Set Username or Recovery Mail
     func updateText(newText: String, textFieldTag: Int) {
-        if !showAdds {
+        if showAdds {
             let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -2458,10 +2475,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                     
                     if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
                         let dict = userDetailCells[0] as! [Int:Any]
-                        
-                        print("flsdkjflsdfa")
-                        print((dict[0] as? String ?? ""))
-                        
+
                         if (dict[3] as? String ?? "").count <= 0 {
                             cell.circleLabel.isHidden = false
                             cell.cellUsernameIcon.isHidden = true

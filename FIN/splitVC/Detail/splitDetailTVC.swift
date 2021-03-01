@@ -59,6 +59,7 @@ class splitDetailTVC: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(groupPersonDeleted), name: Notification.Name("groupPersonDeleted"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeHeaderTitle(notification:)), name: Notification.Name("changeHeaderTitle"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(detailListDisappeared), name: Notification.Name("detailListDisappeared"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(groupPersonAdded), name: Notification.Name("groupPersonUpdated"), object: nil)
         
         numberFormatter.numberStyle = .decimal
 //        numberFormatter.locale = Locale.current

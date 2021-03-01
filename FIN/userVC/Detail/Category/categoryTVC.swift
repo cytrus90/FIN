@@ -52,6 +52,13 @@ class categoryTVC: UITableViewController {
         initView()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NotificationCenter.default.post(name: Notification.Name("detailListDisappeared"), object: nil, userInfo: nil)
+        }
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(traitCollection)
         initView()
@@ -279,6 +286,7 @@ class categoryTVC: UITableViewController {
                 
                 NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
                 NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name("detailListDisappeared"), object: nil, userInfo: nil)
                 self.dismiss(animated: true, completion: nil)
                 reloadAddView = true
             }))
@@ -378,7 +386,7 @@ class categoryTVC: UITableViewController {
     
     @objc func categoryIconChanges(notification: Notification) {
         if let userInfo = notification.userInfo {
-            if (userInfo["selectedType"] as? Int ?? -1) == 1 {
+            if (userInfo["selectedType"] as? Int ?? -1) == 0 {
                 categoryData[3] = userInfo["selectedColor"] as? Int16 ?? categoryData[3] as? Int16 ?? 0
                 categoryData[9] = userInfo["selectedIcon"] as? String ?? categoryData[9] as? String ?? ""
                 categoryData[10] = userInfo["selectedLight"] as? Bool ?? categoryData[10] as? Bool ?? true

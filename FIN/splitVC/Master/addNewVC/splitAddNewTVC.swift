@@ -761,11 +761,6 @@ class splitAddNewTVC: UITableViewController {
                         }
                     }
                 }
-                
-                print("fkljasdjsa")
-                print(iconSelectedType)
-                print(icon)
-                print(selection)
             }
         }
     }
@@ -1778,22 +1773,18 @@ extension splitAddNewTVC: cellSplitAddNewMainDelegate {
 extension splitAddNewTVC: cellSplitAddNewAddDelegate {
     func addButtonPressed() {
         if isInputtextValid() {
-            print("wwwwwwww")
             switch selection {
             case 1: // New Person
-                print("1")
                 saveSplitPerson(namePerson: inputText, color: color ?? 0)
                 updateGroupsIfAny()
                 navTitle = NSLocalizedString("addSuccessNavlabelPerson", comment: "Person Added")
                 break
             case 2: // Update Group
-                print("2")
                 updateGroupSplits(nameGroup: updateGroupOrPersonName ?? "", createDateGroup: updateCreateDate ?? Date(), newGroupName: inputText)
                 updateSplitGroup(groupName: updateGroupOrPersonName ?? "", groupCreateDate: updateCreateDate ?? Date(), personsNew: createPersonsForGroup(), groupNameNew: inputText)
                 navTitle = NSLocalizedString("updateSuccessNavlabelGroup", comment: "Group Updated")
                 break
             case 3: // Update Person
-                print("3")
                 updatePersonSplits(namePerson: updateGroupOrPersonName ?? "", createDatePerson: updateCreateDate ?? Date(), newNamePerson: inputText)
                 updateSplitPerson(personName: updateGroupOrPersonName ?? "", personCreateDate: updateCreateDate ?? Date(), personNameNew: inputText)
                 if editUser {
@@ -1802,7 +1793,6 @@ extension splitAddNewTVC: cellSplitAddNewAddDelegate {
                 navTitle = NSLocalizedString("updateSuccessNavlabelPerson", comment: "Person Updated")
                 break
             default: // New Group
-                print("0")
                 saveSplitSplitGroup(nameGroup: inputText, persons: createPersonsForGroup(), color: color ?? 0)
                 navTitle = NSLocalizedString("addSuccessNavlabelGroup", comment: "Group Added")
                 break

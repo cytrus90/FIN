@@ -621,9 +621,6 @@ class splitTransactionTVC: UITableViewController {
         if newlyCreatedSplit {
             segmentChanged(selected: selectedSplitType ?? 0)
         }
-        
-        print("fsaldöfsaldk")
-        print(split)
     }
     
     @objc func cancel() {
