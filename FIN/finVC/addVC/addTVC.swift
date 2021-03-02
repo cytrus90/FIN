@@ -1679,19 +1679,19 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 for i in 0...4 {
                     switch i {
                     case 1:
-                        self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 10, isIncome: false, isSave: false)
+                        self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 7, isIncome: false, isSave: false, icon: "cycling")
                         break
                     case 2:
-                        self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 2, isIncome: false, isSave: false)
+                        self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 20, isIncome: false, isSave: false, icon: "")
                         break
                     case 3:
-                        self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 4, isIncome: true, isSave: false)
+                        self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 5, isIncome: true, isSave: false, icon: "papermoney")
                         break
                     case 4:
-                        self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true)
+                        self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true, icon: "safe")
                         break
                     default:
-                        self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 8, isIncome: false, isSave: false)
+                        self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 34, isIncome: false, isSave: false, icon: "prefabhouse")
                         break
                     }
                 }
@@ -2114,7 +2114,7 @@ extension addTVC {
         }
     }
     
-    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool) {
+    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool, icon: String?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let managedContext = appDelegate!.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -2130,6 +2130,8 @@ extension addTVC {
         categorySave.isIncome = isIncome
         categorySave.isSave = isSave
         categorySave.createDate = Date()
+        categorySave.icon = icon
+        categorySave.iconLight = true
         
         do {
             try managedContext.save()

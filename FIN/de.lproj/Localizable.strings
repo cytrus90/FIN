@@ -15,22 +15,30 @@
 "swipeText" = "Bildschirm berühren";
 
 // Second (Add categories)
-"secondDescriptionLabelText" = "Als erstes sollten Sie bitte Ihre Kategorien erstellen, unter 'Kategorien' im Tab: 'Benutzer'.";
+"secondDescriptionLabelText" = "Als erstes sollten Sie bitte Ihre Kategorien erstellen, unter 'Kategorien' im letzten Tab: 'Benutzer'.";
 
 // Third (Type of categories)
-"thirdSecondDescriptionText" = "Neben den typischen Einnahmen & Ausgaben Kategorien, können Sie auch eine 'Spar' Kategorie ausgewählen.";
+"thirdSecondDescriptionText" = "Neben den typischen Einnahmen & Ausgaben Kategorien, können Sie auch eine 'Spar' Kategorie auswählen.";
 "thirdDescriptionText" = "Eine 'Spar' Kategorie kann wie ein extra Konto für Ihr Erspartes gesehen werden, welches die sofort verfügbaren Mittel reduziert.";
 
-// Third Two (Initial value)
-"thirdTwoSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
-"thirdTwoDescriptionText" = "Für jede Kategorie kann ein Start-Betrag definiert werden.";
+// Third Two (Budget)
+"thirdTwoSecondDescriptionText" = "Wenn gesetzt, erscheint das Budget in der Übersicht.";
+"thirdTwoDescriptionText" = "Es kann für jede Kategorie ein Monats-Budget (oder Ziel) gesetzt werden";
+
+// Third Three (Initial value)
+"thirdThreeSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
+"thirdThreeDescriptionText" = "Weiters, kann für jede Kategorie ein Start-Betrag definiert werden.";
+
+// Third Four (Icon)
+"thirdFourSecondDescriptionText" = "Selbstverständlich können auch die Icons von Personen & Gruppen angepasst werden.";
+"thirdFourDescriptionText" = "Das Icon kann durch Antippen geändert werden.";
 
 // Fourth (Add Transaction)
-"fourthDescriptionText" = "Zum Hinzugügen einer Transaktion einfach + in der 'Übersicht' drücken (oder Tab 2x drücken).";
+"fourthDescriptionText" = "Zum Hinzufügen einer Transaktion einfach + in der 'Übersicht' antippen (oder Tab 2x drücken).";
 
 // Final (Go)
 "welcomeLabelFinalText" = "Fertig";
-"finalDescriptionLabelText" = "Das sollte für den Anfang reichen. Viel Erfolg beim Tracken Ihrer Finanzen!";
+"finalDescriptionLabelText" = "Das sollte für den Anfang reichen. Viel Spaß beim Aufzeichnen Ihrer Finanzen!";
 "goButtonText" = "Auf gehts!";
 
 // #### Update ####
@@ -39,8 +47,12 @@
 "updateSwipeText" = "Bildschirm berühren";
 
 // Second
-"twoUpdateDescriptionText" = "Es kann jetzt für jede Kategorie ein Start-Betrag definiert werden.";
-"twoUpdateSecondDescriptionText" = "Dieser erhöht/senkt die Gesamtsumme, ohne anderswo aufzuscheinen.";
+"twoUpdateDescriptionText" = "Es kann jetzt für jede Kategorie ein Monats-Budget definiert werden.";
+"twoUpdateSecondDescriptionText" = "Wenn gesetzt, erscheint das Budget in der Übersicht.";
+
+// Third
+"threeUpdateDescriptionText" = "Weiters, können Sie nun auch die Icons ändern.";
+"threeUpdateSecondDescriptionText" = "Selbstverständlich können auch die Icons von Personen & Gruppen angepasst werden.";
 
 //Final
 
@@ -48,7 +60,7 @@
 
 // #### LOGIN
 "updateLabelFinalText" = "Fertig";
-"updateFinalDescriptionLabelText" = "Das wars's auch schon. Weiterhin viel Erfolg beim Tracken Ihrer Finanzen!";
+"updateFinalDescriptionLabelText" = "Das wars's auch schon. Weiterhin viel Erfolg beim Aufzeichnen Ihrer Finanzen!";
 "Authentication" = "Entsperren";
 
 "goodMorning" = "Guten Morgen";

@@ -259,7 +259,7 @@ class listDetailTVC: UITableViewController {
                 cell.circleImage.isHidden = false
                 cell.circleLabel.isHidden = true
                 
-                var selectedIcon = ((rowData[1] as? [Int:Any])?[9] as? String ?? "").replacingOccurrences(of: "_while", with: "")
+                var selectedIcon = ((rowData[1] as? [Int:Any])?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
                 if ((rowData[1] as? [Int:Any])?[10] as? Bool ?? true) {
                     selectedIcon = selectedIcon + "_white"
                 }

@@ -90,7 +90,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
-        
+        // 1402 x 897
         if duplicateIDs.count > 0 {
             for duplicate in duplicateIDs {
                 let nextID = loadNextCategoryID()

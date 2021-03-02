@@ -297,7 +297,7 @@ class listMasterTVC: UITableViewController {
             cell.circleImage.isHidden = false
             cell.circleLabel.isHidden = true
             
-            var selectedImage = (transferData[(indexPath.row)]?[14] as? String ?? "").replacingOccurrences(of: "_while", with: "")
+            var selectedImage = (transferData[(indexPath.row)]?[14] as? String ?? "").replacingOccurrences(of: "_white", with: "")
             if (transferData[(indexPath.row)]?[15] as? Bool ?? true) {
                 selectedImage = selectedImage + "_white"
             }

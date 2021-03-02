@@ -167,7 +167,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func detailListDisappeared() {
-        print("lkjfsdjaflö")
         initRows(clearRows: true)
     }
 
@@ -711,7 +710,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func initRows(indexPathSelected: IndexPath = IndexPath(row: 0, section: 0), clearRows: Bool = false) {
-        print("flkjsdöfadsfalflösdajk")
         if selectedRowForCells == 0 || selectedRowForCells == 1 {
             for (row, _) in userDetailCells {
                 let indexPathRAM: IndexPath = IndexPath(row: row, section: 0)
@@ -736,12 +734,10 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 }
             }
             if !clearRows {
-                print("fjlkdsaf")
                 if let cell = userDetailTable.cellForRow(at: indexPathSelected) as? cellDetailGeneralTVC {
                     cell.cellOutlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                     cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                 } else if let cell = userDetailTable.cellForRow(at: indexPathSelected) as? cellDetailCategory {
-                    print("fjjfjf")
                     cell.cellOutlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                     cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
                 }
@@ -1202,40 +1198,27 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func initCategories() {
-        let categoryTitle = NSLocalizedString("createCategoriesTitle", comment: "Delete Transaction Title")
-        let categoryPrompt = UIAlertController(title: categoryTitle, message: NSLocalizedString("createCategoriesText", comment: "Create Categories Text"), preferredStyle: .alert)
-
-        categoryPrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .default, handler: { action in
-            
-            for i in 0...4 {
-                switch i {
-                case 1:
-                    self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 10, isIncome: false, isSave: false)
-                    break
-                case 2:
-                    self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 2, isIncome: false, isSave: false)
-                    break
-                case 3:
-                    self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 4, isIncome: true, isSave: false)
-                    break
-                case 4:
-                    self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true)
-                    break
-                default:
-                    self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 8, isIncome: false, isSave: false)
-                    break
-                }
+        for i in 0...4 {
+            switch i {
+            case 1:
+                self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 7, isIncome: false, isSave: false, icon: "cycling")
+                break
+            case 2:
+                self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 20, isIncome: false, isSave: false, icon: "")
+                break
+            case 3:
+                self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 5, isIncome: true, isSave: false, icon: "papermoney")
+                break
+            case 4:
+                self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true, icon: "safe")
+                break
+            default:
+                self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 34, isIncome: false, isSave: false, icon: "prefabhouse")
+                break
             }
-            let nc = NotificationCenter.default
-            nc.post(name: Notification.Name("categoryChanged"), object: nil)
-        }))
-        
-        categoryPrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .cancel, handler: nil ))
-            
-        categoryPrompt.popoverPresentationController?.sourceView = self.view
-        categoryPrompt.popoverPresentationController?.sourceRect = self.view.bounds
-            
-        self.present(categoryPrompt, animated: true)
+        }
+        let nc = NotificationCenter.default
+        nc.post(name: Notification.Name("categoryChanged"), object: nil)
     }
     
     @objc func openIconPicker() {
@@ -1634,7 +1617,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         }
     }
     
-    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool) {
+    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool, icon:String?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let managedContext = appDelegate!.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -1648,6 +1631,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         categorySave.countEntries = countEntries
         categorySave.isIncome = isIncome
         categorySave.isSave = isSave
+        categorySave.icon = icon
+        categorySave.iconLight = true
         
         do {
             try managedContext.save()

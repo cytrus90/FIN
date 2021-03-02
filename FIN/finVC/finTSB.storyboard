@@ -17,17 +17,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="amountCell" id="2bE-gv-FYd" customClass="cellAmountTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="414" height="218"/>
+                                <rect key="frame" x="0.0" y="28" width="414" height="250"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2bE-gv-FYd" id="pdM-N8-n2H">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="218"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="250"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xf3-XK-E0I">
-                                            <rect key="frame" x="15" y="5" width="384" height="198"/>
+                                            <rect key="frame" x="15" y="5" width="384" height="230"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="2e6-Tb-9nc">
-                                                    <rect key="frame" x="20" y="20" width="344" height="158"/>
+                                                    <rect key="frame" x="20" y="20" width="344" height="190"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="g29-lS-At6">
                                                             <rect key="frame" x="0.0" y="0.0" width="344" height="43"/>
@@ -60,10 +60,10 @@
                                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
                                                         </textField>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="tE3-Y1-pIH">
-                                                            <rect key="frame" x="0.0" y="87" width="344" height="71"/>
+                                                            <rect key="frame" x="0.0" y="87" width="344" height="103"/>
                                                             <subviews>
                                                                 <view contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Nn-rH-7Hc" customClass="TagListView" customModule="TagListView">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="344" height="22"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="344" height="50"/>
                                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                     <userDefinedRuntimeAttributes>
                                                                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -94,10 +94,10 @@
                                                                     </userDefinedRuntimeAttributes>
                                                                 </view>
                                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="hzY-nf-ykn">
-                                                                    <rect key="frame" x="0.0" y="25" width="344" height="46"/>
+                                                                    <rect key="frame" x="0.0" y="53" width="344" height="50"/>
                                                                     <subviews>
                                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kkf-D2-pXC" customClass="TagListView" customModule="TagListView">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="169.5" height="46"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="169.5" height="50"/>
                                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                             <userDefinedRuntimeAttributes>
                                                                                 <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
@@ -119,7 +119,7 @@
                                                                             </userDefinedRuntimeAttributes>
                                                                         </view>
                                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yrv-S6-6yJ">
-                                                                            <rect key="frame" x="174.5" y="0.0" width="169.5" height="46"/>
+                                                                            <rect key="frame" x="174.5" y="0.0" width="169.5" height="50"/>
                                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                             <state key="normal" title="Split Bill"/>
                                                                             <connections>
@@ -162,7 +162,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="dateCell" id="JS9-Em-oRw" customClass="cellDateTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="246" width="414" height="80"/>
+                                <rect key="frame" x="0.0" y="278" width="414" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JS9-Em-oRw" id="UoZ-oD-Dqm">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="80"/>
@@ -274,7 +274,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="dateCellNew" id="p48-t5-Zaj" customClass="cellDateNewTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="326" width="414" height="111"/>
+                                <rect key="frame" x="0.0" y="358" width="414" height="111"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="p48-t5-Zaj" id="Pg8-AD-Bze">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="111"/>
@@ -401,7 +401,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="categoryCell" id="DCf-U3-deZ" customClass="cellCategoryTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="437" width="414" height="29"/>
+                                <rect key="frame" x="0.0" y="469" width="414" height="29"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DCf-U3-deZ" id="AM9-Ob-XIR">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="29"/>
@@ -439,7 +439,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="cellCategoryNewTVC" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cellCategoryNewTVC" id="QBI-Yc-lA0" customClass="cellCategoryNewTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="466" width="414" height="65"/>
+                                <rect key="frame" x="0.0" y="498" width="414" height="65"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="QBI-Yc-lA0" id="a5c-xa-j1u">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="65"/>
@@ -473,7 +473,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="addCell" id="7LR-M8-mhy" customClass="cellAddTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="531" width="414" height="80"/>
+                                <rect key="frame" x="0.0" y="563" width="414" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="7LR-M8-mhy" id="BFy-sI-13U">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="80"/>
@@ -520,7 +520,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="saveDepositCell" id="XEg-O8-WDT" customClass="cellSaveDeposit" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="611" width="414" height="144"/>
+                                <rect key="frame" x="0.0" y="643" width="414" height="144"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XEg-O8-WDT" id="02I-gf-Ftm">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="144"/>
@@ -1892,14 +1892,6 @@
             <point key="canvasLocation" x="1556.521739130435" y="-1428.3482142857142"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="2Nn-rH-7Hc">
-            <size key="intrinsicContentSize" width="344" height="22"/>
-        </designable>
-        <designable name="Kkf-D2-pXC">
-            <size key="intrinsicContentSize" width="169.5" height="46"/>
-        </designable>
-    </designables>
     <resources>
         <image name="arrow.down" catalog="system" width="120" height="128"/>
         <image name="arrowRight" width="15" height="25"/>

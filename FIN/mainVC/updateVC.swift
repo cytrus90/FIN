@@ -195,6 +195,37 @@ class updateVC: UIViewController {
                 }
             }
             break
+        case 2:
+            if light {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_4")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_4")
+                    }
+                }
+            } else {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_4")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_4")
+                    }
+                }
+            }
+            break
         default:
             break
         }
@@ -208,8 +239,11 @@ class updateVC: UIViewController {
             break
         case 1:
             currentView = 2
-            twoToThreeAnimation()
+            firstToSecond2Animation()
             break
+        case 2:
+            currentView = 3
+            twoToThreeAnimation()
         default:
             break
         }
@@ -279,6 +313,29 @@ class updateVC: UIViewController {
         })
     }
     
+    func firstToSecond2Animation() {
+        swipeGesture.isEnabled = false
+        tabGesture.isEnabled = false
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+            self.descriptionLabel.alpha = 0.0
+            self.secondSubLabel.alpha = 0.0
+            self.fourthImageView.alpha = 0.0
+        }, completion: { _ in
+            self.descriptionLabel.text = NSLocalizedString("threeUpdateSecondDescriptionText", comment: "Description")
+            self.secondSubLabel.text = NSLocalizedString("threeUpdateDescriptionText", comment: "Subtext")
+            self.initImageViews()
+            UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.descriptionLabel.alpha = 1.0
+                self.secondSubLabel.alpha = 1.0
+                self.fourthImageView.alpha = 1.0
+            })
+        })
+        
+        swipeGesture.isEnabled = true
+        tabGesture.isEnabled = true
+    }
+    
     func twoToThreeAnimation() {
         swipeGesture.isEnabled = false
         tabGesture.isEnabled = false
@@ -287,9 +344,10 @@ class updateVC: UIViewController {
             self.descriptionLabel.alpha = 0.0
             self.secondSubLabel.alpha = 0.0
             self.fourthImageView.alpha = 0.0
+        }, completion: { _ in
             self.descriptionLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor).isActive = true
             self.descriptionLabel.text = NSLocalizedString("updateFinalDescriptionLabelText", comment: "Final Text")
-        }, completion: { _ in
+            
             let firstWidth = self.firstImageView.frame.width
             
             self.firstImageX1Constraint?.isActive = false

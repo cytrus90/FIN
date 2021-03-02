@@ -236,7 +236,7 @@
         <!--User SplitVC-->
         <scene sceneID="LtW-XN-ccQ">
             <objects>
-                <splitViewController storyboardIdentifier="userSplitVC" useStoryboardIdentifierAsRestorationIdentifier="YES" allowDoubleColumnStyle="YES" id="4EL-Z5-jrJ" customClass="userSplitVC" customModule="FIN" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="userSplitVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="4EL-Z5-jrJ" customClass="userSplitVC" customModule="FIN" customModuleProvider="target" sceneMemberID="viewController">
                     <connections>
                         <segue destination="URv-O6-oNl" kind="relationship" relationship="detailViewController" id="F28-XI-9oc"/>
                         <segue destination="4PM-ir-DYu" kind="relationship" relationship="masterViewController" id="adG-AS-2QL"/>

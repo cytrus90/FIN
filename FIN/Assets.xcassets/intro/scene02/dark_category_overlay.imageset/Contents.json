@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "dark_category_overlay.png",
+      "filename" : "light_category_1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "dark_category_overlay-1.png",
+      "filename" : "light_category_1-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "dark_category_overlay-2.png",
+      "filename" : "light_category_1-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

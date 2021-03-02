@@ -283,6 +283,68 @@ class introVC: UIViewController {
             if light {
                 if langStr == "DE" || langStr == "de" {
                     if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_3")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_3")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_3")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_3")
+                    }
+                }
+            } else {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_3")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_3")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_3")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_3")
+                    }
+                }
+            }
+            break
+        case 5:
+            if light {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_4")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "light_category_overlay_4")
+                    }
+                }
+            } else {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_4")
+                    }
+                } else {
+                    if UIDevice().model.contains("iPad") {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_iPad_4")
+                    } else {
+                        fourthImageView.image = UIImage(named: "dark_category_overlay_4")
+                    }
+                }
+            }
+            break
+        case 6:
+            if light {
+                if langStr == "DE" || langStr == "de" {
+                    if UIDevice().model.contains("iPad") {
                         firstImageView.image = UIImage(named: "DE_light_add_iPad")
                         secondImageView.image = UIImage(named: "light_add_overlay_iPad")
                     } else {
@@ -348,9 +410,15 @@ class introVC: UIViewController {
             threeToFourthAnimation()
         case 3:
             currentView = 4
-            fourthToFifthAnimation()
+            threeToFourth2Animation()
         case 4:
             currentView = 5
+            threeToFourth3Animation()
+        case 5:
+            currentView = 6
+            fourthToFifthAnimation()
+        case 6:
+            currentView = 7
             fifthToFinalAnimation()
         default:
             break
@@ -372,9 +440,15 @@ class introVC: UIViewController {
             threeToFourthAnimation()
         case 3:
             currentView = 4
-            fourthToFifthAnimation()
+            threeToFourth2Animation()
         case 4:
             currentView = 5
+            threeToFourth3Animation()
+        case 5:
+            currentView = 6
+            fourthToFifthAnimation()
+        case 6:
+            currentView = 7
             fifthToFinalAnimation()
         default:
             break
@@ -506,6 +580,52 @@ class introVC: UIViewController {
         }, completion: { _ in
             self.secondSubLabel.text = NSLocalizedString("thirdTwoDescriptionText", comment: "Description")
             self.descriptionLabel.text = NSLocalizedString("thirdTwoSecondDescriptionText", comment: "Subtext")
+            self.initImageViews()
+            UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.descriptionLabel.alpha = 1.0
+                self.secondSubLabel.alpha = 1.0
+                self.fourthImageView.alpha = 1.0
+            })
+        })
+        
+        swipeGesture.isEnabled = true
+        tabGesture.isEnabled = true
+    }
+    
+    func threeToFourth2Animation() {
+        swipeGesture.isEnabled = false
+        tabGesture.isEnabled = false
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+            self.descriptionLabel.alpha = 0.0
+            self.secondSubLabel.alpha = 0.0
+            self.fourthImageView.alpha = 0.0
+        }, completion: { _ in
+            self.secondSubLabel.text = NSLocalizedString("thirdThreeDescriptionText", comment: "Description")
+            self.descriptionLabel.text = NSLocalizedString("thirdThreeSecondDescriptionText", comment: "Subtext")
+            self.initImageViews()
+            UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.descriptionLabel.alpha = 1.0
+                self.secondSubLabel.alpha = 1.0
+                self.fourthImageView.alpha = 1.0
+            })
+        })
+        
+        swipeGesture.isEnabled = true
+        tabGesture.isEnabled = true
+    }
+    
+    func threeToFourth3Animation() {
+        swipeGesture.isEnabled = false
+        tabGesture.isEnabled = false
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+            self.descriptionLabel.alpha = 0.0
+            self.secondSubLabel.alpha = 0.0
+            self.fourthImageView.alpha = 0.0
+        }, completion: { _ in
+            self.secondSubLabel.text = NSLocalizedString("thirdFourDescriptionText", comment: "Description")
+            self.descriptionLabel.text = NSLocalizedString("thirdFourSecondDescriptionText", comment: "Subtext")
             self.initImageViews()
             UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseInOut, animations: {
                 self.descriptionLabel.alpha = 1.0

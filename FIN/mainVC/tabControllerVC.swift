@@ -86,9 +86,9 @@ class tabController: UITabBarController {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
         
-        let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
+        let numbersOpened = 0//UserDefaults.standard.integer(forKey: "numbersOpened")
         
-        let update130 = UserDefaults.standard.integer(forKey: "update130")
+        let update140 = UserDefaults.standard.integer(forKey: "update140")
         
         if numbersOpened == 0 {
             if !UIDevice().model.contains("iPad") {
@@ -102,8 +102,8 @@ class tabController: UITabBarController {
             self.present(navigationVC, animated: true, completion: nil)
             
             UserDefaults.standard.setValue((numbersOpened+1), forKey: "numbersOpened")
-            UserDefaults.standard.setValue(1, forKey: "update130")
-        } else if update130 == 0 {
+            UserDefaults.standard.setValue(1, forKey: "update140")
+        } else if update140 == 0 {
             if !UIDevice().model.contains("iPad") {
                 AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
             }

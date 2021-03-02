@@ -21,17 +21,25 @@
 "thirdSecondDescriptionText" = "Beside the typical Expense & Income categories, you can also choose a Savings category.";
 "thirdDescriptionText" = "A Savings category is like a separate account for your invested/saved money, which reduces your immediate liquidity.";
 
-// Third Two (Initial value)
-"thirdTwoSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
-"thirdTwoDescriptionText" = "For every category you can set an initial amount.";
+// Third Two (Budget)
+"thirdTwoSecondDescriptionText" = "If set, the budget is shown on the overview tab.";
+"thirdTwoDescriptionText" = "For each category you can set a budget (or goal) for a month.";
+
+// Third Three (Initial value)
+"thirdThreeSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
+"thirdThreeDescriptionText" = "For every category you can set an initial amount.";
+
+// Third Four (Icon)
+"thirdFourSecondDescriptionText" = "Of course, also the icons from persons and groups can be edited.";
+"thirdFourDescriptionText" = "You can edit the icon by tapping it.";
 
 // Fourth (Add Transaction)
-"fourthDescriptionText" = "To add a new transaction, simply press + in the tab: 'Overview' (or press the tab 2x).";
+"fourthDescriptionText" = "To add a new transaction, simply press + in the tab: 'Overview' (or press the tab twice).";
 
 // Final (Go)
 "welcomeLabelFinalText" = "Ready";
 "finalDescriptionLabelText" = "That should get you started. May you do well tracking your finances!";
-"goButtonText" = "Let's go!";
+"goButtonText" = "Let's start!";
 
 // #### Update ####
 // First
@@ -39,8 +47,12 @@
 "updateSwipeText" = "Touch to see changes";
 
 // Second
-"twoUpdateDescriptionText" = "You can now set an initial amount for each category.";
-"twoUpdateSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
+"twoUpdateDescriptionText" = "You can now set a monthly budget for each category.";
+"twoUpdateSecondDescriptionText" = "If set, the budget is shown on the overview tab.";
+
+// Third
+"threeUpdateDescriptionText" = "What is more, you can now edit the icon by tapping it.";
+"threeUpdateSecondDescriptionText" = "Of course, also the icons from persons and groups can be edited.";
 
 //Final
 "updateLabelFinalText" = "Ready";
@@ -318,7 +330,7 @@
 "openSplitsOfPersonInGroupText" = "Cannot remove person from group. There are still bills to settle.";
 
 // Detail
-"tabToSettle" = "Tab to settle";
+"tabToSettle" = "Tap to settle";
 "settleNavitem" = "Settle";
 "personsInGroup" = "Persons in ";
 "transactionsForPerson" = "Open transactions for ";

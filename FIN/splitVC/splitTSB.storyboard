@@ -612,7 +612,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="splitDetailTVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="GCY-3G-V59" customClass="splitDetailTVC" customModule="FIN" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="uL1-mU-alk">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.90196078430000004" green="0.94901960780000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
@@ -892,7 +892,7 @@
             <objects>
                 <navigationController id="6z4-Mp-mo2" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="sx0-3x-YVb">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -922,7 +922,7 @@
         <!--SplitVC-->
         <scene sceneID="2eh-2s-m7B">
             <objects>
-                <splitViewController storyboardIdentifier="splitVC" allowDoubleColumnStyle="YES" id="Y3b-ue-HD7" customClass="splitVC" customModule="FIN" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="splitVC" id="Y3b-ue-HD7" customClass="splitVC" customModule="FIN" customModuleProvider="target" sceneMemberID="viewController">
                     <connections>
                         <segue destination="dBN-1T-Mb1" kind="relationship" relationship="masterViewController" id="TQS-dT-rqR"/>
                         <segue destination="6z4-Mp-mo2" kind="relationship" relationship="detailViewController" id="sA9-Rs-dWq"/>
@@ -952,7 +952,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="mrD-eZ-yws"/>
+        <segue reference="sA9-Rs-dWq"/>
         <segue reference="BBQ-wZ-pJX"/>
     </inferredMetricsTieBreakers>
     <resources>
