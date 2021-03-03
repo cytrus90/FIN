@@ -27,10 +27,10 @@
 
 // Third Three (Initial value)
 "thirdThreeSecondDescriptionText" = "This value increases/decreases the overall sum without appearing anywhere else.";
-"thirdThreeDescriptionText" = "For every category you can set an initial amount.";
+"thirdThreeDescriptionText" = "Additionally, you can set an initial amount for every category.";
 
 // Third Four (Icon)
-"thirdFourSecondDescriptionText" = "Of course, also the icons from persons and groups can be edited.";
+"thirdFourSecondDescriptionText" = "Of course, also the icons from persons and groups can be changed.";
 "thirdFourDescriptionText" = "You can edit the icon by tapping it.";
 
 // Fourth (Add Transaction)

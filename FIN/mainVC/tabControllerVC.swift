@@ -86,7 +86,7 @@ class tabController: UITabBarController {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
         
-        let numbersOpened = 0//UserDefaults.standard.integer(forKey: "numbersOpened")
+        let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
         
         let update140 = UserDefaults.standard.integer(forKey: "update140")
         
@@ -114,7 +114,7 @@ class tabController: UITabBarController {
             navigationVC.isNavigationBarHidden = true
             self.present(navigationVC, animated: true, completion: nil)
             
-            UserDefaults.standard.setValue(1, forKey: "update130")
+            UserDefaults.standard.setValue(1, forKey: "update140")
         } else if numbersOpened == 10 {
             if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 SKStoreReviewController.requestReview(in: scene)

@@ -186,22 +186,22 @@ class userMasterVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row != 5 {
-            if !showAdds && indexPath.row == 2 { // Import / Export, not bought
-                let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
-                let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-                let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-
-                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                    self.purchaseButtonPressed()
-                }))
-                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+//            if !showAdds && indexPath.row == 2 { // Import / Export, not bought
+//                let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+//                let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+//                let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+//
+//                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+//                    self.purchaseButtonPressed()
+//                }))
+//                purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+//
+//                purchasePrompt.popoverPresentationController?.sourceView = self.view
+//                purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+//
+//                self.present(purchasePrompt, animated: true)
                 
-                purchasePrompt.popoverPresentationController?.sourceView = self.view
-                purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-                
-                self.present(purchasePrompt, animated: true)
-                
-            } else {
+//            } else {
                 initRows(indexPathSelected: indexPath)
         //        UISelectionFeedbackGenerator().selectionChanged()
                 selectedRowIndex = indexPath.row
@@ -219,7 +219,7 @@ class userMasterVC: UITableViewController {
                     selectedRowIndex = nil
                     self.navigationController?.pushViewController(userDetailVC, animated: true)
                 }
-            }
+//            }
         }
     }
     
