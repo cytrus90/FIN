@@ -414,6 +414,8 @@
 "cutOffTitle" = "Information";
 "cutOffInfoText" = "Bei großen Datenmengen kann es passieren, dass die App bei bestimmten Schritten langsam wird. Um das zu vermeiden, kann hier ausgewählt werden, dass nur Transaktionen der letzten 2 Jahre angezeigt werden. Deren Summen werden natürlich in die Berechnungen miteinbezogen.";
 
+"recoveryEmailPlaceholder" = "Wiederherstellungs E-Mail";
+
 // #### Regular Payments ####
 "nextText" = "Nächste: ";
 "noRegularPayment" = "Keine regelmäßigen Zahlungen";

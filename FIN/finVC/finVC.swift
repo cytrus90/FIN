@@ -52,8 +52,6 @@ class finTVC: UITableViewController {
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
         
-        activeBudget = loadIfBudget()
-        
         initView()
         initData()
     }
@@ -85,7 +83,7 @@ class finTVC: UITableViewController {
         coordinator.animate(alongsideTransition: nil) { _ in
             if let cell = self.finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
                 var numberSegments = 2
-                if (self.activeBudget && (self.view.frame.height < self.view.frame.width)) || !UIDevice().model.contains("iPhone") {
+                if (self.activeBudget && (self.view.frame.height < self.view.frame.width)) || (!UIDevice().model.contains("iPhone") && self.activeBudget) {
                     numberSegments = 3
                 } else if self.selectedSecond >= 3 {
                     self.selectedSecond = 2
@@ -113,6 +111,8 @@ class finTVC: UITableViewController {
                     cell.stackView.addArrangedSubview(label)
                 }
                 cell.initSelectedCell(selectedIndex: self.selectedSecond)
+                print("555555555")
+                print(cell.stackView.arrangedSubviews.count)
             }
         }
     }
@@ -121,7 +121,7 @@ class finTVC: UITableViewController {
         super.viewDidLayoutSubviews()
         if let cell = finTableView.cellForRow(at: IndexPath(row: 3, section: 0)) as? cellSubtitleStack {
             var numberSegments = 2
-            if (activeBudget && (view.frame.height < view.frame.width)) || !UIDevice().model.contains("iPhone") {
+            if (activeBudget && (view.frame.height < view.frame.width)) || (!UIDevice().model.contains("iPhone") && activeBudget ) {
                 numberSegments = 3
             } else if selectedSecond >= 3 {
                 selectedSecond = 2
@@ -370,12 +370,12 @@ class finTVC: UITableViewController {
             cell.tag = 1
         } else if indexPath.row == 3 {
             var numberSegments = 2
-            if (activeBudget && (view.frame.height < view.frame.width)) || !UIDevice().model.contains("iPhone") {
+            if (activeBudget && (view.frame.height < view.frame.width)) || (!UIDevice().model.contains("iPhone") && activeBudget){
                 numberSegments = 3
             } else if selectedSecond >= 3 {
                 selectedSecond = 2
             }
-                        
+            
             for i in 0...numberSegments {
                 var textString = ""
                 if activeBudget {
@@ -397,6 +397,7 @@ class finTVC: UITableViewController {
                         break
                     }
                 } else {
+                    print(i)
                     switch i {
                     case 1:
                         let yearInt = Calendar.current.component(.year, from: Date())
@@ -431,6 +432,7 @@ class finTVC: UITableViewController {
                 
                 cell.stackView.addArrangedSubview(label)
             }
+
             cell.tag = 3
             cell.initCells()
         }
@@ -460,6 +462,8 @@ class finTVC: UITableViewController {
     
     // MARK: -Init Data
     func initData() {
+        activeBudget = loadIfBudget()
+        
         topOverviewCellData.removeAll()
         splitOverviewCellData.removeAll()
         
@@ -1243,7 +1247,7 @@ extension finTVC {
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
         fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.01)
         fetchRequest.fetchLimit = 1
         do {
             let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]

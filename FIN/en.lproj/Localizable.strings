@@ -412,6 +412,8 @@
 "cutOffTitle" = "Info";
 "cutOffInfoText" = "As the database grows larger, the app could get slow. To address this challenge, you might choose to only show transactions from the last two years. Their sums are of course included during the calculation of overview amounts.";
 
+"recoveryEmailPlaceholder" = "Recovery Email";
+
 // #### Regular Payments ####
 "nextText" = "Next: ";
 "noRegularPayment" = "No regular payments";

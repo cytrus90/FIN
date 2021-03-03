@@ -258,7 +258,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 }
             }
         } else if indexPath == importIndexPath && selectedRowForCells == 2 { // Import
-            if showAdds {
+            if !showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -1007,6 +1007,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             cell.cellLoginSwitch.isOn = true
         }
         
+        cell.cellRecoveryText.placeholder = NSLocalizedString("recoveryEmailPlaceholder", comment: "Placeholder")
+        
         cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false).cgColor
         
@@ -1222,46 +1224,30 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func openIconPicker() {
-        if showAdds {
-            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
-            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                self.purchaseButtonPressed()
-            }))
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-            
-            purchasePrompt.popoverPresentationController?.sourceView = self.view
-            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-            
-            self.present(purchasePrompt, animated: true)
-        } else {
-            if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.circleView.transform = cell.circleView.transform.scaledBy(x: 0.96, y: 0.96)
-                    }, completion: { _ in
-                        UIView.animate(withDuration: 0.1, animations: {
-                        cell.circleView.transform = CGAffineTransform.identity
-                    }, completion: { _ in
-                        let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
-                        let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
+        if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.circleView.transform = cell.circleView.transform.scaledBy(x: 0.96, y: 0.96)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.1, animations: {
+                    cell.circleView.transform = CGAffineTransform.identity
+                }, completion: { _ in
+                    let userStoryBoard: UIStoryboard = UIStoryboard(name: "userTSB", bundle: nil)
+                    let iconTVC = userStoryBoard.instantiateViewController(withIdentifier: "iconPickerTVC") as! iconPickerTVC
                     
-                        iconTVC.selectedColor = (self.userDetailCells[0] as? [Int:Any])?[5] as? Int16 ?? 0
-                        iconTVC.selectedIcon = (self.userDetailCells[0] as? [Int:Any])?[3] as? String ?? ""
-                        if ((self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? "").count > 0 {
-                            iconTVC.selectedLabelText = (self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? ""
-                        } else {
-                            iconTVC.selectedLabelText = NSLocalizedString("previewIcon", comment: "Preview")
-                        }
-                        iconTVC.light = (self.userDetailCells[0] as? [Int:Any])?[4] as? Bool ?? true
-                        iconTVC.selectedType = 3
-                        
-                        let navigationVC = UINavigationController(rootViewController: iconTVC)
-                        self.present(navigationVC, animated: true, completion: nil)
-                    })
+                    iconTVC.selectedColor = (self.userDetailCells[0] as? [Int:Any])?[5] as? Int16 ?? 0
+                    iconTVC.selectedIcon = (self.userDetailCells[0] as? [Int:Any])?[3] as? String ?? ""
+                    if ((self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? "").count > 0 {
+                        iconTVC.selectedLabelText = (self.userDetailCells[0] as? [Int:Any])?[0] as? String ?? ""
+                    } else {
+                        iconTVC.selectedLabelText = NSLocalizedString("previewIcon", comment: "Preview")
+                    }
+                    iconTVC.light = (self.userDetailCells[0] as? [Int:Any])?[4] as? Bool ?? true
+                    iconTVC.selectedType = 3
+                    
+                    let navigationVC = UINavigationController(rootViewController: iconTVC)
+                    self.present(navigationVC, animated: true, completion: nil)
                 })
-            }
+            })
         }
     }
     

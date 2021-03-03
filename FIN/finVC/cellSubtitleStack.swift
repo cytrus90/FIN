@@ -65,6 +65,9 @@ class cellSubtitleStack: UITableViewCell {
             view.addGestureRecognizer(tab)
             view.isUserInteractionEnabled = true
         }
+        
+        print("ffffjjjjjj")
+        print(stackView.arrangedSubviews.count)
     }
     
     func initSelectedCell(selectedIndex: Int = 0) {
@@ -108,6 +111,8 @@ class cellSubtitleStack: UITableViewCell {
             
             self.contentView.sendSubviewToBack(selectedView)
         }
+        print("33333333")
+        print(stackView.arrangedSubviews.count)
     }
     
     @objc func handleTab(sender:UITapGestureRecognizer) {
@@ -217,7 +222,7 @@ class cellSubtitleStack: UITableViewCell {
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
         fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.00)
+        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.01)
         fetchRequest.fetchLimit = 1
         do {
             let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
