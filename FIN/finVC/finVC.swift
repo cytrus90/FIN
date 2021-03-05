@@ -111,8 +111,6 @@ class finTVC: UITableViewController {
                     cell.stackView.addArrangedSubview(label)
                 }
                 cell.initSelectedCell(selectedIndex: self.selectedSecond)
-                print("555555555")
-                print(cell.stackView.arrangedSubviews.count)
             }
         }
     }
@@ -258,7 +256,7 @@ class finTVC: UITableViewController {
 //            11:isLight
 //        ]
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(topOverviewCellData[5] as? Int16 ?? 0), returnText: false, light: false)
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(topOverviewCellData[5] as? Int16 ?? 0))
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
         if (topOverviewCellData[10] as? String ?? "").count > 0 {
@@ -628,7 +626,7 @@ class finTVC: UITableViewController {
                     }
                 } else {
                     entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                    colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                    colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                 }
             }
         }

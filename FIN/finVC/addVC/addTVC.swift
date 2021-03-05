@@ -1679,19 +1679,19 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 for i in 0...4 {
                     switch i {
                     case 1:
-                        self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 7, isIncome: false, isSave: false, icon: "cycling")
+                        self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 53, isIncome: false, isSave: false, icon: "cycling")
                         break
                     case 2:
-                        self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 20, isIncome: false, isSave: false, icon: "")
+                        self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 37, isIncome: false, isSave: false, icon: "")
                         break
                     case 3:
-                        self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 5, isIncome: true, isSave: false, icon: "papermoney")
+                        self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 19, isIncome: true, isSave: false, icon: "papermoney")
                         break
                     case 4:
-                        self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true, icon: "safe")
+                        self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 0, isIncome: false, isSave: true, icon: "safe")
                         break
                     default:
-                        self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 34, isIncome: false, isSave: false, icon: "prefabhouse")
+                        self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 60, isIncome: false, isSave: false, icon: "prefabhouse")
                         break
                     }
                 }
@@ -2781,52 +2781,84 @@ extension addTVC: cellAddPressedDelegate {
 }
 
 extension UIColor {
-    static func randomColor(color: Int = 0, returnText: Bool = false ,light: Bool = true) -> UIColor {
-        var colors = [UIColor]()
-        if returnText {
-            colors =   [.black, .black, .white,
-                        .black, .black, .black,
-                        .black, .black, .white,
-                        .black, .black, .black,
-                        .black, .white, .white,
-                        .black, .black, .black,
-                        .black, .black, .black,
-                        .black, .black, .black,
-                        .black, .black, .black,
-                        .black, .white, .white,
-                        .black, .black, .black,
-                        .black, .white, .white]
-        } else {
-            if light {
-                colors =   [#colorLiteral(red: 1, green: 0.5411764706, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.09019607843, blue: 0.2666666667, alpha: 1), #colorLiteral(red: 0.8352941176, green: 0, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.7254901961, green: 0.9647058824, blue: 0.7921568627, alpha: 1), #colorLiteral(red: 0, green: 0.9019607843, blue: 0.462745098, alpha: 1), #colorLiteral(red: 0, green: 0.7843137255, blue: 0.3254901961, alpha: 1),
-                            #colorLiteral(red: 0.9176470588, green: 0.5019607843, blue: 0.9882352941, alpha: 1), #colorLiteral(red: 0.8352941176, green: 0, blue: 0.9764705882, alpha: 1), #colorLiteral(red: 0.6666666667, green: 0, blue: 1, alpha: 1),
-                            #colorLiteral(red: 1, green: 1, blue: 0.5529411765, alpha: 1), #colorLiteral(red: 1, green: 0.9176470588, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.8392156863, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.7019607843, green: 0.5333333333, blue: 1, alpha: 1), #colorLiteral(red: 0.3960784314, green: 0.1215686275, blue: 1, alpha: 1), #colorLiteral(red: 0.3843137255, green: 0, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 1, green: 0.8196078431, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.568627451, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.4274509804, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.5490196078, green: 0.6196078431, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.6901960784, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.568627451, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 1, green: 0.6196078431, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.2392156863, blue: 0, alpha: 1), #colorLiteral(red: 0.8666666667, green: 0.1725490196, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.5019607843, green: 0.8470588235, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.6901960784, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.568627451, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 0.737254902, green: 0.6666666667, blue: 0.6431372549, alpha: 1), #colorLiteral(red: 0.4745098039, green: 0.3333333333, blue: 0.2823529412, alpha: 1), #colorLiteral(red: 0.3058823529, green: 0.2039215686, blue: 0.1803921569, alpha: 1),
-                            #colorLiteral(red: 0.5176470588, green: 1, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.8980392157, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.7215686275, blue: 0.831372549, alpha: 1),
-                            #colorLiteral(red: 0.7411764706, green: 0.7411764706, blue: 0.7411764706, alpha: 1), #colorLiteral(red: 0.3803921569, green: 0.3803921569, blue: 0.3803921569, alpha: 1), #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1294117647, alpha: 1)]
-            } else {
-                colors =   [#colorLiteral(red: 1, green: 0.5411764706, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.09019607843, blue: 0.2666666667, alpha: 1), #colorLiteral(red: 0.8352941176, green: 0, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.7254901961, green: 0.9647058824, blue: 0.7921568627, alpha: 1), #colorLiteral(red: 0, green: 0.9019607843, blue: 0.462745098, alpha: 1), #colorLiteral(red: 0, green: 0.7843137255, blue: 0.3254901961, alpha: 1),
-                            #colorLiteral(red: 0.9176470588, green: 0.5019607843, blue: 0.9882352941, alpha: 1), #colorLiteral(red: 0.8352941176, green: 0, blue: 0.9764705882, alpha: 1), #colorLiteral(red: 0.6666666667, green: 0, blue: 1, alpha: 1),
-                            #colorLiteral(red: 1, green: 1, blue: 0.5529411765, alpha: 1), #colorLiteral(red: 1, green: 0.9176470588, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.8392156863, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.7019607843, green: 0.5333333333, blue: 1, alpha: 1), #colorLiteral(red: 0.3960784314, green: 0.1215686275, blue: 1, alpha: 1), #colorLiteral(red: 0.3843137255, green: 0, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 1, green: 0.8196078431, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.568627451, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.4274509804, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.5490196078, green: 0.6196078431, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.6901960784, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.568627451, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 1, green: 0.6196078431, blue: 0.5019607843, alpha: 1), #colorLiteral(red: 1, green: 0.2392156863, blue: 0, alpha: 1), #colorLiteral(red: 0.8666666667, green: 0.1725490196, blue: 0, alpha: 1),
-                            #colorLiteral(red: 0.5019607843, green: 0.8470588235, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.6901960784, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.568627451, blue: 0.9176470588, alpha: 1),
-                            #colorLiteral(red: 0.737254902, green: 0.6666666667, blue: 0.6431372549, alpha: 1), #colorLiteral(red: 0.4745098039, green: 0.3333333333, blue: 0.2823529412, alpha: 1), #colorLiteral(red: 0.3058823529, green: 0.2039215686, blue: 0.1803921569, alpha: 1),
-                            #colorLiteral(red: 0.5176470588, green: 1, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.8980392157, blue: 1, alpha: 1), #colorLiteral(red: 0, green: 0.7215686275, blue: 0.831372549, alpha: 1),
-                            #colorLiteral(red: 0.7411764706, green: 0.7411764706, blue: 0.7411764706, alpha: 1), #colorLiteral(red: 0.3803921569, green: 0.3803921569, blue: 0.3803921569, alpha: 1), UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0)]
-                
-                
-            }
-        }
+    static func randomColor(color: Int = 0) -> UIColor {
+        let colors = [
+            UIColor(red: 255/255, green:0/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 255/255, green:99/255, blue: 71/255, alpha: 1.0),
+            UIColor(red: 255/255, green:127/255, blue: 80/255, alpha: 1.0),
+            UIColor(red: 205/255, green:92/255, blue: 92/255, alpha: 1.0),
+            UIColor(red: 233/255, green:150/255, blue: 122/255, alpha: 1.0),
+            UIColor(red: 250/255, green:128/255, blue: 114/255, alpha: 1.0),
+            UIColor(red: 255/255, green:160/255, blue: 122/255, alpha: 1.0),
+            UIColor(red: 255/255, green:165/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 218/255, green:165/255, blue: 32/255, alpha: 1.0),
+            UIColor(red: 238/255, green:232/255, blue: 170/255, alpha: 1.0),
+            UIColor(red: 240/255, green:230/255, blue: 140/255, alpha: 1.0),
+            UIColor(red: 128/255, green:128/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 255/255, green:255/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 154/255, green:205/255, blue: 50/255, alpha: 1.0),
+            UIColor(red: 85/255, green:107/255, blue: 47/255, alpha: 1.0),
+            UIColor(red: 107/255, green: 142/255, blue: 35/255, alpha: 1.0),
+            UIColor(red: 124/255, green: 252/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 173/255, green: 255/255, blue: 47/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 100/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 128/255, blue: 0/255, alpha: 1.0),
+            UIColor(red: 50/255, green: 205/255, blue: 50/255, alpha: 1.0),
+            UIColor(red: 144/255, green: 238/255, blue: 144/255, alpha: 1.0),
+            UIColor(red: 152/255, green: 251/255, blue: 152/255, alpha: 1.0),
+            UIColor(red: 143/255, green: 188/255, blue: 143/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 255/255, blue: 127/255, alpha: 1.0),
+            UIColor(red: 46/255, green: 139/255, blue: 87/255, alpha: 1.0),
+            UIColor(red: 102/255, green: 205/255, blue: 170/255, alpha: 1.0),
+            UIColor(red: 60/255, green: 179/255, blue: 113/255, alpha: 1.0),
+            UIColor(red: 32/255, green: 178/255, blue: 170/255, alpha: 1.0),
+            UIColor(red: 47/255, green: 79/255, blue: 79/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0),
+            UIColor(red: 224/255, green: 255/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 206/255, blue: 209/255, alpha: 1.0),
+            UIColor(red: 72/255, green: 209/255, blue: 204/255, alpha: 1.0),
+            UIColor(red: 127/255, green: 255/255, blue: 212/255, alpha: 1.0),
+            UIColor(red: 176/255, green: 224/255, blue: 230/255, alpha: 1.0),
+            UIColor(red: 95/255, green: 158/255, blue: 160/255, alpha: 1.0),
+            UIColor(red: 70/255, green: 130/255, blue: 180/255, alpha: 1.0),
+            UIColor(red: 100/255, green: 149/255, blue: 237/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 191/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 30/255, green: 144/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 25/255, green: 25/255, blue: 112/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1.0),
+            UIColor(red: 0/255, green: 0/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 65/255, green: 105/255, blue: 225/255, alpha: 1.0),
+            UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 1.0),
+            UIColor(red: 75/255, green: 0/255, blue: 130/255, alpha: 1.0),
+            UIColor(red: 72/255, green: 61/255, blue: 139/255, alpha: 1.0),
+            UIColor(red: 106/255, green: 90/255, blue: 205/255, alpha: 1.0),
+            UIColor(red: 139/255, green: 0/255, blue: 139/255, alpha: 1.0),
+            UIColor(red: 128/255, green: 0/255, blue: 128/255, alpha: 1.0),
+            UIColor(red: 216/255, green: 191/255, blue: 216/255, alpha: 1.0),
+            UIColor(red: 238/255, green: 130/255, blue: 238/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 0/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 218/255, green: 112/255, blue: 214/255, alpha: 1.0),
+            UIColor(red: 199/255, green: 21/255, blue: 133/255, alpha: 1.0),
+            UIColor(red: 219/255, green: 112/255, blue: 147/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 20/255, blue: 147/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 105/255, blue: 180/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1.0),
+            UIColor(red: 160/255, green: 82/255, blue: 45/255, alpha: 1.0),
+            UIColor(red: 210/255, green: 105/255, blue: 30/255, alpha: 1.0),
+            UIColor(red: 205/255, green: 133/255, blue: 63/255, alpha: 1.0),
+            UIColor(red: 210/255, green: 180/255, blue: 140/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 228/255, blue: 181/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 218/255, blue: 185/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 240/255, blue: 245/255, alpha: 1.0),
+            UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1.0),
+            UIColor(red: 176/255, green: 196/255, blue: 222/255, alpha: 1.0),
+            UIColor(red: 230/255, green: 230/255, blue: 250/255, alpha: 1.0),
+            UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0),
+            UIColor(red: 105/255, green: 105/255, blue: 105/255, alpha: 1.0),
+            UIColor(red: 128/255, green: 128/255, blue: 128/255, alpha: 1.0),
+            UIColor(red: 211/255, green: 211/255, blue: 211/255, alpha: 1.0),
+            UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+            ]
         return colors[color]
     }
 }

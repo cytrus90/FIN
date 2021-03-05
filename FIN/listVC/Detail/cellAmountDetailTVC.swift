@@ -104,7 +104,7 @@ class cellAmountDetailTVC: UITableViewCell {
                 let newTag = tagListView.addTag(value.value["Title"] as? String ?? "Tag")
                 newTag.borderColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
                 newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.7)
-                newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0, returnText: true)
+                newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
                 newTag.tag = value.key
             }
             tagListHeight?.isActive = false

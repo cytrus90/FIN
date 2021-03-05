@@ -196,8 +196,8 @@ class splitTransactionTVC: UITableViewController {
                 
                 let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
                 
-                cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt, returnText: false, light: false)
-                cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
+                cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
+                cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
                 
                 if (split[i]?[10] as? String ?? "").count > 0 {
                     cell.circleLabel.isHidden = true
@@ -674,9 +674,9 @@ class splitTransactionTVC: UITableViewController {
                     
                     let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
                     
-                    cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt, returnText: false, light: false)
-                    cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
-                    cell.circleLabel.textColor = UIColor.randomColor(color: colorInt, returnText: true, light: false)
+                    cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
+                    cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
+                    cell.circleLabel.textColor = UIColor.randomColor(color: colorInt)
                     
                     if (split[i]?[10] as? String ?? "").count > 0 {
                         cell.circleLabel.isHidden = true

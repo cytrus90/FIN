@@ -314,7 +314,7 @@ class splitDetailTVC: UITableViewController {
             }
         }
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[4] as? Int16 ?? 0), returnText: false, light: false)
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[4] as? Int16 ?? 0))
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
         if (rowData[indexPath.row]?[8] as? Int ?? 0) == 1 {

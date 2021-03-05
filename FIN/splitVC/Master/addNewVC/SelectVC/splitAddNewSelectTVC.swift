@@ -210,8 +210,8 @@ class splitAddNewSelectTVC: UITableViewController {
             }
         }
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)), returnText: false, light: false)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)), returnText: false, light: false).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0)))
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int((tableData[indexPath.row]?[2] as? Int16 ?? 0))).cgColor
         
         if (tableData[indexPath.row]?[3] as? Bool ?? false) == true {
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)

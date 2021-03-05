@@ -275,7 +275,7 @@ class splitMasterTVC: UITableViewController {
     func getGeneralCell(indexPath: IndexPath) -> cellSplitGeneral {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellSplitGeneral", for: indexPath) as! cellSplitGeneral
         
-        cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0), returnText: false, light: false)
+        cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(rowData[(indexPath.row-1)]?[1] as? Int16 ?? 0))
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
         if (rowData[(indexPath.row-1)]?[6] as? String ?? "").count > 0 {

@@ -251,8 +251,8 @@ class splitAddNewTVC: UITableViewController {
             color = Int16(1)
         }
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0))
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0)).cgColor
         
         if icon.count > 0 {
             cell.circleLabel.isHidden = true
@@ -736,8 +736,8 @@ class splitAddNewTVC: UITableViewController {
                 iconLight = userInfo["selectedLight"] as? Bool ?? iconLight
                 
                 if let cell = splitAddTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellSplitAddNewMain {
-                    cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true)
-                    cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0), returnText: false, light: true).cgColor
+                    cell.circleView.backgroundColor = UIColor.randomColor(color: Int(color ?? 0))
+                    cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(color ?? 0)).cgColor
                     
                     if icon.count > 0 {
                         cell.circleLabel.isHidden = true

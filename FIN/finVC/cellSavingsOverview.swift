@@ -75,10 +75,10 @@ class cellSavingsOverview: UITableViewCell, UICollectionViewDataSource, UICollec
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCarouselCell", for: indexPath) as! categoryCarouselCell
         
         cell.subLabel.text = (savingsData[indexPath.row][0] as? String ?? "")
-        cell.outlineView.backgroundColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue)
-        cell.outlineView.layer.borderColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue).cgColor
-        cell.subLabel.textColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0), returnText: true, light: false)
-        cell.amountLabel.textColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0), returnText: true, light: false)
+        cell.outlineView.backgroundColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0)).withAlphaComponent(alphaValue)
+        cell.outlineView.layer.borderColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0)).withAlphaComponent(alphaValue).cgColor
+        cell.subLabel.textColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0))
+        cell.amountLabel.textColor = UIColor.randomColor(color: Int(savingsData[indexPath.row][1] as? Int16 ?? 0))
         cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: savingsData[indexPath.row][2] as? Double ?? 0.00))
         
         return cell

@@ -42,17 +42,14 @@ class cellDetailCategory: UITableViewCell {
     func initView() {
         let userInterfaceStyle = traitCollection.userInterfaceStyle
         if userInterfaceStyle == .light {
-//            self.backgroundColor = backgroundGeneralColor
+            cellOutlineView.backgroundColor = .white
             cellOutlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
-            
         } else {
-//            backgroundColor = .secondarySystemBackground
+            cellOutlineView.backgroundColor = .black
             cellOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
-        
         circleView.layer.cornerRadius = 10//circleView.bounds.size.width/2
         circleView.clipsToBounds = true
-        
         circleView.layer.borderWidth = 1
     }
 }

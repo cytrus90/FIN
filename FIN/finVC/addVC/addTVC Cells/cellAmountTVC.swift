@@ -207,7 +207,7 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
                 let newTag = tagListView.addTag(tag.value["Title"] as? String ?? "Tag")
                 newTag.borderColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0)
                 newTag.tagBackgroundColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0).withAlphaComponent(0.7)
-                newTag.textColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0, returnText: true)
+                newTag.textColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0)
                 newTag.selectedTextColor = newTag.textColor
                 newTag.tag = tag.key
             }

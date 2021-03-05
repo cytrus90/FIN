@@ -14,6 +14,8 @@ class iconPickerTVC: UITableViewController {
     
     let numberFormatter = NumberFormatter()
     
+    var mediumDate = DateFormatter()
+    
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
         return nib.instantiate(withOwner: self, options: nil).first as! headerView
@@ -34,6 +36,8 @@ class iconPickerTVC: UITableViewController {
         super.viewDidLoad()
 
         self.title = ""
+        
+        mediumDate.dateStyle = .medium
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
@@ -156,10 +160,11 @@ class iconPickerTVC: UITableViewController {
                 }
             }
             
-            cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(selectedColor), returnText: false, light: false)
+            cell.circleView.backgroundColor =  UIColor.randomColor(color: Int(selectedColor))
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
             
-            cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: 100.00))
+            cell.amountLabel.text = String((getSymbol(forCurrencyCode: Locale.current.currencyCode ?? "EUR") ?? "€") + " " + (numberFormatter.string(from: NSNumber(value: 100.00)) ?? "100.00"))
+            cell.dateLabel.text = getDayForDate(dayDate: Date().startOfMonth)
             
             switch selectedType {
             case 1: // Person
@@ -221,6 +226,40 @@ class iconPickerTVC: UITableViewController {
         )
     }
     
+    func getDayForDate(dayDate: Date) -> String {
+        let calendar = Calendar.current
+        
+        let dayDateDateOnly = calendar.dateComponents([Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: dayDate)
+        let nowDateOnly = calendar.dateComponents([Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: Date())
+        
+        let differenceInDays = Calendar.current.dateComponents([.day], from: dayDateDateOnly, to: nowDateOnly).day!
+        
+        if differenceInDays == 0 {
+            return NSLocalizedString("today", comment: "Today")
+        } else if differenceInDays == 1 {
+            return NSLocalizedString("yesterday", comment: "Yesterday")
+        } else if differenceInDays <= 7 && differenceInDays > 0 {
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEEE"
+            return dayFormatter.string(from: dayDate)
+        } else if differenceInDays == -1 {
+            return NSLocalizedString("tomorrowText", comment: "Tomorrow")
+        } else if differenceInDays == -2 {
+            return NSLocalizedString("dayAfterTomorrowText", comment: "Day after Tomorrow")
+        } else {
+            return mediumDate.string(from: dayDate)
+        }
+    }
+    
+    func getSymbol(forCurrencyCode code: String) -> String? {
+        let locale = NSLocale(localeIdentifier: code)
+        if locale.displayName(forKey: .currencySymbol, value: code) == code {
+            let newlocale = NSLocale(localeIdentifier: code.dropLast() + "_en")
+            return newlocale.displayName(forKey: .currencySymbol, value: code)
+        }
+        return locale.displayName(forKey: .currencySymbol, value: code)
+    }
+    
     @objc func dismissViewController() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -259,7 +298,7 @@ extension iconPickerTVC: cellCategoryColorDelegate {
     func colorChanged(newColor: Int16) {
         selectedColor = newColor
         if let cell = iconTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellListEntry {
-            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(selectedColor), returnText: false, light: false)
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(selectedColor))
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         }
     }

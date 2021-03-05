@@ -1107,8 +1107,8 @@ class listMasterTVC: UITableViewController {
                         6:data.value(forKey: "descriptionNote") as? String ?? "", // Description
                         7:getDayForDate(dayDate: data.value(forKey: "dateTime") as? Date ?? Date()), // mediumDate.string(from: data.value(forKey: "dateTime") as? Date ?? Date()),    // Date
                         8:(loadQueriedAttribute(entitie: "Categories", attibute: "name", query: categoryQuery) as? String ?? "").prefix(2).uppercased(), // Category Name
-                        9:UIColor.randomColor(color: Int(loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0), returnText: false, light: light), // Category Color
-                        10:UIColor.randomColor(color: Int(loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0), returnText: true, light: light),
+                        9:UIColor.randomColor(color: Int(loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0)), // Category Color
+                        10:UIColor.randomColor(color: Int(loadQueriedAttribute(entitie: "Categories", attibute: "color", query: categoryQuery) as? Int16 ?? 0)),
                         11:data.value(forKey: "dateTime") as? Date ?? Date(),
                         12:Int((data.value(forKey: "isSplit") as? Int16 ?? 0)),
                         13:false,

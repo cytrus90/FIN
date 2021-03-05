@@ -65,9 +65,6 @@ class cellSubtitleStack: UITableViewCell {
             view.addGestureRecognizer(tab)
             view.isUserInteractionEnabled = true
         }
-        
-        print("ffffjjjjjj")
-        print(stackView.arrangedSubviews.count)
     }
     
     func initSelectedCell(selectedIndex: Int = 0) {
@@ -111,8 +108,6 @@ class cellSubtitleStack: UITableViewCell {
             
             self.contentView.sendSubviewToBack(selectedView)
         }
-        print("33333333")
-        print(stackView.arrangedSubviews.count)
     }
     
     @objc func handleTab(sender:UITapGestureRecognizer) {

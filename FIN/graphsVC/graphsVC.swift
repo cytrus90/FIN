@@ -980,7 +980,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: true))
                     if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
                         entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                         sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
                         labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                     }
@@ -991,12 +991,12 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
                         if (graphOption1 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                             entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
                             labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         } else if (graphOption1 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                             entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
                             labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         }
@@ -1026,11 +1026,11 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
                     if (graphOption1 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                         entries.append((BarChartDataEntry(x: Double(j), y: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100))))
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                         labels.append(loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")
                         j = j + 1
                     } else if (graphOption1 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0)), returnText: false, light: false))
+                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                         labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         entries.append((BarChartDataEntry(x: Double(j), y: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100))))
                         j = j + 1

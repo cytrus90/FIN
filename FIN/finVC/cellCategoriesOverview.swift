@@ -204,8 +204,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCarouselCell", for: indexPath) as! categoryCarouselCell
         cell.amountLabel.isHidden = false
         cell.subLabel.text = (categoryData[indexPath.row][0] as? String ?? "")
-        cell.outlineView.backgroundColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue)
-        cell.outlineView.layer.borderColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0), returnText: false, light: false).withAlphaComponent(alphaValue).cgColor
+        cell.outlineView.backgroundColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0)).withAlphaComponent(alphaValue)
+        cell.outlineView.layer.borderColor = UIColor.randomColor(color: Int(categoryData[indexPath.row][1] as? Int16 ?? 0)).withAlphaComponent(alphaValue).cgColor
         cell.outlineView.layer.borderWidth = 1.0
         if selectedCategoryTimeRange == 0 && activeBudget {
             if categoryData[indexPath.row][6] as? Bool ?? false {

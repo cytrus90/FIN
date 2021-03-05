@@ -293,7 +293,7 @@ class splitTransactionSelectTVC: UITableViewController {
             }
         }
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[1] as? Int16 ?? 0), returnText: false, light: false)
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[1] as? Int16 ?? 0))
         cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
         
         if selectedSplitSegment != nil && selectedSplitRow.count != 0 {

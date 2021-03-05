@@ -40,15 +40,15 @@ class cellCategoryColor: UITableViewCell, ColorPickerViewDelegate, ColorPickerVi
             self.backgroundColor = .clear
             cellOutlineView.backgroundColor = .white
             cellOutlineView.layer.borderColor = UIColor.white.cgColor
-            for i in 0...35 {
+            for i in 0...74 {
                 colorsArray.append(UIColor.randomColor(color: i))
             }
         } else {
             self.backgroundColor = .clear
             cellOutlineView.backgroundColor = .black
             cellOutlineView.layer.borderColor = UIColor.black.cgColor
-            for i in 0...35 {
-                colorsArray.append(UIColor.randomColor(color: i, light: false))
+            for i in 0...74 {
+                colorsArray.append(UIColor.randomColor(color: i))
             }
         }
         colorPickerView.colors = colorsArray
@@ -56,6 +56,7 @@ class cellCategoryColor: UITableViewCell, ColorPickerViewDelegate, ColorPickerVi
     
     func colorPickerView(_ colorPickerView: ColorPickerView, didSelectItemAt indexPath: IndexPath) {
         self.delegate?.colorChanged(newColor: Int16(indexPath.row))
+        print(indexPath.row)
     }
     
     func colorPickerView(_ colorPickerView: ColorPickerView, didDeselectItemAt indexPath: IndexPath) {

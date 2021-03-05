@@ -252,8 +252,8 @@ class listDetailTVC: UITableViewController {
         if indexPath.row == 1 { // Category
             cell.descriptionLabel.text = ((rowData[1] as? [Int:Any])?[0] as? String ?? "")
             
-            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0), returnText: false, light: false)
-            cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0), returnText: false, light: false).cgColor
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0))
+            cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[1]) as? [Int:Any])?[1] as? Int16 ?? 0)).cgColor
             
             if ((rowData[1] as? [Int:Any])?[9] as? String ?? "").count > 0 {
                 cell.circleImage.isHidden = false
@@ -313,8 +313,8 @@ class listDetailTVC: UITableViewController {
             if ((rowData[indexPath.row] as? [Int:Any])?[0] as? Bool ?? false) { // is Group
                 cell.descriptionLabel.text = ((rowData[indexPath.row] as? [Int:Any])?[1] as? String ?? "")
                 
-                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false)
-                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false).cgColor
+                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0))
+                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0)).cgColor
                 
                 if ((rowData[indexPath.row] as? [Int:Any])?[9] as? String ?? "").count > 0 {
                     cell.circleImage.isHidden = false
@@ -381,8 +381,8 @@ class listDetailTVC: UITableViewController {
                     }
                 }
                 
-                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false)
-                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0), returnText: false, light: false).cgColor
+                cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0))
+                cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((rowData[indexPath.row]) as? [Int:Any])?[2] as? Int16 ?? 0)).cgColor
                 
                 cell.amountLabel.text = (getSymbol(forCurrencyCode: ((rowData[indexPath.row] as? [Int:Any])?[7] as? String ?? "EUR")) ?? "€") + " " + (numberFormatter.string(from: NSNumber(value: ((rowData[indexPath.row] as? [Int:Any])?[5] as? Double ?? 0.00))) ?? "")
                 

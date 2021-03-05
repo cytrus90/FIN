@@ -149,7 +149,7 @@ class categoryTVC: UITableViewController {
                 cell.categoryTypeSegmentControl.isHidden = false
             }
             
-            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: false, light: false)
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0))
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
             
             if (categoryData[9] as? String ?? "").count > 0 {
@@ -333,26 +333,34 @@ class categoryTVC: UITableViewController {
         var savingsSorted = savings.sorted(by: { $0.order < $1.order })
         
         var j:Int16 = 0
-        for i in 0...expensesSorted.count-1 {
-            expensesSorted[i].order = j
-            j = j + 1
-            
-            let querySave = NSPredicate(format: "cID == %i", expensesSorted[i].cID)
-            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: expensesSorted[i].order)
+        if expensesSorted.count-1 >= 0 {
+            for i in 0...expensesSorted.count-1 {
+                expensesSorted[i].order = j
+                j = j + 1
+                
+                let querySave = NSPredicate(format: "cID == %i", expensesSorted[i].cID)
+                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: expensesSorted[i].order)
+            }
         }
-        for i in 0...incomeSorted.count-1 {
-            incomeSorted[i].order = j
-            j = j + 1
-            
-            let querySave = NSPredicate(format: "cID == %i", incomeSorted[i].cID)
-            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: incomeSorted[i].order)
+        
+        if incomeSorted.count-1 >= 0 {
+            for i in 0...incomeSorted.count-1 {
+                incomeSorted[i].order = j
+                j = j + 1
+                
+                let querySave = NSPredicate(format: "cID == %i", incomeSorted[i].cID)
+                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: incomeSorted[i].order)
+            }
         }
-        for i in 0...savingsSorted.count-1 {
-            savingsSorted[i].order = j
-            j = j + 1
-            
-            let querySave = NSPredicate(format: "cID == %i", savingsSorted[i].cID)
-            saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
+        
+        if savingsSorted.count-1 >= 0 {
+            for i in 0...savingsSorted.count-1 {
+                savingsSorted[i].order = j
+                j = j + 1
+                
+                let querySave = NSPredicate(format: "cID == %i", savingsSorted[i].cID)
+                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
+            }
         }
     }
     
@@ -845,7 +853,7 @@ extension categoryTVC: cellCategoryColorDelegate {
     func colorChanged(newColor: Int16) {
         categoryData[3] = newColor
         if let cell = categoryTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellCategoryMain {
-            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: false, light: false)
+            cell.circleView.backgroundColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0))
             cell.circleView.layer.borderColor = cell.circleView.backgroundColor?.cgColor
             
             if (categoryData[0] as? String ?? "").count > 2 {
@@ -855,7 +863,7 @@ extension categoryTVC: cellCategoryColorDelegate {
             } else {
                 cell.circleLabel.text = "CA"
             }
-            cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0), returnText: true, light: false)
+            cell.circleLabel.textColor = UIColor.randomColor(color: Int(categoryData[3] as? Int16 ?? 0))
         }
     }
 }

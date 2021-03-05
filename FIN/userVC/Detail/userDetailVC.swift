@@ -258,7 +258,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 }
             }
         } else if indexPath == importIndexPath && selectedRowForCells == 2 { // Import
-            if !showAdds {
+            if showAdds {
                 let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
                 let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
                 let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
@@ -461,7 +461,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             break
         case 1: // Categories
 //            saveCategoryWithID(name: "BAD", isIncome: false, isSave: false)
-            
             numberOfSections = 1
             userDetailCells.removeAll()
             
@@ -477,7 +476,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             ] as [Int : Any]
             userDetailCells[i] = ramDict0
             i = i + 1
-            
             // Get Expenses
             let predicateExpenses:NSPredicate = NSPredicate(format: "isIncome == false && isSave == false")
             let expenses = loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses)
@@ -638,7 +636,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             let orderButton = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), style: .plain, target: self, action: #selector(reorderCategories))
             
             navigationItem.rightBarButtonItems = [addButton,orderButton]
-            
             break
         case 2: // Export / Import
             numberOfSections = 1
@@ -769,8 +766,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     func getRegularPaymentCell(indexPath: IndexPath) -> cellDetailGeneralTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellDetailGeneralTVC", for: indexPath) as! cellDetailGeneralTVC
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0), returnText: false, light: false)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0), returnText: false, light: false).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0))
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(((userDetailCells[indexPath.row]) as? [Int:Any])?[7] as? Int16 ?? 0)).cgColor
         
         if ((userDetailCells[indexPath.row] as? [Int:Any])?[10] as? String ?? "").count > 0 {
             cell.circleImage.isHidden = false
@@ -896,8 +893,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         }
         // cell.cellOutlineView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
          
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0), returnText: false, light: light).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0))
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict?[3] as? Int16 ?? 0)).cgColor
         
         if (dict?[8] as? String ?? "").count > 0 {
             cell.circleLabel.isHidden = true
@@ -1009,8 +1006,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         cell.cellRecoveryText.placeholder = NSLocalizedString("recoveryEmailPlaceholder", comment: "Placeholder")
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10), returnText: false, light: false).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10))
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: Int(dict[5] as? Int16 ?? 10)).cgColor
         
         if (dict[3] as? String ?? "").count > 0 {
             cell.circleLabel.isHidden = true
@@ -1203,19 +1200,19 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         for i in 0...4 {
             switch i {
             case 1:
-                self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 7, isIncome: false, isSave: false, icon: "cycling")
+                self.saveCategory(name: NSLocalizedString("categorySport", comment: "Sport"), color: 53, isIncome: false, isSave: false, icon: "cycling")
                 break
             case 2:
-                self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 20, isIncome: false, isSave: false, icon: "")
+                self.saveCategory(name: NSLocalizedString("categoryOther", comment: "Other"), color: 37, isIncome: false, isSave: false, icon: "")
                 break
             case 3:
-                self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 5, isIncome: true, isSave: false, icon: "papermoney")
+                self.saveCategory(name: NSLocalizedString("categorySalary", comment: "Salary"), color: 19, isIncome: true, isSave: false, icon: "papermoney")
                 break
             case 4:
-                self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 1, isIncome: false, isSave: true, icon: "safe")
+                self.saveCategory(name: NSLocalizedString("categorySavingsAccount", comment: "Savings Account"), color: 0, isIncome: false, isSave: true, icon: "safe")
                 break
             default:
-                self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 34, isIncome: false, isSave: false, icon: "prefabhouse")
+                self.saveCategory(name: NSLocalizedString("categoryHousehold", comment: "Household"), color: 60, isIncome: false, isSave: false, icon: "prefabhouse")
                 break
             }
         }

@@ -135,8 +135,8 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
         
         let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
         
-        cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt, returnText: false, light: false)
-        cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt, returnText: false, light: false).cgColor
+        cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
+        cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
         
         return cell
     }

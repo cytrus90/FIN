@@ -148,8 +148,8 @@ class settleSplitTVC: UITableViewController {
                 cell.rightCircleLabel.text = ""
             }
             
-            cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0), returnText: false, light: false)
-            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0), returnText: true, light: false)
+            cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
+            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
             cell.rightCircleView.layer.borderColor = cell.rightCircleView.backgroundColor?.cgColor
             
             if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
@@ -160,8 +160,8 @@ class settleSplitTVC: UITableViewController {
                 cell.leftCircleLabel.text = ""
             }
             
-            cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0), returnText: false, light: false)
-            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0), returnText: true, light: false)
+            cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
+            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
             if isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
@@ -190,8 +190,8 @@ class settleSplitTVC: UITableViewController {
                 cell.rightCircleLabel.text = ""
             }
             
-            cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0), returnText: false, light: false)
-            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0), returnText: true, light: false)
+            cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
+            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
             cell.rightCircleView.layer.borderColor = cell.rightCircleView.backgroundColor?.cgColor
             
             if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
@@ -202,8 +202,8 @@ class settleSplitTVC: UITableViewController {
                 cell.leftCircleLabel.text = ""
             }
             
-            cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0), returnText: false, light: false)
-            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0), returnText: true, light: false)
+            cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
+            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
             if isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
