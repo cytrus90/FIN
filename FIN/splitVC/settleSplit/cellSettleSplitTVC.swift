@@ -14,11 +14,13 @@ class cellSettleSplitTVC: UITableViewCell, UITextFieldDelegate {
     
     @IBOutlet weak var leftCircleView: UIView!
     @IBOutlet weak var leftCircleLabel: UILabel!
+    @IBOutlet weak var leftCircleImage: UIImageView!
     
     @IBOutlet weak var centerImageView: UIImageView!
     
     @IBOutlet weak var rightCircleView: UIView!
     @IBOutlet weak var rightCircleLabel: UILabel!
+    @IBOutlet weak var rightCircleImage: UIImageView!
     
     @IBOutlet weak var subTitle: UILabel!
     

@@ -140,28 +140,65 @@ class settleSplitTVC: UITableViewController {
         
         if (rowData[indexPath.row]?[0] as? Double ?? 0.00) >= 0 {
             
-            if (rowData[indexPath.row]?[1] as? String ?? "").count > 1 {
-                cell.rightCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
-            } else if (rowData[indexPath.row]?[1] as? String ?? "").count == 1 {
-                cell.rightCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
+            if (rowData[indexPath.row]?[9] as? String ?? "").count > 0 {
+                cell.rightCircleImage.isHidden = false
+                cell.rightCircleLabel.isHidden = true
+                
+                var selectedRightIcon = (rowData[indexPath.row]?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                    selectedRightIcon = selectedRightIcon + "_white"
+                }
+                cell.rightCircleImage.image = UIImage(named: selectedRightIcon)
             } else {
-                cell.rightCircleLabel.text = ""
+                cell.rightCircleImage.isHidden = true
+                cell.rightCircleLabel.isHidden = false
+                
+                if (rowData[indexPath.row]?[1] as? String ?? "").count > 1 {
+                    cell.rightCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
+                } else if (rowData[indexPath.row]?[1] as? String ?? "").count == 1 {
+                    cell.rightCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
+                } else {
+                    cell.rightCircleLabel.text = ""
+                }
+                if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                    cell.rightCircleLabel.textColor = .white
+                } else {
+                    cell.rightCircleLabel.textColor = .black
+                }
             }
             
             cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
-            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
             cell.rightCircleView.layer.borderColor = cell.rightCircleView.backgroundColor?.cgColor
             
-            if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
-                cell.leftCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(2).uppercased()
-            } else if (rowData[indexPath.row]?[4] as? String ?? "").count == 1 {
-                cell.leftCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(1).uppercased()
+            if (rowData[indexPath.row]?[11] as? String ?? "").count > 0 {
+                cell.leftCircleImage.isHidden = false
+                cell.leftCircleLabel.isHidden = true
+                
+                var selectedLeftIcon = (rowData[indexPath.row]?[11] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                if (rowData[indexPath.row]?[12] as? Bool ?? true) {
+                    selectedLeftIcon = selectedLeftIcon + "_white"
+                }
+                cell.leftCircleImage.image = UIImage(named: selectedLeftIcon)
             } else {
-                cell.leftCircleLabel.text = ""
+                cell.leftCircleImage.isHidden = true
+                cell.leftCircleLabel.isHidden = false
+                
+                if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
+                    cell.leftCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(2).uppercased()
+                } else if (rowData[indexPath.row]?[4] as? String ?? "").count == 1 {
+                    cell.leftCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(1).uppercased()
+                } else {
+                    cell.leftCircleLabel.text = ""
+                }
+                
+                if (rowData[indexPath.row]?[12] as? Bool ?? true) {
+                    cell.leftCircleLabel.textColor = .white
+                } else {
+                    cell.leftCircleLabel.textColor = .black
+                }
             }
             
             cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
-            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
             if isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
@@ -182,28 +219,67 @@ class settleSplitTVC: UITableViewController {
                 secondName = (rowData[indexPath.row]?[1] as? String ?? "")
             }
         } else {
-            if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
-                cell.rightCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(2).uppercased()
-            } else if (rowData[indexPath.row]?[4] as? String ?? "").count == 1 {
-                cell.rightCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(1).uppercased()
+            if (rowData[indexPath.row]?[11] as? String ?? "").count > 0 {
+                cell.rightCircleLabel.isHidden = true
+                cell.rightCircleImage.isHidden = false
+                
+                var selectedRigthIcon = (rowData[indexPath.row]?[11] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                if (rowData[indexPath.row]?[12] as? Bool ?? true) {
+                    selectedRigthIcon = selectedRigthIcon + "_white"
+                }
+                
+                cell.rightCircleImage.image = UIImage(named: selectedRigthIcon)
             } else {
-                cell.rightCircleLabel.text = ""
+                cell.rightCircleLabel.isHidden = false
+                cell.rightCircleImage.isHidden = true
+                
+                if (rowData[indexPath.row]?[1] as? String ?? "").count > 1 {
+                    cell.rightCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(2).uppercased()
+                } else if (rowData[indexPath.row]?[1] as? String ?? "").count == 1 {
+                    cell.rightCircleLabel.text = (rowData[indexPath.row]?[4] as? String ?? "").prefix(1).uppercased()
+                } else {
+                    cell.rightCircleLabel.text = ""
+                }
+                
+                if (rowData[indexPath.row]?[12] as? Bool ?? true) {
+                    cell.rightCircleLabel.textColor = .white
+                } else {
+                    cell.rightCircleLabel.textColor = .black
+                }
             }
             
             cell.rightCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
-            cell.rightCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
             cell.rightCircleView.layer.borderColor = cell.rightCircleView.backgroundColor?.cgColor
             
-            if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
-                cell.leftCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
-            } else if (rowData[indexPath.row]?[1] as? String ?? "").count == 1 {
-                cell.leftCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
+            if (rowData[indexPath.row]?[9] as? String ?? "").count > 0 {
+                cell.leftCircleLabel.isHidden = true
+                cell.leftCircleImage.isHidden = false
+                
+                var selectedLeftIcon = (rowData[indexPath.row]?[9] as? String ?? "").replacingOccurrences(of: "_white", with: "")
+                if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                    selectedLeftIcon = selectedLeftIcon + "_white"
+                }
+                cell.leftCircleImage.image = UIImage(named: selectedLeftIcon)
             } else {
-                cell.leftCircleLabel.text = ""
+                cell.leftCircleLabel.isHidden = false
+                cell.leftCircleImage.isHidden = true
+                
+                if (rowData[indexPath.row]?[4] as? String ?? "").count > 1 {
+                    cell.leftCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(2).uppercased()
+                } else if (rowData[indexPath.row]?[4] as? String ?? "").count == 1 {
+                    cell.leftCircleLabel.text = (rowData[indexPath.row]?[1] as? String ?? "").prefix(1).uppercased()
+                } else {
+                    cell.leftCircleLabel.text = ""
+                }
+                
+                if (rowData[indexPath.row]?[10] as? Bool ?? true) {
+                    cell.leftCircleLabel.textColor = .white
+                } else {
+                    cell.leftCircleLabel.textColor = .black
+                }
             }
             
             cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
-            cell.leftCircleLabel.textColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
             if isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
@@ -449,6 +525,8 @@ class settleSplitTVC: UITableViewController {
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get user data
         let nameSort = NSSortDescriptor(key: "namePerson", ascending: false)
@@ -457,11 +535,15 @@ class settleSplitTVC: UITableViewController {
         var userColor:Int16 = 0
         var userName:String?
         var createDateUser:Date?
+        var userIcon:String?
+        var userIconLight:Bool?
         
         for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             userName = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
             userColor = data.value(forKey: "color") as? Int16 ?? 0
+            userIcon = data.value(forKey: "icon") as? String ?? ""
+            userIconLight = data.value(forKey: "iconLight") as? Bool ?? true
         }
         
         let createDateUserPlus = Calendar.current.date(byAdding: .second, value: 1, to: (createDateUser ?? Date()))!
@@ -510,7 +592,11 @@ class settleSplitTVC: UITableViewController {
             5:personColor,
             6:personCreateDate,
             7:currencyCode,
-            8:sumOwed // Amount to-be-settled
+            8:sumOwed, // Amount to-be-settled
+            9:userIcon ?? "",
+            10:userIconLight ?? true,
+            11:personIcon,
+            12:personIconLight
         ]
     }
     
@@ -523,6 +609,8 @@ class settleSplitTVC: UITableViewController {
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get outerPaid Data
         let createDateOuterPlus = Calendar.current.date(byAdding: .second, value: 1, to: outerPersonCreateDate)!
@@ -531,6 +619,8 @@ class settleSplitTVC: UITableViewController {
         let queryPersonWhoPaid = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDateOuterPlus as NSDate, createDateOuterMinus as NSDate, outerPersonName as NSString)
         
         let outerPersonColor = (loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
+        let outerPersonIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
+        let outerPersonIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
         
         // Get owed Amount:
         // Per Split where Group, Person
@@ -577,7 +667,11 @@ class settleSplitTVC: UITableViewController {
             5:personColor,
             6:personCreateDate,
             7:currencyCode,
-            8:sumOwed // Amount to-be-settled
+            8:sumOwed, // Amount to-be-settled
+            9:outerPersonIcon,
+            10:outerPersonIconLight,
+            11:personIcon,
+            12:personIconLight
         ]
     }
     
@@ -590,6 +684,8 @@ class settleSplitTVC: UITableViewController {
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get open amount
         // for sumOwed: (TransactionAmount/ExchangeRate)*Ratio - Settled
@@ -616,6 +712,8 @@ class settleSplitTVC: UITableViewController {
         let queryPersonWhoPaid = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonWhoPaidPlus as NSDate, createDatePersonWhoPaidMinus as NSDate, personWhoPaidName as NSString)
         
         let personWhoPaidColor = (loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
+        let personWhoPaidIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
+        let personWhoPaidIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
         
         return [
             0:sumOwed, // Amount Owed as it is now in the DB
@@ -626,7 +724,11 @@ class settleSplitTVC: UITableViewController {
             5:personColor,
             6:personCreateDate,
             7:currencyCode,
-            8:sumOwed // Amount to-be-settled
+            8:sumOwed, // Amount to-be-settled
+            9:personWhoPaidIcon,
+            10:personWhoPaidIconLight,
+            11:personIcon,
+            12:personIconLight
         ]
     }
     
