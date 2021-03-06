@@ -723,6 +723,7 @@ class finTVC: UITableViewController {
     @objc func refreshView() {
         initData()
         finTableView.reloadData()
+        
     }
     
     @objc func addTransactionTabbed() {

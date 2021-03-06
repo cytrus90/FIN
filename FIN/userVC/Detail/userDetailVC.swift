@@ -142,7 +142,6 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         if (loadBulkData(entitie: "Categories", orderBy: "cID")).count <= 0 && selectedRowForCells == 1 {
             initCategories()
         }
-        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -160,6 +159,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     
     
     @objc func categoryChanged() {
+        self.title = ""
         initCells(selectedRowForCells: selectedRowForCells ?? 0)
         initView(table: userDetailTable)
         userDetailTable.reloadData()

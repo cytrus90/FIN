@@ -22,7 +22,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     var numberFormatter = NumberFormatter()
     var numberFormatterPercent = NumberFormatter()
     
-    let alphaValue:CGFloat = 0.6
+    let alphaValue:CGFloat = 0.8
     
     var selectedCategoryTimeRange = 0
     
@@ -76,6 +76,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
     }
     
     @objc func refreshView() {
+        activeBudget = loadIfBudget()
         categoryData.removeAll()
         getCategoryData()
         collectionView.reloadData()
@@ -176,12 +177,17 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         if let userInfo = notification.userInfo, let selectedNew = userInfo["selectedLabel"] as? Int {
             if let selectedCell = userInfo["selectedCell"] as? Int {
                 if selectedCell == 3 {
+                    activeBudget = loadIfBudget()
+                    
                     selectedCategoryTimeRange = selectedNew
                     getCategoryData()
-                    collectionView.performBatchUpdates({
-                        collectionView.reloadData()
+
+                    collectionView.reloadSections(IndexSet(integer: 0))
+                    
+                    //collectionView.performBatchUpdates({
+                        //collectionView.reloadData()
                         // collectionView.reloadSections(IndexSet(integer: 0))
-                    }, completion: nil)
+                    //}, completion: nil)
                     // collectionView.layoutIfNeeded()
                 }
             }
@@ -224,6 +230,7 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
             }
         } else {
+            print("111111")
             cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][2] as? Double ?? 0.00))
             cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
         }
@@ -237,6 +244,8 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         }
 
         if (categoryData[indexPath.row][7] as? String ?? "").count > 0 {
+            print("222222")
+            print(categoryData[indexPath.row][7])
             var selectedIcon = (categoryData[indexPath.row][7] as? String ?? "").replacingOccurrences(of: "_white", with: "")
             if (categoryData[indexPath.row][8] as? Bool ?? true) {
                 selectedIcon = selectedIcon + "_white"

@@ -87,6 +87,8 @@ class userMasterVC: UITableViewController {
         
         initFirstSelected()
         initView(table: userTable)
+        
+        self.title = ""
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -97,11 +99,13 @@ class userMasterVC: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         initFirstSelected()
+        self.title = ""
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
         viewDisappear = true
+        self.title = ""
     }
     
     override func viewWillLayoutSubviews() {
@@ -217,6 +221,9 @@ class userMasterVC: UITableViewController {
                     userDetailVC.selectedRowForCells = selectedRowIndex
                     userDetailVC.modalPresentationStyle = .fullScreen
                     selectedRowIndex = nil
+                    userDetailVC.title = ""
+                    self.title = ""
+                    self.navigationController?.title = ""
                     self.navigationController?.pushViewController(userDetailVC, animated: true)
                 }
 //            }
