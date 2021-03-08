@@ -359,11 +359,10 @@ class listMasterTVC: UITableViewController {
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
             cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
         }
-        if !UIDevice().model.contains("iPad") {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            cell.outlineView.addInteraction(interaction)
-            cell.outlineView.tag = indexPath.row
-        }
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.outlineView.addInteraction(interaction)
+        cell.outlineView.tag = indexPath.row
         
         return cell
     }
@@ -1152,13 +1151,23 @@ class listMasterTVC: UITableViewController {
 // Context Menu
 extension listMasterTVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(
-            identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-            previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
-              actionProvider: { _ in
-                let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
-                return UIMenu(title: "", children: children)
-              })
+        if UIDevice().model.contains("iPad") {
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: nil,
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeEditAction(row: (interaction.view?.tag ?? -1)),self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        } else {
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        }
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
@@ -1186,6 +1195,33 @@ extension listMasterTVC: UIContextMenuInteractionDelegate {
         identifier: UIAction.Identifier(rowString),
         attributes: .destructive,
         handler: deleteTransaction)
+    }
+    
+    func makeEditAction(row: Int) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            image: UIImage(systemName: "pencil"),
+            identifier: UIAction.Identifier(String(row)+"_edit"),
+            handler: openEdit)
+    }
+    
+    func openEdit(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue).replacingOccurrences(of: "_edit", with: "")
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+        
+        if row != -1 {
+            addVC.updateCreateDate = (transferData[(row)]?[11] as? Date ?? Date())
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        
+        self.present(navigationVC, animated: true, completion: nil)
     }
     
     func deleteTransaction(from action: UIAction) {

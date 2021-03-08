@@ -230,7 +230,6 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
                 cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
             }
         } else {
-            print("111111")
             cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: categoryData[indexPath.row][2] as? Double ?? 0.00))
             cell.amountLabel.font = UIFont.preferredFont(forTextStyle: .body)
         }
@@ -244,8 +243,6 @@ class cellCategoriesOverview: UITableViewCell, UICollectionViewDataSource, UICol
         }
 
         if (categoryData[indexPath.row][7] as? String ?? "").count > 0 {
-            print("222222")
-            print(categoryData[indexPath.row][7])
             var selectedIcon = (categoryData[indexPath.row][7] as? String ?? "").replacingOccurrences(of: "_white", with: "")
             if (categoryData[indexPath.row][8] as? Bool ?? true) {
                 selectedIcon = selectedIcon + "_white"

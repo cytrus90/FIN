@@ -815,11 +815,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             cell.icon.isHidden = true
         }
         
-        if !UIDevice().model.contains("iPad") {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            cell.cellOutlineView.addInteraction(interaction)
-            cell.cellOutlineView.tag = indexPath.row
-        }
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.cellOutlineView.addInteraction(interaction)
+        cell.cellOutlineView.tag = indexPath.row
         
         return cell
     }
@@ -922,10 +920,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             }
         }
         
-        if !UIDevice().model.contains("iPad") {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            cell.cellOutlineView.addInteraction(interaction)
-        }
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.cellOutlineView.addInteraction(interaction)
         
         return cell
     }
@@ -2144,22 +2140,42 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
 // Context Menu
 extension userDetailVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        if selectedRowForCells == 1 { // Categories
-            return UIContextMenuConfiguration(
-                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-                previewProvider: nil,
-                  actionProvider: { _ in
-                    let children: [UIMenuElement] = [self.makeCategoryAction()]
-                    return UIMenu(title: "", children: children)
-                  })
+        if UIDevice().model.contains("iPad") {
+            if selectedRowForCells == 1 { // Categories
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: nil,
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeCategoryAction()]
+                        return UIMenu(title: "", children: children)
+                      })
+            } else {
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: nil,
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeEditTransactionAction(row: (interaction.view?.tag ?? -1)), self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                        return UIMenu(title: "", children: children)
+                      })
+            }
         } else {
-            return UIContextMenuConfiguration(
-                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
-                  actionProvider: { _ in
-                    let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
-                    return UIMenu(title: "", children: children)
-                  })
+            if selectedRowForCells == 1 { // Categories
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: nil,
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeCategoryAction()]
+                        return UIMenu(title: "", children: children)
+                      })
+            } else {
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                        return UIMenu(title: "", children: children)
+                      })
+            }
         }
     }
     
@@ -2198,6 +2214,36 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
         title: NSLocalizedString("reorderCategoryQuickAction", comment: "Change order"),
         image: UIImage(systemName: "arrow.up.arrow.down"),
         handler: triggerReorder)
+    }
+    
+    func makeEditTransactionAction(row: Int) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            image: UIImage(systemName: "pencil"),
+            identifier: UIAction.Identifier(String(row)+"_edit"),
+            handler: openEditTransaction)
+    }
+    
+    func openEditTransaction(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue).replacingOccurrences(of: "_edit", with: "")
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+        
+        if row != -1 {
+            if let latestTransactionDate = ((userDetailCells[(row)] as? [Int:Any])?[4] as? Date) {
+                addVC.updateCreateDate = latestTransactionDate
+                addVC.superRegularPayment = true
+                addVC.newRegularPayment = true
+            }
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        self.present(navigationVC, animated: true, completion: nil)
     }
     
     func triggerReorder(from action: UIAction) {

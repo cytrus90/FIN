@@ -308,10 +308,8 @@ class finTVC: UITableViewController {
         cell.transactionArrowIcon.image = UIImage(named: "arrowRight")?.withRenderingMode(.alwaysTemplate)
         
         if (topOverviewCellData[7] as? Date) != nil {
-            if !UIDevice().model.contains("iPad") {
-                let interaction = UIContextMenuInteraction(delegate: self)
-                cell.latestTransactionStackView.addInteraction(interaction)
-            }
+            let interaction = UIContextMenuInteraction(delegate: self)
+            cell.latestTransactionStackView.addInteraction(interaction)
             
             let tabRecongnizer = UITapGestureRecognizer(target: self, action: #selector(switchToList))
             cell.latestTransactionStackView.addGestureRecognizer(tabRecongnizer)
@@ -395,7 +393,6 @@ class finTVC: UITableViewController {
                         break
                     }
                 } else {
-                    print(i)
                     switch i {
                     case 1:
                         let yearInt = Calendar.current.component(.year, from: Date())
@@ -1007,13 +1004,24 @@ extension finTVC: cellCategoriesOverviewDelegate {
 
 extension finTVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(
-              identifier: nil,
-              previewProvider: makeDetailPreview,
-              actionProvider: { _ in
-                let children: [UIMenuElement] = [self.makeDeleteAction()]
-                return UIMenu(title: "", children: children)
-            })
+        if UIDevice().model.contains("iPad") {
+            return UIContextMenuConfiguration(
+                  identifier: nil,
+                  previewProvider: nil,
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeEditAction(),self.makeDeleteAction()]
+                    return UIMenu(title: "", children: children)
+                })
+        } else {
+            return UIContextMenuConfiguration(
+                  identifier: nil,
+                  previewProvider: makeDetailPreview,
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeDeleteAction()]
+                    return UIMenu(title: "", children: children)
+                })
+        }
+        
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
@@ -1024,10 +1032,17 @@ extension finTVC: UIContextMenuInteractionDelegate {
     
     func makeDeleteAction() -> UIAction {
       return UIAction(
-        title: "Delete",
+        title: NSLocalizedString("deleteButton", comment: "Delete"),
         image: UIImage(systemName: "trash"),
         attributes: .destructive,
         handler: deleteTransaction)
+    }
+    
+    func makeEditAction() -> UIAction {
+        return UIAction(
+          title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+          image: UIImage(systemName: "pencil"),
+          handler: openEdit)
     }
     
     func makeDetailPreview() -> UIViewController {
@@ -1040,6 +1055,19 @@ extension finTVC: UIContextMenuInteractionDelegate {
         
         let navigationVC = UINavigationController(rootViewController: addVC)
         return navigationVC
+    }
+    
+    func openEdit(from action: UIAction) {
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        if let latestTransactionDate = topOverviewCellData[7] as? Date {
+            addVC.updateCreateDate = latestTransactionDate
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        
+        self.present(navigationVC, animated: true, completion: nil)
     }
     
     func deleteTransaction(from action: UIAction) {

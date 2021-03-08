@@ -327,11 +327,9 @@ class splitDetailTVC: UITableViewController {
             cell.icon.isHidden = true
         }
         
-        if !UIDevice().model.contains("iPad") {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            cell.outlineView.addInteraction(interaction)
-            cell.outlineView.tag = indexPath.row
-        }
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.outlineView.addInteraction(interaction)
+        cell.outlineView.tag = indexPath.row
         
         return cell
     }
@@ -811,22 +809,43 @@ class splitDetailTVC: UITableViewController {
 // Context Menu
 extension splitDetailTVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        if selectedSegement == 0 { // Group has been selected
-            return UIContextMenuConfiguration(
-                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-                previewProvider: { self.makeSplitPersonDetailPreview(row: (interaction.view?.tag ?? -1)) },
-                  actionProvider: { _ in
-                    let children: [UIMenuElement] = []
-                    return UIMenu(title: "", children: children)
-                  })
-        } else { // Person has been selected
-            return UIContextMenuConfiguration(
-                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
-                  actionProvider: { _ in
-                    let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
-                    return UIMenu(title: "", children: children)
-                  })
+        
+        if UIDevice().model.contains("iPad") {
+            if selectedSegement == 0 { // Group has been selected
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: nil,
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeEditPersonAction(row: (interaction.view?.tag ?? -1))]
+                        return UIMenu(title: "", children: children)
+                      })
+            } else { // Person has been selected
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: nil,
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeEditTransactionAction(row: (interaction.view?.tag ?? -1)),self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                        return UIMenu(title: "", children: children)
+                      })
+            }
+        } else {
+            if selectedSegement == 0 { // Group has been selected
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: { self.makeSplitPersonDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = []
+                        return UIMenu(title: "", children: children)
+                      })
+            } else { // Person has been selected
+                return UIContextMenuConfiguration(
+                    identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                    previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                      actionProvider: { _ in
+                        let children: [UIMenuElement] = [self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                        return UIMenu(title: "", children: children)
+                      })
+            }
         }
     }
     
@@ -875,6 +894,64 @@ extension splitDetailTVC: UIContextMenuInteractionDelegate {
             nc.post(name: Notification.Name("transactionDeleted"), object: nil)
             nc.post(name: Notification.Name("groupPersonAdded"), object: nil)
         }
+    }
+    
+    func makeEditPersonAction(row: Int) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            image: UIImage(systemName: "pencil"),
+            identifier: UIAction.Identifier(String(row)+"_edit"),
+            handler: openEditPerson)
+    }
+    
+    func openEditPerson(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue).replacingOccurrences(of: "_edit", with: "")
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "splitTSB", bundle: nil)
+        let addSplitVC = finStoryBoard.instantiateViewController(withIdentifier: "splitAddNewTVC") as! splitAddNewTVC
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+        
+        if row != -1 {
+            addSplitVC.updateGroupOrPersonName = rowData[(row)]?[1] as? String ?? ""
+            addSplitVC.updateCreateDate = (rowData[(row)]?[5] as? Date ?? Date())
+        }
+        
+        addSplitVC.update = 1
+        
+        let navigationVC = UINavigationController(rootViewController: addSplitVC)
+        
+        self.present(navigationVC, animated: true, completion: nil)
+    }
+    
+    func makeEditTransactionAction(row: Int) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            image: UIImage(systemName: "pencil"),
+            identifier: UIAction.Identifier(String(row)+"_edit"),
+            handler: openEditTransaction)
+    }
+    
+    func openEditTransaction(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue).replacingOccurrences(of: "_edit", with: "")
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
+        let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+        
+        if row != -1 {
+            if let latestTransactionDate = (rowData[(row)]?[7] as? Date) {
+                addVC.updateCreateDate = latestTransactionDate
+            }
+        }
+        
+        let navigationVC = UINavigationController(rootViewController: addVC)
+        self.present(navigationVC, animated: true, completion: nil)
     }
     
     func makeSplitPersonDetailPreview(row: Int) -> UIViewController {

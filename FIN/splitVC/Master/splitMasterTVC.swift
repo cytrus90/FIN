@@ -338,11 +338,9 @@ class splitMasterTVC: UITableViewController {
             cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
         }
         
-        if !UIDevice().model.contains("iPad") {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            cell.outlineView.addInteraction(interaction)
-            cell.outlineView.tag = (indexPath.row-1)
-        }
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.outlineView.addInteraction(interaction)
+        cell.outlineView.tag = (indexPath.row-1)
         
         return cell
     }
@@ -694,13 +692,23 @@ class splitMasterTVC: UITableViewController {
 // Context Menu
 extension splitMasterTVC: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(
-            identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
-            previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
-              actionProvider: { _ in
-                let children: [UIMenuElement] = []//[self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
-                return UIMenu(title: "", children: children)
-              })
+        if UIDevice().model.contains("iPad") {
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: nil,
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = [self.makeEditAction(row: (interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        } else {
+            return UIContextMenuConfiguration(
+                identifier: IndexPath(row: (interaction.view?.tag ?? -1), section: 0) as NSIndexPath,
+                previewProvider: { self.makeDetailPreview(row: (interaction.view?.tag ?? -1)) },
+                  actionProvider: { _ in
+                    let children: [UIMenuElement] = []//[self.makeDeleteAction(rowString: String(interaction.view?.tag ?? -1))]
+                    return UIMenu(title: "", children: children)
+                  })
+        }
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
@@ -719,6 +727,36 @@ extension splitMasterTVC: UIContextMenuInteractionDelegate {
 
         let navigationVC = UINavigationController(rootViewController: addSplitVC)
         return navigationVC
+    }
+    
+    func makeEditAction(row: Int) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            image: UIImage(systemName: "pencil"),
+            identifier: UIAction.Identifier(String(row)+"_edit"),
+            handler: openEdit)
+    }
+    
+    func openEdit(from action: UIAction) {
+        let identifier = String(action.identifier.rawValue).replacingOccurrences(of: "_edit", with: "")
+        let numFormater = NumberFormatter()
+        numFormater.numberStyle = .none
+        
+        let finStoryBoard: UIStoryboard = UIStoryboard(name: "splitTSB", bundle: nil)
+        let addSplitVC = finStoryBoard.instantiateViewController(withIdentifier: "splitAddNewTVC") as! splitAddNewTVC
+        
+        let row = Int(truncating: numFormater.number(from: identifier) ?? -1)
+        
+        if row != -1 {
+            addSplitVC.updateGroupOrPersonName = rowData[(row)]?[0] as? String ?? ""
+            addSplitVC.updateCreateDate = (rowData[(row)]?[4] as? Date ?? Date())
+        }
+        
+        addSplitVC.update = selectedSegement
+        
+        let navigationVC = UINavigationController(rootViewController: addSplitVC)
+        
+        self.present(navigationVC, animated: true, completion: nil)
     }
 }
 
