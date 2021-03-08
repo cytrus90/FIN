@@ -95,6 +95,7 @@
 		17A8CE0024BB4EE4003A2E39 /* userSplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A8CDFF24BB4EE4003A2E39 /* userSplitVC.swift */; };
 		17A8CE0424BB7FC0003A2E39 /* userDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A8CE0324BB7FC0003A2E39 /* userDetailVC.swift */; };
 		17A8CE0624BB7FEE003A2E39 /* cellDetailGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A8CE0524BB7FEE003A2E39 /* cellDetailGeneral.swift */; };
+		17A996F225F6A8E90084F5DA /* cellGraphSettingsSecondTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A996F125F6A8E90084F5DA /* cellGraphSettingsSecondTVC.swift */; };
 		17ACD20825B0936E0018BC38 /* PKIAHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ACD20725B0936E0018BC38 /* PKIAHandler.swift */; };
 		17AF201C24BE462500223931 /* setPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF201A24BE462500223931 /* setPasscode.swift */; };
 		17AF202224C01DBB00223931 /* balanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF202024C01DBB00223931 /* balanceView.swift */; };
@@ -250,6 +251,7 @@
 		17A8CDFF24BB4EE4003A2E39 /* userSplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userSplitVC.swift; sourceTree = "<group>"; };
 		17A8CE0324BB7FC0003A2E39 /* userDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userDetailVC.swift; sourceTree = "<group>"; };
 		17A8CE0524BB7FEE003A2E39 /* cellDetailGeneral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellDetailGeneral.swift; sourceTree = "<group>"; };
+		17A996F125F6A8E90084F5DA /* cellGraphSettingsSecondTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellGraphSettingsSecondTVC.swift; sourceTree = "<group>"; };
 		17ACD20725B0936E0018BC38 /* PKIAHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKIAHandler.swift; sourceTree = "<group>"; };
 		17AF201A24BE462500223931 /* setPasscode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setPasscode.swift; sourceTree = "<group>"; };
 		17AF202024C01DBB00223931 /* balanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = balanceView.swift; sourceTree = "<group>"; };
@@ -688,6 +690,7 @@
 				17F6BD622597B6AA006A4B38 /* graphSettingsTVC.swift */,
 				17F6BD5A2597B667006A4B38 /* cellGraphSettingsTVC.swift */,
 				17F6BD5E2597B692006A4B38 /* cellGraphSettingsDetailsTVC.swift */,
+				17A996F125F6A8E90084F5DA /* cellGraphSettingsSecondTVC.swift */,
 			);
 			path = GraphSettings;
 			sourceTree = "<group>";
@@ -938,6 +941,7 @@
 				17DBF0C724FA802B00B9F2E5 /* listFilterCell.swift in Sources */,
 				17A4B4022520A95400EBEBDB /* cellSplitGeneral.swift in Sources */,
 				17087DBD253C6F0800FD2034 /* cellSplitTransactionSplitAddButton.swift in Sources */,
+				17A996F225F6A8E90084F5DA /* cellGraphSettingsSecondTVC.swift in Sources */,
 				17A8CE0424BB7FC0003A2E39 /* userDetailVC.swift in Sources */,
 				173B2F3725AC60B300CADA71 /* cellAboutLogo.swift in Sources */,
 				17EB5EDB25DA976100F9281B /* updateVC.swift in Sources */,

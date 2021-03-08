@@ -270,6 +270,8 @@
 
 "changeLabel" = "Entwicklung: ";
 
+"showSecondGraphLabel" = "Zweites Diagramm:";
+
 // #### Split VC ####
 "bottomSegmentGroups" = "Gruppen";
 "bottomSegmentUsers" = "Personen";

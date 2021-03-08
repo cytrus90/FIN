@@ -102,7 +102,11 @@ class graphSettingsTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        if UIDevice().model.contains("iPad") {
+            return 3
+        } else {
+            return 2
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -118,49 +122,12 @@ class graphSettingsTVC: UITableViewController {
             cell.delegate = self
             
             return cell
+        } else if indexPath.row == 1 && !UIDevice().model.contains("iPad") {
+            return getSettingsCells(indexPath: indexPath)
+        } else if indexPath.row == 1 && UIDevice().model.contains("iPad") {
+            return getSecondSwitchCell(indexPath: indexPath)
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cellGraphSettingsDetailsTVC", for: indexPath) as! cellGraphSettingsDetailsTVC
-            
-            if activeGraphID == 0 {
-                cell.label1.text = NSLocalizedString("option1LineChartTitle", comment: "Line Chart Options")
-                cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_0", comment: "Balance"), forSegmentAt: 0)
-                
-//                if UIDevice().model.contains("iPhone") && view.frame.height > view.frame.width {
-//                    cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_1_h", comment: "Ex vs. In"), forSegmentAt: 1)
-//                } else {
-//                    cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_1_w", comment: "Expenses vs. Income"), forSegmentAt: 1)
-//                }
-//                if cell.segmentControl1.numberOfSegments == 2 {
-//                    cell.segmentControl1.insertSegment(withTitle: NSLocalizedString("lineChartOption1_2", comment: "Savings"), at: 2, animated: false)
-//                }
-                cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_2", comment: "Savings"), forSegmentAt: 1)
-                
-                if cell.segmentControl1.numberOfSegments >= 3 {
-                    cell.segmentControl1.removeSegment(at: 2, animated: false)
-                }
-                
-                cell.segmentControl1.selectedSegmentIndex = Int(rowData[activeGraphID]?[2] as? Int16 ?? 0)
-            } else {
-                cell.label1.text = NSLocalizedString("option1BarChartTitle", comment: "Bar Chart Options")
-                cell.segmentControl1.setTitle(NSLocalizedString("barChartOption1_0", comment: "Category"), forSegmentAt: 0)
-                cell.segmentControl1.setTitle(NSLocalizedString("barChartOption1_1", comment: "Tags"), forSegmentAt: 1)
-//                cell.segmentControl1.removeSegment(at: 2, animated: false)
-                if cell.segmentControl1.numberOfSegments < 3 {
-                    cell.segmentControl1.insertSegment(withTitle: NSLocalizedString("lineChartOption1_2", comment: "Savings"), at: 2, animated: false)
-                }
-                cell.segmentControl1.selectedSegmentIndex = Int(rowData[activeGraphID]?[2] as? Int16 ?? 0)
-            }
-            
-            cell.label2.text = NSLocalizedString("option2ChartTitle", comment: "Options2")
-            cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentMonthly", comment: "Monthly"), forSegmentAt: 0)
-            cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentYearly", comment: "Yearly"), forSegmentAt: 1)
-            cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentAll", comment: "All"), forSegmentAt: 2)
-            
-            cell.segmentControl2.selectedSegmentIndex = Int(rowData[activeGraphID]?[3] as? Int16 ?? 0)
-            
-            cell.delegate = self
-            
-            return cell
+            return getSettingsCells(indexPath: indexPath)
         }
     }
 
@@ -207,8 +174,51 @@ class graphSettingsTVC: UITableViewController {
         )
     }
     
-    // MARK: -FUNCTIONS
+    // MARK: -CELLs
+    func getSettingsCells(indexPath: IndexPath) -> cellGraphSettingsDetailsTVC {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellGraphSettingsDetailsTVC", for: indexPath) as! cellGraphSettingsDetailsTVC
+        
+        if activeGraphID == 0 {
+            cell.label1.text = NSLocalizedString("option1LineChartTitle", comment: "Line Chart Options")
+            cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_0", comment: "Balance"), forSegmentAt: 0)
+
+            cell.segmentControl1.setTitle(NSLocalizedString("lineChartOption1_2", comment: "Savings"), forSegmentAt: 1)
+            
+            if cell.segmentControl1.numberOfSegments >= 3 {
+                cell.segmentControl1.removeSegment(at: 2, animated: false)
+            }
+            
+            cell.segmentControl1.selectedSegmentIndex = Int(rowData[activeGraphID]?[2] as? Int16 ?? 0)
+        } else {
+            cell.label1.text = NSLocalizedString("option1BarChartTitle", comment: "Bar Chart Options")
+            cell.segmentControl1.setTitle(NSLocalizedString("barChartOption1_0", comment: "Category"), forSegmentAt: 0)
+            cell.segmentControl1.setTitle(NSLocalizedString("barChartOption1_1", comment: "Tags"), forSegmentAt: 1)
+//                cell.segmentControl1.removeSegment(at: 2, animated: false)
+            if cell.segmentControl1.numberOfSegments < 3 {
+                cell.segmentControl1.insertSegment(withTitle: NSLocalizedString("lineChartOption1_2", comment: "Savings"), at: 2, animated: false)
+            }
+            cell.segmentControl1.selectedSegmentIndex = Int(rowData[activeGraphID]?[2] as? Int16 ?? 0)
+        }
+        
+        cell.label2.text = NSLocalizedString("option2ChartTitle", comment: "Options2")
+        cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentMonthly", comment: "Monthly"), forSegmentAt: 0)
+        cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentYearly", comment: "Yearly"), forSegmentAt: 1)
+        cell.segmentControl2.setTitle(NSLocalizedString("bottomSegmentAll", comment: "All"), forSegmentAt: 2)
+        
+        cell.segmentControl2.selectedSegmentIndex = Int(rowData[activeGraphID]?[3] as? Int16 ?? 0)
+        
+        cell.delegate = self
+        
+        return cell
+    }
     
+    func getSecondSwitchCell(indexPath: IndexPath) -> cellGraphSettingsSecondTVC {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellGraphSettingsSecondTVC", for: indexPath) as! cellGraphSettingsSecondTVC
+        cell.delegate = self
+        return cell
+    }
+    
+    // MARK: -FUNCTIONS
     func initData() {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
         // DataCheck
@@ -429,5 +439,11 @@ extension graphSettingsTVC: cellGraphSettingsDetailsTVCDelegate {
     func graphOption2Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
         _ = saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption2", query: query, value: Int16(selected))
+    }
+}
+
+extension graphSettingsTVC: cellGraphSettingsSecondTVCDelegate {
+    func secondSwitchChanged(newState:Bool) {
+        print("switchChanged")
     }
 }

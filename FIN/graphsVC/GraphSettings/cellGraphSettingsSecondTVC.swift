@@ -1,35 +1,33 @@
 //
-//  cellGraphSettingsTVC.swift
+//  cellGraphSettingsSecondTVC.swift
 //  FIN
 //
-//  Created by Florian Riel on 26.12.20.
-//  Copyright © 2020 Alpako. All rights reserved.
+//  Created by Florian Riel on 08.03.21.
+//  Copyright © 2021 Alpako. All rights reserved.
 //
 
 import UIKit
 
-class cellGraphSettingsTVC: UITableViewCell {
+class cellGraphSettingsSecondTVC: UITableViewCell {
 
     @IBOutlet weak var outlineView: UIView!
+    @IBOutlet weak var secondLabel: UILabel!
+    @IBOutlet weak var secondSwitch: UISwitch!
     
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var segmentControl: UISegmentedControl!
-    
-    weak var delegate: cellGraphSettingsTVSDelegate?
+    weak var delegate:cellGraphSettingsSecondTVCDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         initView()
     }
-
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         initView()
     }
-    
+
     func initView() {
-        segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor.white], for: .selected)
-        segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)], for: .normal)
+        secondLabel.text = NSLocalizedString("showSecondGraphLabel", comment: "Show Second")
         
         outlineView.layer.borderWidth = 1
         outlineView.layer.cornerRadius = 10
@@ -45,16 +43,12 @@ class cellGraphSettingsTVC: UITableViewCell {
             outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
     }
-
-    @IBAction func segementControllChanged(_ sender: Any) {
-        self.delegate?.selectedGraphChanged(selected: segmentControl.selectedSegmentIndex)
-    }
     
-    @IBAction func secondSwitchChanged(_ sender: Any) {
-        
+    @IBAction func secondSwitchSwitched(_ sender: Any) {
+        self.delegate?.secondSwitchChanged(newState: secondSwitch.isOn)
     }
 }
 
-protocol cellGraphSettingsTVSDelegate: AnyObject {
-    func selectedGraphChanged(selected: Int)
+protocol cellGraphSettingsSecondTVCDelegate: AnyObject {
+    func secondSwitchChanged(newState:Bool)
 }

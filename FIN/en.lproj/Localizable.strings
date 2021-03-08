@@ -269,6 +269,8 @@
 
 "changeLabel" = "Change: ";
 
+"showSecondGraphLabel" = "Show second graph:";
+
 // #### Split VC ####
 "bottomSegmentGroups" = "Groups";
 "bottomSegmentUsers" = "Persons";

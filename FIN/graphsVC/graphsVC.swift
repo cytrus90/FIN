@@ -18,6 +18,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var chartStackView: UIStackView!
     @IBOutlet weak var labelStackView: UIStackView!
     
+    @IBOutlet weak var mainStackView: UIStackView!
+    
     @IBOutlet weak var chartTopConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var carouselView: ScalingCarouselView!
@@ -52,6 +54,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var graphOption1:Int? // Balance, EX.vs.EA, Tags, Categories...
     var graphOption2:Int? // Monthly, Yearly, All
     
+    var secondGraph:Bool = true
+    var graphOption3:Int? // Balance, EX.vs.EA, Tags, Categories...
+    
+    let secondOutlineView = UIView()
+    let secondChartStackView = UIStackView()
+    
+    let secondLabel = UILabel()
+    let secondLeftLabel = UILabel()
+    
     var fromDateShown: Date?
     var toDateShown: Date?
     
@@ -64,7 +75,14 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var pieChartSum:Double?
     var pieChartLabels:[String]?
     
+    let secondPieChart = PieChartView()
+    var secondPieChartSum:Double?
+    var secondPieChartLabels:[String]?
+    
+    var secondChartTopConstraint:NSLayoutConstraint?
+    
     let lineChart = LineChartView()
+    let secondLineChart = LineChartView()
     
     struct LineChartEntry {
         var value:Double
@@ -75,11 +93,19 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var lineChartEntries = [LineChartEntry]()
     var lineChartEntriesExpenses = [LineChartEntry]()
     
+    var secondLineChartEntries = [LineChartEntry]()
+    
     var lineChartMax = 0.00
     var lineCharMin = 0.00
     var lineChartDates = [Date]()
     var lineChartRealValues = [Double]()
     var lineChartDifference = 0.00
+    
+    var secondLineChartMax = 0.00
+    var secondLineCharMin = 0.00
+    var secondLineChartDates = [Date]()
+    var secondLineChartRealValues = [Double]()
+    var secondLineChartDifference = 0.00
     
     var initialLoad:Bool = true
     
@@ -196,15 +222,22 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         outlineView.layer.borderWidth = 1
         outlineView.layer.cornerRadius = 10
         
+        secondOutlineView.layer.borderWidth = 1
+        secondOutlineView.layer.cornerRadius = 10
+        
         let userInterfaceStyle = traitCollection.userInterfaceStyle
         if userInterfaceStyle == .light {
             outlineView.backgroundColor = .white
             outlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+            secondOutlineView.backgroundColor = .white
+            secondOutlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
             self.view.backgroundColor = backgroundGeneralColor
         } else {
             self.view.backgroundColor = .secondarySystemBackground
             outlineView.backgroundColor = .black
             outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
+            secondOutlineView.backgroundColor = .black
+            secondOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
             self.view.backgroundColor = .secondarySystemBackground
         }
         
@@ -213,10 +246,61 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         
         activityIndicator.style = .medium
         activityIndicator.hidesWhenStopped = true
-        outlineView.addSubview(activityIndicator)
+        mainStackView.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.centerYAnchor.constraint(equalTo: outlineView.safeAreaLayoutGuide.centerYAnchor, constant: 0).isActive = true
-        activityIndicator.centerXAnchor.constraint(equalTo: outlineView.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: mainStackView.safeAreaLayoutGuide.centerYAnchor, constant: 0).isActive = true
+        activityIndicator.centerXAnchor.constraint(equalTo: mainStackView.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
+    }
+    
+    func initSecondOutlineView() {
+        mainStackView.addArrangedSubview(secondOutlineView)
+        mainStackView.spacing = 10
+        
+        // secondOutlineView.translatesAutoresizingMaskIntoConstraints = false
+        // mainStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        secondLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        secondLabel.textAlignment = .right
+        
+        secondLeftLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        secondLeftLabel.textAlignment = .left
+                
+        if graphIDActive == 0 {
+            secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Balance")
+        } else {
+            if graphOption2 == 0 {
+                secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+            } else if graphOption2 == 1 {
+                secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+            } else {
+                secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+            }
+        }
+        
+        secondLabel.text = "Test"
+        
+        let secondLabelStackView = UIStackView()
+        secondLabelStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        secondLabelStackView.axis = .horizontal
+        secondLabelStackView.alignment = .fill
+        secondLabelStackView.distribution = .fillEqually
+        secondLabelStackView.spacing = 0
+        
+        secondLabelStackView.addArrangedSubview(secondLeftLabel)
+        secondLabelStackView.addArrangedSubview(secondLabel)
+        
+        secondOutlineView.addSubview(secondLabelStackView)
+        secondLabelStackView.leadingAnchor.constraint(equalTo: secondOutlineView.leadingAnchor, constant: 15).isActive = true
+        secondLabelStackView.trailingAnchor.constraint(equalTo: secondOutlineView.trailingAnchor, constant: -15).isActive = true
+        secondLabelStackView.topAnchor.constraint(equalTo: secondOutlineView.topAnchor, constant: 15).isActive = true
+                
+        secondChartStackView.translatesAutoresizingMaskIntoConstraints = false
+        secondOutlineView.addSubview(secondChartStackView)
+        secondChartStackView.leadingAnchor.constraint(equalTo: secondOutlineView.leadingAnchor, constant: 5).isActive = true
+        secondChartStackView.trailingAnchor.constraint(equalTo: secondOutlineView.trailingAnchor, constant: -5).isActive = true
+        secondChartStackView.topAnchor.constraint(equalTo: secondOutlineView.topAnchor, constant: 5).isActive = true
+        secondChartStackView.bottomAnchor.constraint(equalTo: secondOutlineView.bottomAnchor, constant: -5).isActive = true
     }
     
     // MARK: ScrollView
@@ -287,11 +371,14 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                 self.viewLineChart(createNew: true)
             }
-//            if graphOption1 == 0 { // Balance
-                labelLeft.text = NSLocalizedString("changeLabel", comment: "Balance")
-//            } else { // Savings
-//                labelLeft.text = NSLocalizedString("lineChartOption1_2", comment: "Savings")
-//            }
+            labelLeft.text = NSLocalizedString("changeLabel", comment: "Balance")
+            
+            if secondGraph {
+                initSecondOutlineView()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    self.viewSecondLineChart(createNew: true)
+                }
+            }
         } else if graphIDActive == 1 && (!viewAppeared || refresh) { // Pie Chart
             if graphOption1 == 0 {
                 labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
@@ -304,6 +391,24 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 viewPieChart(createNew: true)
             } else {
                 viewPieChart(createNew: true)
+            }
+            
+            if secondGraph {
+                initSecondOutlineView()
+                
+                if graphOption3 == 0 {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                } else if graphOption3 == 1 {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                } else {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                }
+                
+                if self.view.frame.height > self.view.frame.width {
+                    viewSecondPieChart(createNew: true)
+                } else {
+                    viewSecondPieChart(createNew: true)
+                }
             }
         }
     }
@@ -367,6 +472,9 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         }
         pieChart.clear()
         pieChart.data?.dataSets.removeAll()
+        
+        pieChart.tag = 0
+        
         let pieData = getPieChartData()
         
         pieChartSum = pieData.2
@@ -407,6 +515,61 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         pieChart.setSmoothSelected(true)
         
         pieChart.notifyDataSetChanged()
+    }
+    
+    func viewSecondPieChart(createNew:Bool = false) {
+        secondLabel.isHidden = false
+        secondLeftLabel.isHidden = false
+        if createNew {
+            secondChartStackView.subviews.forEach({ $0.removeFromSuperview() })
+            secondChartStackView.addArrangedSubview(secondPieChart)
+        }
+        
+        secondPieChart.clear()
+        secondPieChart.data?.dataSets.removeAll()
+        
+        secondPieChart.tag = 1
+        
+        let secondPieData = getSecondPieChartData()
+        
+        secondPieChartSum = secondPieData.2
+        secondPieChartLabels = secondPieData.3
+        
+        secondLabel.text = numberFormatter.string(from: NSNumber(value: secondPieChartSum ?? 0.00))
+        
+        let dataSet = PieChartDataSet(entries: secondPieData.0, label: "")
+        dataSet.colors = secondPieData.1
+        
+        let data = PieChartData(dataSet: dataSet)
+        
+        secondPieChart.data = data
+        secondPieChart.legend.enabled = true
+        secondPieChart.legend.font = .preferredFont(forTextStyle: .footnote)
+//        pieChart.entryLabelFont = .preferredFont(forTextStyle: .footnote)
+//        pieChart.data?.setValueFont(.preferredFont(forTextStyle: .footnote))
+//        pieChart.data?.setValueTextColor(.black)
+        secondPieChart.drawEntryLabelsEnabled = false
+        secondPieChart.animate(xAxisDuration: 1.0, yAxisDuration: 1.0, easingOption: .easeInOutQuart)
+        secondPieChart.data?.setDrawValues(false)
+        secondPieChart.backgroundColor = .clear
+        
+        secondPieChart.holeColor = .clear
+        secondPieChart.delegate = self
+        
+        var textColor = UIColor.white
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        if userInterfaceStyle == .light {
+            textColor = UIColor.black
+        }
+        let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: 100.00)) ?? "100.00") + "%"
+        let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+        let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+        
+        secondPieChart.centerAttributedText = centerText
+        
+        secondPieChart.setSmoothSelected(true)
+        
+        secondPieChart.notifyDataSetChanged()
     }
     
     func viewLineChart(createNew:Bool = false) {
@@ -551,6 +714,122 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         lineChart.notifyDataSetChanged()
         activityIndicator.stopAnimating()
     }
+        
+    func viewSecondLineChart(createNew:Bool = false) {
+        if createNew {
+            secondChartStackView.subviews.forEach({ $0.removeFromSuperview() })
+            secondChartStackView.addArrangedSubview(secondLineChart)
+            secondChartStackView.layoutSubviews()
+        }
+        
+        secondLineChart.clear()
+        
+        let lineData = getSecondLineChartData()
+        
+        let data = LineChartData()
+        
+        secondLineChartDates.removeAll()
+        secondLineChartDates = lineData.1
+        
+        var chartTitle = ""
+        switch graphOption3 {
+        case 1: // Savings
+            chartTitle = NSLocalizedString("lineChartOption1_2", comment: "Savings")
+            break
+        default: // Balance
+            chartTitle = NSLocalizedString("lineChartOption1_0", comment: "Balance")
+            break
+        }
+        
+        let line1 = LineChartDataSet(entries: lineData.0, label: chartTitle)
+        line1.mode = .linear
+        line1.drawCirclesEnabled = false
+        line1.drawFilledEnabled = true
+        line1.fillColor = .clear
+        
+        // Body Text Sizes:
+        // 14.0
+        // 15.0
+        // 16.0
+        // 17.0
+        // 19.0
+        // 21.0
+        // 23.0
+        if label.font.pointSize < 16 {
+            line1.lineWidth = 1
+        } else if label.font.pointSize < 19 {
+            line1.lineWidth = 2
+        } else {
+            line1.lineWidth = 3
+        }
+        
+        data.addDataSet(line1)
+        
+        secondLineChart.data = data
+        secondLineChart.data?.setDrawValues(false)
+        
+        secondLineChart.drawGridBackgroundEnabled = false
+        secondLineChart.drawBordersEnabled = false
+        secondLineChart.drawMarkers = false
+        secondLineChart.backgroundColor = .clear
+        secondLineChart.doubleTapToZoomEnabled = false
+        
+        secondLineChart.rightAxis.enabled = false
+        secondLineChart.drawGridBackgroundEnabled = false
+        
+        secondLineChart.xAxis.labelPosition = .bottom
+        secondLineChart.xAxis.gridLineWidth = 0.00
+        secondLineChart.xAxis.enabled = false
+        
+        secondLineChart.leftAxis.gridLineWidth = 0.00
+        
+        secondLineChart.leftAxis.enabled = false
+        
+        if graphOption2 != 0 && (lineData.0.count > 10) {
+            secondLineChart.animate(xAxisDuration: 2.0, easingOption: .easeInOutQuart)
+        }
+        
+        var isDark:Bool = true
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        if userInterfaceStyle == .light {
+            isDark = false
+        }
+        
+        if lineData.2 && (graphOption3 != 2) {
+            line1.colors.removeAll()
+            if !isDark {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 204/255, green: 0/255, blue: 0/255, alpha: 1.0))]
+            } else {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 255/255, green: 26/255, blue: 26/255, alpha: 1.0))]
+            }
+//            line1.fillColor = NSUIColor.red.withAlphaComponent(0.2)
+        } else if !lineData.2 && (graphOption3 != 2) {
+            line1.colors.removeAll()
+            if !isDark {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 0/255, green: 153/255, blue: 51/255, alpha: 1.0))]
+            } else {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 0/255, green: 255/255, blue: 0/255, alpha: 1.0))]
+            }
+//            line1.fillColor = NSUIColor.green.withAlphaComponent(0.2)
+        } else {
+            line1.colors.removeAll()
+            if !isDark {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 0/255, green: 153/255, blue: 51/255, alpha: 1.0))]
+            } else {
+                line1.colors = [NSUIColor.init(cgColor: CGColor(srgbRed: 0/255, green: 255/255, blue: 0/255, alpha: 1.0))]
+            }
+//            line1.fillColor = NSUIColor.green.withAlphaComponent(0.2)
+        }
+        
+        secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Balance")
+        secondLabel.text = lineNumberFormatter.string(from: NSNumber(value: lineData.3))
+        secondLineChartDifference = lineData.3
+        
+        secondLineChart.delegate = self
+        
+        secondLineChart.notifyDataSetChanged()
+        activityIndicator.stopAnimating()
+    }
     
     func initChartSettings() {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
@@ -564,6 +843,21 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         graphIDActive = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphID", query: queryGraphActive) as? Int16 ?? 0)
         graphOption1 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
         graphOption2 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
+        
+        if UIDevice().model.contains("iPad") {
+            secondGraph = true//(loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
+            graphOption3 = 1//Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
+        } else {
+            secondGraph = false
+            graphOption3 = nil
+        }
+        if secondGraph {
+            secondOutlineView.isHidden = false
+            secondOutlineView.isUserInteractionEnabled = true
+        } else {
+            secondOutlineView.isHidden = true
+            secondOutlineView.isUserInteractionEnabled = false
+        }
     }
     
     @objc func setBarButtons() {
@@ -943,6 +1237,274 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         }
     }
     
+    func getSecondLineChartData(getExpenses:Bool = false) -> ([ChartDataEntry],[Date],Bool,Double) {
+        var entries = [ChartDataEntry]()
+        var dates = [Date]()
+        var lastNegative = false
+        var differenceFirstLast = 0.00
+        
+        let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
+        let toDate = collectionCellData[carouselScrollingId]?[2] as? Date ?? Date()
+        
+        if graphOption3 == 2 { // Expenses vs. Income
+            if lineChartEntries.count <= 0 || lineChartEntriesExpenses.count <= 0 {
+                loadLineChartData()
+            }
+            
+            if getExpenses {
+                let selected = lineChartEntriesExpenses.filter { $0.dateTime >= fromDate && $0.dateTime <= toDate }
+                let firstEntryValue = selected[0].value
+                if selected.count > 0 {
+                    for i in 0...selected.count-1 {
+                        entries.append(ChartDataEntry(x: Double(i), y: selected[i].value))
+                        dates.append(selected[i].dateTime)
+                        if i == (selected.count-1) && selected[i].value < firstEntryValue {
+                            lastNegative = true
+                        }
+                    }
+                }
+            } else {
+                let selected = lineChartEntries.filter { $0.dateTime >= fromDate && $0.dateTime <= toDate }
+                let firstEntryValue = selected[0].value
+                if selected.count > 0 {
+                    for i in 0...selected.count-1 {
+                        entries.append(ChartDataEntry(x: Double(i), y: selected[i].value))
+                        dates.append(selected[i].dateTime)
+                        if i == (selected.count-1) && selected[i].value > firstEntryValue {
+                            lastNegative = true
+                        }
+                    }
+                }
+            }
+        } else {
+            if secondLineChartEntries.count <= 0 {
+                loadSecondLineChartData()
+            }
+            secondLineChartRealValues.removeAll()
+            var selected = secondLineChartEntries.filter { $0.dateTime >= fromDate && $0.dateTime <= toDate }
+            
+            if selected.count == 1 {
+                let value = selected[0].value
+                let selecteRAM = selected[0]
+                let indexRAM = selected[0].index
+                selected.removeAll()
+                selected.append(LineChartEntry(value: value, dateTime: fromDate, index: (indexRAM-1)))
+                selected.append(selecteRAM)
+            }
+            
+            if selected.count > 0 {
+                var ma = 1
+                if selected.count > 500 {
+                    switch graphOption2 {
+                    case 1: // Yearly
+                        ma = 4
+                        break
+                    case 2: // All
+                        ma = 12
+                        break
+                    default: // Monthly
+                        ma = 1
+                        break
+                    }
+                }
+                
+                var firstEntryValue = selected[0].value
+                if secondLineChartEntries.indices.contains(selected[0].index-1) {
+                    firstEntryValue = secondLineChartEntries[selected[0].index-1].value
+                }
+                for i in 0...selected.count-1 {
+                    var movingAverage = selected[i].value
+                    if ma != 1 {
+                        var selectedArray = [Double]()
+                        for j in 1...ma {
+                            let m = i - j
+                            if m > 0 {
+                                selectedArray.append(selected[m].value)
+                            }
+                        }
+                        selectedArray.append(selected[i].value)
+                        for j in 1...ma {
+                            let m = i + j
+                            if m < selected.count-1 {
+                                selectedArray.append(selected[m].value)
+                            }
+                        }
+                        movingAverage = (selectedArray.reduce(0, +)) / Double(selectedArray.count)
+                    }
+                    
+                    entries.append(ChartDataEntry(x: Double(i), y: movingAverage))
+                    secondLineChartRealValues.append(selected[i].value)
+                    dates.append(selected[i].dateTime)
+                    if i == (selected.count-1) {
+                        if (selected[i].value <= firstEntryValue) {
+                            lastNegative = true
+                        }
+                        differenceFirstLast =  selected[i].value - firstEntryValue
+                    }
+                }
+            }
+        }
+        return (entries,dates,lastNegative,differenceFirstLast)
+    }
+    
+    func loadSecondLineChartData() {
+        lineChartMax = 0.00
+        lineCharMin = 0.00
+        
+        switch graphOption3 {
+        case 2: // Expenses vs. Income
+            
+            break
+        case 1: // Savings
+            if fromDateMax == nil || toDateMax == nil  {
+                setInitialToFromMaxDates()
+            }
+            
+//            let queryCountEntries = NSPredicate(format: "isSave == %@", NSNumber(value: true))
+//            let countEntries = (loadDataSUMEntries(entitie: "Categories", query: queryCountEntries) as? [[String:Any]])?[0]["sum"] as? Double ?? 1.00
+//            var numberEntries:Double = 1000.00
+//            if countEntries > 1000 && countEntries <= 3000 {
+//                numberEntries = (0.9 * countEntries)
+//            } else if countEntries > 3000 && countEntries <= 5000 {
+//                numberEntries = (0.8 * countEntries)
+//            } else if countEntries > 5000 && countEntries <= 10000 {
+//                numberEntries = (0.7 * countEntries)
+//            } else {
+//                numberEntries = 7000.00
+//            }
+            
+//            let nEntries = max(Int(countEntries/numberEntries),1000)
+            
+            let dateSort = NSSortDescriptor(key: "dateTime", ascending: true)
+
+            var tagFilterPredicateString = ""
+            
+            if filteredTagsArray.count > 0 {
+                for i in 0...(filteredTagsArray.count-1) {
+                    if i == 0 {
+                        tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    } else if i != (filteredTagsArray.count-1) {
+                        tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    }
+                    if i == (filteredTagsArray.count-1) {
+                        if i != 0 {
+                            tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
+                        } else {
+                            tagFilterPredicateString = tagFilterPredicateString + ")"
+                        }
+                    }
+                }
+                
+            }
+            
+            var savings:Double = 0.00
+            
+            let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
+            let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == true" + tagFilterPredicateString, -1)
+            
+            for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+                savings = savings + (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
+            }
+//            var i = 0
+            var index = 1
+            
+            var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
+            secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
+            
+            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+                if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
+                    repeat {
+                        if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
+                            secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: preDate.endOfMonth, index: index))
+                            index = index + 1
+                        }
+                        preDate = (Calendar.current.date(byAdding: .month, value: 1, to: preDate)!).startOfMonth
+                    } while preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending
+                }
+                
+                let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
+                if (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                    savings = savings + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                    secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: (transaction.value(forKey: "dateTime") as? Date ?? Date()), index: index))
+                    index = index + 1
+                }
+            }
+            secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: toDateMax ?? Date(), index: index))
+            break
+        default: // Balance
+            if fromDateMax == nil || toDateMax == nil  {
+                setInitialToFromMaxDates()
+            }
+            
+            let dateSort = NSSortDescriptor(key: "dateTime", ascending: true)
+            
+            var tagFilterPredicateString = ""
+            
+            if filteredTagsArray.count > 0 {
+                for i in 0...(filteredTagsArray.count-1) {
+                    if i == 0 {
+                        tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    } else if i != (filteredTagsArray.count-1) {
+                        tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    }
+                    if i == (filteredTagsArray.count-1) {
+                        if i != 0 {
+                            tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
+                        } else {
+                            tagFilterPredicateString = tagFilterPredicateString + ")"
+                        }
+                    }
+                }
+                
+            }
+            let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
+            
+            var balance:Double = 0.00
+            var index = 1
+            let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == false" + tagFilterPredicateString, -1)
+            for transaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+                let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? -1))
+                let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+                if isIncome {
+                    balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                } else {
+                    balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                }
+            }
+            var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
+            secondLineChartEntries.append(LineChartEntry(value: balance, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
+            
+            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+                if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
+                    repeat {
+                        if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
+                            secondLineChartEntries.append(LineChartEntry(value: balance, dateTime: preDate.endOfMonth, index: index))
+                            index = index + 1
+                        }
+                        preDate = (Calendar.current.date(byAdding: .month, value: 1, to: preDate)!).startOfMonth
+                    } while preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending
+                }
+                
+                let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
+                if !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                    if (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) {
+                        balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                    } else {
+                        balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
+                    }
+
+                    secondLineChartEntries.append(LineChartEntry(value: balance, dateTime: (transaction.value(forKey: "dateTime") as? Date ?? Date()), index: index))
+                    index = index + 1
+                }
+            }
+            secondLineChartEntries.append(LineChartEntry(value: balance, dateTime: toDateMax ?? Date(), index: index))
+            break
+        }
+        if secondLineChartEntries.count > 0 {
+            secondLineChartEntries.sort { $0.dateTime < $1.dateTime }
+        }
+    }
+    
     func getPieChartData()-> ([PieChartDataEntry],[UIColor], Double, [String]) {
         var entries = [PieChartDataEntry]()
         var colors = [UIColor]()
@@ -995,6 +1557,71 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
                             labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         } else if (graphOption1 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                            sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
+                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        }
+                    }
+                }
+            }
+        }
+        return (entries, colors, sum, labels)
+    }
+    
+    func getSecondPieChartData()-> ([PieChartDataEntry],[UIColor], Double, [String]) {
+        var entries = [PieChartDataEntry]()
+        var colors = [UIColor]()
+        var sum:Double = 0.00
+        var labels = [String]()
+        
+        let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
+        let toDate = collectionCellData[carouselScrollingId]?[2] as? Date ?? Date()
+        
+        var tagFilterPredicateString = ""
+        
+        if filteredTagsArray.count > 0 {
+            for i in 0...(filteredTagsArray.count-1) {
+                if i == 0 {
+                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                } else if i != (filteredTagsArray.count-1) {
+                    tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                }
+                if i == (filteredTagsArray.count-1) {
+                    if i != 0 {
+                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
+                    } else {
+                        tagFilterPredicateString = tagFilterPredicateString + ")"
+                    }
+                }
+            }
+        }
+
+        let queryPieChart = NSPredicate(format: ("dateTime >= %@ AND dateTime <= %@" + tagFilterPredicateString), fromDate as NSDate, toDate as NSDate)
+        
+        let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
+        if (data?.count ?? 0) > 0 {
+            if graphOption3 == 2 {
+                for i in 0...((data?.count ?? 1)-1) {
+                    let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: true))
+                    print(queryCategory)
+                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                        sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
+                        labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                    }
+                }
+            } else {
+                for i in 0...((data?.count ?? 1)-1) {
+                    let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: false))
+                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        if (graphOption3 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                            sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
+                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        } else if (graphOption3 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                             entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
                             colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
@@ -1602,21 +2229,39 @@ extension graphsVC: UICollectionViewDelegateFlowLayout {
 extension graphsVC: ChartViewDelegate {
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
         if chartView.isMember(of: PieChartView.self) {
-            let value = (entry.y/(pieChartSum ?? 1.00)) * 100
-            
-            var textColor = UIColor.white
-            let userInterfaceStyle = traitCollection.userInterfaceStyle
-            if userInterfaceStyle == .light {
-                textColor = UIColor.black
+            if chartView.tag == 0 {
+                let value = (entry.y/(pieChartSum ?? 1.00)) * 100
+                
+                var textColor = UIColor.white
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
+                if userInterfaceStyle == .light {
+                    textColor = UIColor.black
+                }
+                let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: value)) ?? "0.00") + "%"
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+                
+                pieChart.centerAttributedText = centerText
+                
+                labelLeft.text = pieChartLabels?[Int(highlight.x)]
+                label.text = numberFormatter.string(from: NSNumber(value: entry.y))
+            } else {
+                let value = (entry.y/(secondPieChartSum ?? 1.00)) * 100
+                
+                var textColor = UIColor.white
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
+                if userInterfaceStyle == .light {
+                    textColor = UIColor.black
+                }
+                let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: value)) ?? "0.00") + "%"
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+                
+                secondPieChart.centerAttributedText = centerText
+                
+                secondLeftLabel.text = secondPieChartLabels?[Int(highlight.x)]
+                secondLabel.text = numberFormatter.string(from: NSNumber(value: entry.y))
             }
-            let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: value)) ?? "0.00") + "%"
-            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
-            let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
-            
-            pieChart.centerAttributedText = centerText
-            
-            labelLeft.text = pieChartLabels?[Int(highlight.x)]
-            label.text = numberFormatter.string(from: NSNumber(value: entry.y))
         } else if chartView.isMember(of: LineChartView.self) {
             labelLeft.text = mediumDate.string(from: lineChartDates[Int(entry.x)])
             label.text = lineNumberFormatter.string(from: NSNumber(value: lineChartRealValues[Int(entry.x)]))
@@ -1625,26 +2270,50 @@ extension graphsVC: ChartViewDelegate {
     
     func chartValueNothingSelected(_ chartView: ChartViewBase) {
         if chartView.isMember(of: PieChartView.self) {
-            var textColor = UIColor.white
-            let userInterfaceStyle = traitCollection.userInterfaceStyle
-            if userInterfaceStyle == .light {
-                textColor = UIColor.black
-            }
-            let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: 100.00)) ?? "100.00") + "%"
-            let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
-            let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
-            
-            pieChart.centerAttributedText = centerText
-            
-            if graphOption1 == 0 {
-                labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
-                label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
-            } else if graphOption1 == 1 {
-                labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
-                label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
+            if chartView.tag == 0 {
+                var textColor = UIColor.white
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
+                if userInterfaceStyle == .light {
+                    textColor = UIColor.black
+                }
+                let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: 100.00)) ?? "100.00") + "%"
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+                
+                pieChart.centerAttributedText = centerText
+                
+                if graphOption1 == 0 {
+                    labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                    label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
+                } else if graphOption1 == 1 {
+                    labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                    label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
+                } else {
+                    labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                    label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
+                }
             } else {
-                labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
-                label.text = numberFormatter.string(from: NSNumber(value: pieChartSum ?? 0.00))
+                var textColor = UIColor.white
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
+                if userInterfaceStyle == .light {
+                    textColor = UIColor.black
+                }
+                let centerTextText = (numberFormatterPercent.string(from: NSNumber(value: 100.00)) ?? "100.00") + "%"
+                let textAttribute = [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .footnote), NSAttributedString.Key.foregroundColor: textColor]
+                let centerText = NSAttributedString(string: centerTextText, attributes: textAttribute)
+                
+                secondPieChart.centerAttributedText = centerText
+                
+                if graphOption3 == 0 {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                    secondLabel.text = numberFormatter.string(from: NSNumber(value: secondPieChartSum ?? 0.00))
+                } else if graphOption3 == 1 {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                    secondLabel.text = numberFormatter.string(from: NSNumber(value: secondPieChartSum ?? 0.00))
+                } else {
+                    secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                    secondLabel.text = numberFormatter.string(from: NSNumber(value: secondPieChartSum ?? 0.00))
+                }
             }
         } else if chartView.isMember(of: LineChartView.self) {
             labelLeft.text = NSLocalizedString("changeLabel", comment: "Balance")

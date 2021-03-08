@@ -29,6 +29,8 @@
         <attribute name="graphName" optional="YES" attributeType="String"/>
         <attribute name="graphOption1" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="graphOption2" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphOption3" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="showSecondGraph" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
     <entity name="ImportRAM" representedClassName="ImportRAM" syncable="YES" codeGenerationType="class">
         <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -138,7 +140,7 @@
     <elements>
         <element name="Categories" positionX="112.56640625" positionY="45.76171875" width="128" height="209"/>
         <element name="Currency" positionX="144" positionY="-18" width="128" height="134"/>
-        <element name="GraphSettings" positionX="144" positionY="-9" width="128" height="104"/>
+        <element name="GraphSettings" positionX="144" positionY="-9" width="128" height="134"/>
         <element name="ImportRAM" positionX="144" positionY="-9" width="128" height="164"/>
         <element name="RegularPayments" positionX="90.2578125" positionY="145.76953125" width="128" height="224"/>
         <element name="Settings" positionX="-43.3125" positionY="-131.890625" width="128" height="14"/>
