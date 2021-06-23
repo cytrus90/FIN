@@ -21,7 +21,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="321" height="92"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QKL-BF-HYw">
-                                <rect key="frame" x="0.0" y="0.0" width="321" height="92"/>
+                                <rect key="frame" x="10" y="0.0" width="301" height="92"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrowLeft" translatesAutoresizingMaskIntoConstraints="NO" id="2qG-JC-SMt">
                                         <rect key="frame" x="10" y="38" width="16" height="16"/>
@@ -31,10 +31,10 @@
                                         </constraints>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="1hk-hp-WK6">
-                                        <rect key="frame" x="41" y="5" width="239" height="82"/>
+                                        <rect key="frame" x="41" y="5" width="219" height="82"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Qfg-lV-mHl">
-                                                <rect key="frame" x="0.0" y="0.0" width="239" height="82"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="219" height="82"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -45,7 +45,7 @@
                                         </constraints>
                                     </stackView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrowRight" translatesAutoresizingMaskIntoConstraints="NO" id="03f-kX-cUe">
-                                        <rect key="frame" x="295" y="38" width="16" height="16"/>
+                                        <rect key="frame" x="275" y="38" width="16" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="16" id="AyI-HT-NEf"/>
                                             <constraint firstAttribute="height" constant="16" id="w6R-ih-9yP"/>
@@ -68,8 +68,8 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="QKL-BF-HYw" secondAttribute="bottom" id="2qu-m8-4mE"/>
-                            <constraint firstItem="QKL-BF-HYw" firstAttribute="leading" secondItem="8WF-Q3-9lk" secondAttribute="leading" id="PTD-xe-fdN"/>
-                            <constraint firstAttribute="trailing" secondItem="QKL-BF-HYw" secondAttribute="trailing" id="a6i-nI-Btg"/>
+                            <constraint firstItem="QKL-BF-HYw" firstAttribute="leading" secondItem="8WF-Q3-9lk" secondAttribute="leading" constant="10" id="PTD-xe-fdN"/>
+                            <constraint firstAttribute="trailing" secondItem="QKL-BF-HYw" secondAttribute="trailing" constant="10" id="a6i-nI-Btg"/>
                             <constraint firstItem="QKL-BF-HYw" firstAttribute="top" secondItem="8WF-Q3-9lk" secondAttribute="top" id="yiz-Se-YgY"/>
                         </constraints>
                     </view>

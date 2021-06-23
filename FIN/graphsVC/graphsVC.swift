@@ -42,8 +42,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     var outlineTopViewConstraint:NSLayoutConstraint?
     
-    var firstCarouselWidthConstraint:NSLayoutConstraint?
-    var secondCarouselWidthConstraint:NSLayoutConstraint?
+    var firstCarouselWidthConstraints = [NSLayoutConstraint]()
+    var secondCarouselWidthConstraints = [NSLayoutConstraint]()
     
     var viewDisappear = false
     var viewAppeared = false
@@ -146,14 +146,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         setCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
         
         if secondGraph {
-            secondCarouselView.register(nib, forCellWithReuseIdentifier: "graphCarouselCell")
-            setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
-            
             carouselStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             carouselStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             
-            //arouselView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-            //secondCarouselView.inset = -55
+            secondCarouselView.register(nib, forCellWithReuseIdentifier: "graphCarouselCell")
+            setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
+            
+            carouselStackView.spacing = -10
         }
         
         mediumDate.dateStyle = .medium
@@ -169,8 +168,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             }
         })
         
-        carouselView.backgroundColor = .blue
-        secondCarouselView.backgroundColor = .red
+        //carouselView.backgroundColor = .blue
+        //secondCarouselView.backgroundColor = .red
         
         showChart()
         
@@ -220,18 +219,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 if UIDevice().model.contains("iPhone") {
                     hideCarouselView()
                 }
-//                if graphIDActive == 1 {
-//                    viewPieChart()
-//                }
             } else if UIDevice.current.orientation.isPortrait {
                 if UIDevice().model.contains("iPhone") {
                     showCarouselView()
                 }
-//                if graphIDActive == 1 {
-//                    viewPieChart()
-//                }
             }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+            self.setCellLayout()
+        })
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -291,9 +287,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func initSecondOutlineView() {
         mainStackView.addArrangedSubview(secondOutlineView)
         mainStackView.spacing = 10
-        
-        // secondOutlineView.translatesAutoresizingMaskIntoConstraints = false
-        // mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
         secondLabel.font = UIFont.preferredFont(forTextStyle: .body)
         secondLabel.textAlignment = .right
@@ -357,7 +350,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     }
     
     func setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: UICollectionViewDataSource & UICollectionViewDelegate, forRow row: Int) {
-        // carousel.delegate = dataSourceDelegate
         secondCarouselView.delegate = self
         secondCarouselView.dataSource = dataSourceDelegate
         secondCarouselView.tag = row
@@ -2284,6 +2276,56 @@ extension graphsVC {
 }
 
 extension graphsVC: UICollectionViewDataSource {
+    func setCellLayout() {
+        
+        if firstCarouselWidthConstraints.count > 0 {
+            for index in 0...(firstCarouselWidthConstraints.count-1) {
+                firstCarouselWidthConstraints[index].isActive = false
+            }
+            firstCarouselWidthConstraints.removeAll()
+        }
+        
+        for index in 0...999999 {
+            let path = IndexPath(row: index, section: 0)
+            if let cell = carouselView.cellForItem(at: path) {
+                firstCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width))
+                firstCarouselWidthConstraints[index].isActive = true
+            } else {
+                break
+            }
+        }
+        carouselView.layoutIfNeeded()
+        carouselView.collectionViewLayout.invalidateLayout()
+        carouselView.reloadData()
+        if secondGraph {
+            if secondCarouselWidthConstraints.count > 0 {
+                for index in 0...(secondCarouselWidthConstraints.count-1) {
+                    secondCarouselWidthConstraints[index].isActive = false
+                }
+                secondCarouselWidthConstraints.removeAll()
+            }
+            
+            for index in 0...999999 {
+                let path = IndexPath(row: index, section: 0)
+                if let cell = secondCarouselView.cellForItem(at: path) {
+                    secondCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width))
+                    secondCarouselWidthConstraints[index].isActive = true
+                } else {
+                    break
+                }
+            }
+        }
+        secondCarouselView.layoutIfNeeded()
+        secondCarouselView.collectionViewLayout.invalidateLayout()
+        
+        carouselView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .centeredHorizontally, animated: false)
+        
+        if secondGraph {
+            secondCarouselView.reloadData()
+            secondCarouselView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .centeredHorizontally, animated: false)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return collectionCellData.count
     }
@@ -2306,29 +2348,31 @@ extension graphsVC: UICollectionViewDataSource {
         }
         
         if collectionView == carouselView {
-            /*firstCarouselWidthConstraint?.isActive = false
-            firstCarouselWidthConstraint = cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width)
-            firstCarouselWidthConstraint?.isActive = true*/
-            cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width).isActive = true
+            if firstCarouselWidthConstraints.indices.contains(indexPath.row) {
+                firstCarouselWidthConstraints[indexPath.row].isActive = false
+            }
+            firstCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width))
+            firstCarouselWidthConstraints[firstCarouselWidthConstraints.count-1].isActive = true
         } else if collectionView == secondCarouselView {
-            /*secondCarouselWidthConstraint?.isActive = false
-            secondCarouselWidthConstraint = cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width)
-            secondCarouselWidthConstraint?.isActive = true*/
-            cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width).isActive = true
+            if secondCarouselWidthConstraints.indices.contains(indexPath.row) {
+                secondCarouselWidthConstraints[indexPath.row].isActive = false
+            }
+            secondCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width))
+            secondCarouselWidthConstraints[secondCarouselWidthConstraints.count-1].isActive = true
         }
         
-        cell.setNeedsLayout()
-        cell.layoutIfNeeded()
+        //cell.setNeedsLayout()
+        //cell.layoutIfNeeded()
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.size.width - 10 , height: collectionView.frame.size.height - 2)
+        return CGSize(width: collectionView.frame.size.width , height: collectionView.frame.size.height)
     }
 }
 

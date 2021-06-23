@@ -16,17 +16,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="EuR-vA-ctk">
-                                <rect key="frame" x="0.0" y="98" width="414" height="50"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="EuR-vA-ctk">
+                                <rect key="frame" x="10" y="98" width="394" height="50"/>
                                 <subviews>
-                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="yPY-7K-l3d">
-                                        <rect key="frame" x="0.0" y="0.0" width="207" height="50"/>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" prefetchingEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yPY-7K-l3d">
+                                        <rect key="frame" x="0.0" y="0.0" width="194.5" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="eZD-mg-Izv">
+                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="eZD-mg-Izv">
                                             <size key="itemSize" width="128" height="128"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                            <inset key="sectionInset" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
+                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="inset">
@@ -35,7 +35,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </collectionView>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Nax-xx-NjB">
-                                        <rect key="frame" x="207" y="0.0" width="207" height="50"/>
+                                        <rect key="frame" x="199.5" y="0.0" width="194.5" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="xs9-VV-5Eu">
                                             <size key="itemSize" width="128" height="128"/>
@@ -100,12 +100,12 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="sXl-gu-US5" firstAttribute="top" secondItem="EuR-vA-ctk" secondAttribute="bottom" constant="10" id="0Tq-vj-6J8"/>
-                            <constraint firstItem="EuR-vA-ctk" firstAttribute="trailing" secondItem="ezJ-6q-uKI" secondAttribute="trailing" id="4jE-UG-bAc"/>
+                            <constraint firstItem="ezJ-6q-uKI" firstAttribute="trailing" secondItem="EuR-vA-ctk" secondAttribute="trailing" constant="10" id="4jE-UG-bAc"/>
                             <constraint firstItem="sXl-gu-US5" firstAttribute="leading" secondItem="ezJ-6q-uKI" secondAttribute="leading" constant="10" id="91U-bP-hFZ"/>
                             <constraint firstItem="EuR-vA-ctk" firstAttribute="top" secondItem="ezJ-6q-uKI" secondAttribute="top" constant="10" id="Hye-wr-4Ph"/>
                             <constraint firstItem="ezJ-6q-uKI" firstAttribute="bottom" secondItem="sXl-gu-US5" secondAttribute="bottom" constant="10" id="Mqz-KQ-XzL"/>
                             <constraint firstItem="ezJ-6q-uKI" firstAttribute="trailing" secondItem="sXl-gu-US5" secondAttribute="trailing" constant="10" id="mkA-Bq-Mz9"/>
-                            <constraint firstItem="EuR-vA-ctk" firstAttribute="leading" secondItem="ezJ-6q-uKI" secondAttribute="leading" id="uRR-SH-HGg"/>
+                            <constraint firstItem="EuR-vA-ctk" firstAttribute="leading" secondItem="ezJ-6q-uKI" secondAttribute="leading" constant="10" id="uRR-SH-HGg"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="VL5-3T-9r1"/>
