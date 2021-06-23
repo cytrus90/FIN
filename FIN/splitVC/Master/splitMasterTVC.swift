@@ -731,7 +731,7 @@ extension splitMasterTVC: UIContextMenuInteractionDelegate {
     
     func makeEditAction(row: Int) -> UIAction {
         return UIAction(
-            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            title: NSLocalizedString("editSomethingLabel", comment: "Edit"),
             image: UIImage(systemName: "pencil"),
             identifier: UIAction.Identifier(String(row)+"_edit"),
             handler: openEdit)

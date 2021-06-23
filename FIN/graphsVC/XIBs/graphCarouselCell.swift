@@ -9,20 +9,19 @@
 import UIKit
 import ScalingCarousel
 
-class graphCarouselCell: ScalingCarouselCell {
+class graphCarouselCell: UICollectionViewCell {
     
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var arrowLeft: UIImageView!
     @IBOutlet weak var arrowRight: UIImageView!
+    
+    @IBOutlet weak var mainView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         arrowLeft.image = arrowLeft.image?.withRenderingMode(.alwaysTemplate)
         arrowRight.image = arrowRight.image?.withRenderingMode(.alwaysTemplate)
-        
-        self.mainView.layer.borderWidth = 1
-        self.cornerRadius = 10
         
         initView()
     }
@@ -33,6 +32,9 @@ class graphCarouselCell: ScalingCarouselCell {
     }
 
     func initView() {
+        self.mainView.layer.borderWidth = 1
+        self.mainView.layer.cornerRadius = 10
+        
         let userInterfaceStyle = traitCollection.userInterfaceStyle
         if userInterfaceStyle == .light {
             self.backgroundColor = .clear

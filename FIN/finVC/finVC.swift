@@ -1040,7 +1040,7 @@ extension finTVC: UIContextMenuInteractionDelegate {
     
     func makeEditAction() -> UIAction {
         return UIAction(
-          title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+          title: NSLocalizedString("editSomethingLabel", comment: "Edit"),
           image: UIImage(systemName: "pencil"),
           handler: openEdit)
     }

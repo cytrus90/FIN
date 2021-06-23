@@ -18,6 +18,8 @@ class cellGraphSettingsDetailsTVC: UITableViewCell {
     @IBOutlet weak var label2: UILabel!
     @IBOutlet weak var segmentControl2: UISegmentedControl!
     
+    @IBOutlet weak var segmentControl3: UISegmentedControl!
+    
     weak var delegate: cellGraphSettingsDetailsTVCDelegate?
     
     override func awakeFromNib() {
@@ -37,6 +39,9 @@ class cellGraphSettingsDetailsTVC: UITableViewCell {
         
         segmentControl2.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor.white], for: .selected)
         segmentControl2.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)], for: .normal)
+        
+        segmentControl3.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor.white], for: .selected)
+        segmentControl3.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)], for: .normal)
         
         outlineView.layer.borderWidth = 1
         outlineView.layer.cornerRadius = 10
@@ -60,9 +65,14 @@ class cellGraphSettingsDetailsTVC: UITableViewCell {
     @IBAction func segment2Changed(_ sender: Any) {
         self.delegate?.graphOption2Changed(selected: segmentControl2.selectedSegmentIndex)
     }
+    
+    @IBAction func segment3Changed(_ sender: Any) {
+        self.delegate?.graphOption3Changed(selected: segmentControl3.selectedSegmentIndex)
+    }
 }
 
 protocol cellGraphSettingsDetailsTVCDelegate: AnyObject {
     func graphOption1Changed(selected: Int)
     func graphOption2Changed(selected: Int)
+    func graphOption3Changed(selected: Int)
 }

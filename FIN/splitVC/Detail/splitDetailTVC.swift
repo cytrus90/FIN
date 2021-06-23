@@ -898,7 +898,7 @@ extension splitDetailTVC: UIContextMenuInteractionDelegate {
     
     func makeEditPersonAction(row: Int) -> UIAction {
         return UIAction(
-            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            title: NSLocalizedString("editSomethingLabel", comment: "Edit"),
             image: UIImage(systemName: "pencil"),
             identifier: UIAction.Identifier(String(row)+"_edit"),
             handler: openEditPerson)
@@ -928,7 +928,7 @@ extension splitDetailTVC: UIContextMenuInteractionDelegate {
     
     func makeEditTransactionAction(row: Int) -> UIAction {
         return UIAction(
-            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            title: NSLocalizedString("editSomethingLabel", comment: "Edit"),
             image: UIImage(systemName: "pencil"),
             identifier: UIAction.Identifier(String(row)+"_edit"),
             handler: openEditTransaction)

@@ -22,7 +22,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     @IBOutlet weak var chartTopConstraint: NSLayoutConstraint!
     
-    @IBOutlet weak var carouselView: ScalingCarouselView!
+    @IBOutlet weak var carouselView: UICollectionView!
+    @IBOutlet weak var secondCarouselView: UICollectionView!
+    
+    @IBOutlet weak var carouselStackView: UIStackView!
     
     @IBOutlet weak var outlineViewTopConstraint: NSLayoutConstraint?
     
@@ -38,6 +41,9 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var carouselScrollingTodayId: Int = 0
     
     var outlineTopViewConstraint:NSLayoutConstraint?
+    
+    var firstCarouselWidthConstraint:NSLayoutConstraint?
+    var secondCarouselWidthConstraint:NSLayoutConstraint?
     
     var viewDisappear = false
     var viewAppeared = false
@@ -109,10 +115,14 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     var initialLoad:Bool = true
     
+    override func loadView() {
+        super.loadView()
+        initChartSettings()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         label.text = ""
-        initChartSettings()
         
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: Notification.Name("filterChangedForGraph"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(setBarButtons), name: Notification.Name("filterChanged"), object: nil)
@@ -135,6 +145,17 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         carouselView.register(nib, forCellWithReuseIdentifier: "graphCarouselCell")
         setCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
         
+        if secondGraph {
+            secondCarouselView.register(nib, forCellWithReuseIdentifier: "graphCarouselCell")
+            setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
+            
+            carouselStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            carouselStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+            
+            //arouselView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            //secondCarouselView.inset = -55
+        }
+        
         mediumDate.dateStyle = .medium
         shortDate.dateStyle = .short
         
@@ -143,9 +164,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         setInitialToFromMaxDates()
         setCollectionCellData(completion: {(success) -> Void in
             carouselView.reloadData()
+            if secondGraph {
+                secondCarouselView.reloadData()
+            }
         })
         
-        carouselView.backgroundColor = .clear
+        carouselView.backgroundColor = .blue
+        secondCarouselView.backgroundColor = .red
         
         showChart()
         
@@ -166,10 +191,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         super.viewDidAppear(true)
         
         carouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
+        
+        if secondGraph {
+            secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
+        }
+        
         viewAppeared = true
         viewDisappear = false
         showChart(viewAppeared: true)
-        
+        // secondCarouselView.layoutSubviews()
         if reloadGraphView && !initialLoad {
             reloadGraphView = false
             refresh()
@@ -213,7 +243,12 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         if carouselView != nil {
-            carouselView.deviceRotated()
+            //carouselView.deviceRotated()
+            carouselView.layoutIfNeeded()
+        }
+        if secondCarouselView != nil && secondGraph {
+            //secondCarouselView.deviceRotated()
+            secondCarouselView.layoutIfNeeded()
         }
     }
     
@@ -247,6 +282,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         activityIndicator.style = .medium
         activityIndicator.hidesWhenStopped = true
         mainStackView.addSubview(activityIndicator)
+        mainStackView.bringSubviewToFront(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.centerYAnchor.constraint(equalTo: mainStackView.safeAreaLayoutGuide.centerYAnchor, constant: 0).isActive = true
         activityIndicator.centerXAnchor.constraint(equalTo: mainStackView.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
@@ -276,9 +312,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
             }
         }
-        
-        secondLabel.text = "Test"
-        
+
         let secondLabelStackView = UIStackView()
         secondLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -303,6 +337,16 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         secondChartStackView.bottomAnchor.constraint(equalTo: secondOutlineView.bottomAnchor, constant: -5).isActive = true
     }
     
+    func initSecondCarouselView() {
+        //let nib = UINib(nibName: "graphCarouselCell", bundle: nil)
+        //secondCarouselView.register(nib, forCellWithReuseIdentifier: "graphCarouselCell")
+        //setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
+        
+        //carouselStackView.addArrangedSubview(secondCarouselView)
+        //carouselStackView.spacing = 15
+        // secondCarouselView.backgroundColor = .red
+    }
+    
     // MARK: ScrollView
     func setCollectionViewDataSourceDelegate(dataSourceDelegate: UICollectionViewDataSource & UICollectionViewDelegate, forRow row: Int) {
         // carousel.delegate = dataSourceDelegate
@@ -312,14 +356,25 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         carouselView.reloadData()
     }
     
+    func setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: UICollectionViewDataSource & UICollectionViewDelegate, forRow row: Int) {
+        // carousel.delegate = dataSourceDelegate
+        secondCarouselView.delegate = self
+        secondCarouselView.dataSource = dataSourceDelegate
+        secondCarouselView.tag = row
+        secondCarouselView.reloadData()
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        carouselView.didScroll()
-        guard let currentCenterIndex = carouselView.currentCenterCellIndex?.row else { return }
+        //carouselView.didScroll()
+        /*guard let currentCenterIndex = carouselView.indexPathsForVisibleItems. else { return }
         if (currentCenterIndex != carouselScrollingId) && viewAppeared {
             carouselScrollingId = currentCenterIndex
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 if self.graphIDActive == 0 { // Line
                     self.viewLineChart()
+                    if self.secondGraph {
+                        self.viewSecondLineChart()
+                    }
                 } else if self.graphIDActive == 1 { // Pie
                     if self.graphOption1 == 0 {
                         self.labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
@@ -334,9 +389,24 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     } else {
                         self.viewPieChart()
                     }
+                    if self.secondGraph {
+                        if self.graphOption3 == 0 {
+                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                        } else if self.graphOption3 == 1 {
+                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                        } else {
+                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                        }
+                        
+                        if self.view.frame.height > self.view.frame.width {
+                            self.viewSecondPieChart()
+                        } else {
+                            self.viewSecondPieChart()
+                        }
+                    }
                 }
             }
-        }
+        }*/
 //        guard let currentCenterIndex = carouselView.currentCenterCellIndex?.row else { return }
 //        let nc = NotificationCenter.default
 //        nc.post(name: Notification.Name("collectionViewChanged"), object: nil, userInfo: ["currentCenterIndex": currentCenterIndex])
@@ -346,7 +416,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func hideCarouselView() {
         outlineViewTopConstraint?.isActive = false
         UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut, animations: {
-            self.carouselView.alpha = 0.0
+            self.carouselStackView.alpha = 0.0
+            if self.secondGraph {
+                self.secondCarouselView.alpha = 0.0
+            }
             self.outlineTopViewConstraint?.isActive = false
             self.outlineTopViewConstraint = self.outlineView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10)
             self.outlineTopViewConstraint?.isActive = true
@@ -356,7 +429,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func showCarouselView() {
         outlineViewTopConstraint?.isActive = false
         UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut, animations: {
-            self.carouselView.alpha = 1.0
+            self.carouselStackView.alpha = 1.0
+            if self.secondGraph {
+                self.secondCarouselView.alpha = 1.0
+            }
             self.outlineTopViewConstraint?.isActive = false
             self.outlineTopViewConstraint = self.outlineView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 70)
             self.outlineTopViewConstraint?.isActive = true
@@ -366,6 +442,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     // MARK: -FUNCTIONS
     // MARK: CHART FUNCTIONS
     func showChart(viewAppeared:Bool = false, refresh: Bool = false) {
+        if secondGraph && (viewAppeared || refresh) {
+            initSecondCarouselView()
+        }
+        
         if graphIDActive == 0 && (viewAppeared || refresh) { // Line Chart
             activityIndicator.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
@@ -710,6 +790,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         lineChartDifference = lineData.3
         
         lineChart.delegate = self
+        lineChart.tag = 0
         
         lineChart.notifyDataSetChanged()
         activityIndicator.stopAnimating()
@@ -826,6 +907,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         secondLineChartDifference = lineData.3
         
         secondLineChart.delegate = self
+        secondLineChart.tag = 1
         
         secondLineChart.notifyDataSetChanged()
         activityIndicator.stopAnimating()
@@ -845,8 +927,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         graphOption2 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
         
         if UIDevice().model.contains("iPad") {
-            secondGraph = true//(loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
-            graphOption3 = 1//Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
+            secondGraph = (loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
+            graphOption3 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
         } else {
             secondGraph = false
             graphOption3 = nil
@@ -858,6 +940,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             secondOutlineView.isHidden = true
             secondOutlineView.isUserInteractionEnabled = false
         }
+        
+        if secondGraph {
+            secondCarouselView.isHidden = false
+        } else {
+            secondCarouselView.isHidden = true
+        }
+        
+        print("flsdkjflsda")
+        print(loadBulkQueried(entitie: "GraphSettings", query: queryGraphActive))
     }
     
     @objc func setBarButtons() {
@@ -1604,7 +1695,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             if graphOption3 == 2 {
                 for i in 0...((data?.count ?? 1)-1) {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: true))
-                    print(queryCategory)
                     if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
                         entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
                         colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
@@ -1931,11 +2021,17 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         toDateShown = nil
         lineChartEntries.removeAll()
         lineChartEntriesExpenses.removeAll()
+        secondLineChartEntries.removeAll()
         initChartSettings()
         initTagFilter()
         setBarButtons()
         setInitialToFromMaxDates()
-        setCollectionCellData(completion: {(success) -> Void in carouselView.reloadData() })
+        setCollectionCellData(completion: {(success) -> Void in
+            carouselView.reloadData()
+            if secondGraph {
+                secondCarouselView.reloadData()
+            }
+        })
         showChart(refresh: true)
     }
     
@@ -1980,6 +2076,7 @@ extension graphsVC {
             
             do {
                 try managedContext.save()
+                initChartSettings()
             } catch let error as NSError {
                 print("Could not save. \(error), \(error.userInfo)")
             }
@@ -2208,11 +2305,30 @@ extension graphsVC: UICollectionViewDataSource {
             cell.arrowRight.isHidden = false
         }
         
-        DispatchQueue.main.async {
-            cell.setNeedsLayout()
-            cell.layoutIfNeeded()
+        if collectionView == carouselView {
+            /*firstCarouselWidthConstraint?.isActive = false
+            firstCarouselWidthConstraint = cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width)
+            firstCarouselWidthConstraint?.isActive = true*/
+            cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width).isActive = true
+        } else if collectionView == secondCarouselView {
+            /*secondCarouselWidthConstraint?.isActive = false
+            secondCarouselWidthConstraint = cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width)
+            secondCarouselWidthConstraint?.isActive = true*/
+            cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width).isActive = true
         }
+        
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.size.width - 10 , height: collectionView.frame.size.height - 2)
     }
 }
 
@@ -2263,8 +2379,13 @@ extension graphsVC: ChartViewDelegate {
                 secondLabel.text = numberFormatter.string(from: NSNumber(value: entry.y))
             }
         } else if chartView.isMember(of: LineChartView.self) {
-            labelLeft.text = mediumDate.string(from: lineChartDates[Int(entry.x)])
-            label.text = lineNumberFormatter.string(from: NSNumber(value: lineChartRealValues[Int(entry.x)]))
+            if chartView.tag == 0 {
+                labelLeft.text = mediumDate.string(from: lineChartDates[Int(entry.x)])
+                label.text = lineNumberFormatter.string(from: NSNumber(value: lineChartRealValues[Int(entry.x)]))
+            } else {
+                secondLeftLabel.text = mediumDate.string(from: secondLineChartDates[Int(entry.x)])
+                secondLabel.text = lineNumberFormatter.string(from: NSNumber(value: secondLineChartRealValues[Int(entry.x)]))
+            }
         }
     }
     
@@ -2316,8 +2437,14 @@ extension graphsVC: ChartViewDelegate {
                 }
             }
         } else if chartView.isMember(of: LineChartView.self) {
-            labelLeft.text = NSLocalizedString("changeLabel", comment: "Balance")
-            label.text = lineNumberFormatter.string(from: NSNumber(value: lineChartDifference))
+            if chartView.tag == 0 {
+                labelLeft.text = NSLocalizedString("changeLabel", comment: "Balance")
+                label.text = lineNumberFormatter.string(from: NSNumber(value: lineChartDifference))
+            } else {
+                secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Balance")
+                secondLabel.text = lineNumberFormatter.string(from: NSNumber(value: secondLineChartDifference))
+            }
+            
         }
     }
 }

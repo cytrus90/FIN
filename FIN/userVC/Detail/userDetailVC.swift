@@ -2218,7 +2218,7 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
     
     func makeEditTransactionAction(row: Int) -> UIAction {
         return UIAction(
-            title: NSLocalizedString("editRegularPaymentTitle", comment: "Edit"),
+            title: NSLocalizedString("editSomethingLabel", comment: "Edit"),
             image: UIImage(systemName: "pencil"),
             identifier: UIAction.Identifier(String(row)+"_edit"),
             handler: openEditTransaction)

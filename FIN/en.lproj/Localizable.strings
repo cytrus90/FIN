@@ -101,6 +101,8 @@
 "totalLabel" = "Total";
 "yearOneDigit" = "Y";
 
+"editSomethingLabel" = "Edit";
+
 // #### Add VC ####
 "createCategoriesTitle" = "Create categories?";
 "createCategoriesText" = "There are no categories yet. FIN can create a few common categories for you.";
