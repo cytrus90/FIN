@@ -40,6 +40,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var carouselScrollingId: Int = 0
     var carouselScrollingTodayId: Int = 0
     
+    var secondCarouselScrollingId:Int = 0
+    
     var outlineTopViewConstraint:NSLayoutConstraint?
     
     var firstCarouselWidthConstraints = [NSLayoutConstraint]()
@@ -153,6 +155,11 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             setSecondCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: 0)
             
             carouselStackView.spacing = -10
+        } else {
+            carouselStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            carouselStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+            
+            carouselStackView.spacing = 0
         }
         
         mediumDate.dateStyle = .medium
@@ -189,12 +196,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         
-        carouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
-        
-        if secondGraph {
-            secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
-        }
-        
         viewAppeared = true
         viewDisappear = false
         showChart(viewAppeared: true)
@@ -203,6 +204,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             reloadGraphView = false
             refresh()
         }
+        
         initialLoad = false
     }
     
@@ -213,7 +215,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
         if !viewDisappear {
             if UIDevice.current.orientation.isLandscape {
                 if UIDevice().model.contains("iPhone") {
@@ -402,6 +403,64 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
 //        guard let currentCenterIndex = carouselView.currentCenterCellIndex?.row else { return }
 //        let nc = NotificationCenter.default
 //        nc.post(name: Notification.Name("collectionViewChanged"), object: nil, userInfo: ["currentCenterIndex": currentCenterIndex])
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if scrollView == carouselView {
+            for cell in carouselView.visibleCells {
+                guard let currentCenterIndex = carouselView.indexPath(for: cell)?.row else { return }
+                if carouselScrollingId != currentCenterIndex {
+                    carouselScrollingId = currentCenterIndex
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if self.graphIDActive == 0 { // Line
+                            self.viewLineChart()
+                        } else if self.graphIDActive == 1 { // Pie
+                            if self.graphOption1 == 0 {
+                                self.labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                            } else if self.graphOption1 == 1 {
+                                self.labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                            } else {
+                                self.labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                            }
+                            
+                            if self.view.frame.height > self.view.frame.width {
+                                self.viewPieChart()
+                            } else {
+                                self.viewPieChart()
+                            }
+                        }
+                    }
+                    break
+                }
+            }
+        } else if scrollView == secondCarouselView {
+            for cell in secondCarouselView.visibleCells {
+                guard let currentCenterIndex = secondCarouselView.indexPath(for: cell)?.row else { return }
+                if secondCarouselScrollingId != currentCenterIndex && secondGraph {
+                    secondCarouselScrollingId = currentCenterIndex
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if self.graphIDActive == 0 { // Line
+                            self.viewSecondLineChart()
+                        } else if self.graphIDActive == 1 { // Pie
+                            if self.graphOption3 == 0 {
+                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                            } else if self.graphOption3 == 1 {
+                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                            } else {
+                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                            }
+                            
+                            if self.view.frame.height > self.view.frame.width {
+                                self.viewSecondPieChart()
+                            } else {
+                                self.viewSecondPieChart()
+                            }
+                        }
+                    }
+                    break
+                }
+            }
+        }
     }
     
     // MARK: ANIMATIONS
@@ -938,9 +997,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         } else {
             secondCarouselView.isHidden = true
         }
-        
-        print("flsdkjflsda")
-        print(loadBulkQueried(entitie: "GraphSettings", query: queryGraphActive))
     }
     
     @objc func setBarButtons() {
@@ -1326,8 +1382,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         var lastNegative = false
         var differenceFirstLast = 0.00
         
-        let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
-        let toDate = collectionCellData[carouselScrollingId]?[2] as? Date ?? Date()
+        let fromDate = collectionCellData[secondCarouselScrollingId]?[1] as? Date ?? Date()
+        let toDate = collectionCellData[secondCarouselScrollingId]?[2] as? Date ?? Date()
         
         if graphOption3 == 2 { // Expenses vs. Income
             if lineChartEntries.count <= 0 || lineChartEntriesExpenses.count <= 0 {
@@ -1658,8 +1714,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         var sum:Double = 0.00
         var labels = [String]()
         
-        let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
-        let toDate = collectionCellData[carouselScrollingId]?[2] as? Date ?? Date()
+        let fromDate = collectionCellData[secondCarouselScrollingId]?[1] as? Date ?? Date()
+        let toDate = collectionCellData[secondCarouselScrollingId]?[2] as? Date ?? Date()
         
         var tagFilterPredicateString = ""
         
@@ -1820,11 +1876,19 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             } else {
                 scrollToIdRAM = scrollToId
             }
-            carouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: false)
+            carouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+            if secondGraph {
+                secondCarouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+            }
             carouselScrollingId = scrollToIdRAM ?? 0
+            secondCarouselScrollingId = scrollToIdRAM ?? 0
         } else {
-            carouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: false)
+            carouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+            if secondGraph {
+                secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+            }
             carouselScrollingId = carouselScrollingTodayId
+            secondCarouselScrollingId = carouselScrollingTodayId
         }
         completion(true)
     }
@@ -2285,7 +2349,7 @@ extension graphsVC: UICollectionViewDataSource {
             firstCarouselWidthConstraints.removeAll()
         }
         
-        for index in 0...999999 {
+        for index in 0...9999999 {
             let path = IndexPath(row: index, section: 0)
             if let cell = carouselView.cellForItem(at: path) {
                 firstCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width))
@@ -2305,7 +2369,7 @@ extension graphsVC: UICollectionViewDataSource {
                 secondCarouselWidthConstraints.removeAll()
             }
             
-            for index in 0...999999 {
+            for index in 0...9999999 {
                 let path = IndexPath(row: index, section: 0)
                 if let cell = secondCarouselView.cellForItem(at: path) {
                     secondCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width))
@@ -2318,11 +2382,11 @@ extension graphsVC: UICollectionViewDataSource {
         secondCarouselView.layoutIfNeeded()
         secondCarouselView.collectionViewLayout.invalidateLayout()
         
-        carouselView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .centeredHorizontally, animated: false)
+        carouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
         
         if secondGraph {
             secondCarouselView.reloadData()
-            secondCarouselView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .centeredHorizontally, animated: false)
+            secondCarouselView.scrollToItem(at: IndexPath(row: secondCarouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
         }
     }
     
