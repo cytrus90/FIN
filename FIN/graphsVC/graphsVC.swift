@@ -49,6 +49,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     var viewDisappear = false
     var viewAppeared = false
+    var scrollViewScrolling = false
     
     var mediumDate = DateFormatter()
     var shortDate = DateFormatter()
@@ -226,9 +227,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
-            self.setCellLayout()
-        })
+        setCellLayout()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -357,107 +356,83 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         secondCarouselView.reloadData()
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //carouselView.didScroll()
-        /*guard let currentCenterIndex = carouselView.indexPathsForVisibleItems. else { return }
-        if (currentCenterIndex != carouselScrollingId) && viewAppeared {
-            carouselScrollingId = currentCenterIndex
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if self.graphIDActive == 0 { // Line
-                    self.viewLineChart()
-                    if self.secondGraph {
-                        self.viewSecondLineChart()
-                    }
-                } else if self.graphIDActive == 1 { // Pie
-                    if self.graphOption1 == 0 {
-                        self.labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
-                    } else if self.graphOption1 == 1 {
-                        self.labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
-                    } else {
-                        self.labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
-                    }
-                    
-                    if self.view.frame.height > self.view.frame.width {
-                        self.viewPieChart()
-                    } else {
-                        self.viewPieChart()
-                    }
-                    if self.secondGraph {
-                        if self.graphOption3 == 0 {
-                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
-                        } else if self.graphOption3 == 1 {
-                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
-                        } else {
-                            self.secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
-                        }
-                        
-                        if self.view.frame.height > self.view.frame.width {
-                            self.viewSecondPieChart()
-                        } else {
-                            self.viewSecondPieChart()
-                        }
-                    }
-                }
-            }
-        }*/
-//        guard let currentCenterIndex = carouselView.currentCenterCellIndex?.row else { return }
-//        let nc = NotificationCenter.default
-//        nc.post(name: Notification.Name("collectionViewChanged"), object: nil, userInfo: ["currentCenterIndex": currentCenterIndex])
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollViewScrolling = true
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView == carouselView {
-            for cell in carouselView.visibleCells {
-                guard let currentCenterIndex = carouselView.indexPath(for: cell)?.row else { return }
-                if carouselScrollingId != currentCenterIndex {
-                    carouselScrollingId = currentCenterIndex
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if self.graphIDActive == 0 { // Line
-                            self.viewLineChart()
-                        } else if self.graphIDActive == 1 { // Pie
-                            if self.graphOption1 == 0 {
-                                self.labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
-                            } else if self.graphOption1 == 1 {
-                                self.labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
-                            } else {
-                                self.labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
-                            }
-                            
-                            if self.view.frame.height > self.view.frame.width {
-                                self.viewPieChart()
-                            } else {
-                                self.viewPieChart()
+        if (scrollView == carouselView) && viewAppeared {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                for cell in self.carouselView.visibleCells {
+                    guard let currentCenterIndex = self.carouselView.indexPath(for: cell)?.row else { return }
+                    
+                    let cellRect = self.carouselView.convert(cell.frame, to: nil)
+                        
+                    let lowerBound = cellRect.midX - 20
+                    let upperBound = cellRect.midX + 20
+                    let centerCarousel = self.carouselView.frame.midX
+                        
+                    if centerCarousel > lowerBound && centerCarousel < upperBound {
+                        self.carouselScrollingId = currentCenterIndex
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            if self.graphIDActive == 0 { // Line
+                                self.viewLineChart()
+                            } else if self.graphIDActive == 1 { // Pie
+                                if self.graphOption1 == 0 {
+                                    self.labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                                } else if self.graphOption1 == 1 {
+                                    self.labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                                } else {
+                                    self.labelLeft.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                                }
+                                        
+                                if self.view.frame.height > self.view.frame.width {
+                                    self.viewPieChart()
+                                } else {
+                                    self.viewPieChart()
+                                }
                             }
                         }
+                        self.scrollViewScrolling = false
+                        return
                     }
-                    break
                 }
             }
-        } else if scrollView == secondCarouselView {
-            for cell in secondCarouselView.visibleCells {
-                guard let currentCenterIndex = secondCarouselView.indexPath(for: cell)?.row else { return }
-                if secondCarouselScrollingId != currentCenterIndex && secondGraph {
-                    secondCarouselScrollingId = currentCenterIndex
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if self.graphIDActive == 0 { // Line
-                            self.viewSecondLineChart()
-                        } else if self.graphIDActive == 1 { // Pie
-                            if self.graphOption3 == 0 {
-                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
-                            } else if self.graphOption3 == 1 {
-                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
-                            } else {
-                                self.secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
-                            }
-                            
-                            if self.view.frame.height > self.view.frame.width {
-                                self.viewSecondPieChart()
-                            } else {
-                                self.viewSecondPieChart()
+        } else if (scrollView == secondCarouselView) && viewAppeared {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                for cell in self.secondCarouselView.visibleCells {
+                    guard let currentCenterIndex = self.secondCarouselView.indexPath(for: cell)?.row else { return }
+                        
+                    let cellRect = self.secondCarouselView.convert(cell.frame, to: nil)
+
+                    let lowerBound = cellRect.midX - 20
+                    let upperBound = cellRect.midX + 20
+                    let centerCarousel = self.secondCarouselView.frame.midX
+                    
+                    if centerCarousel > lowerBound && centerCarousel < upperBound {
+                        self.secondCarouselScrollingId = currentCenterIndex
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            if self.graphIDActive == 0 { // Line
+                                self.viewSecondLineChart()
+                            } else if self.graphIDActive == 1 { // Pie
+                                if self.graphOption3 == 0 {
+                                    self.secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Expense")
+                                } else if self.graphOption3 == 1 {
+                                    self.secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Income")
+                                } else {
+                                    self.secondLeftLabel.text = NSLocalizedString("barChartOption1_2", comment: "Savings")
+                                }
+                                    
+                                if self.view.frame.height > self.view.frame.width {
+                                    self.viewSecondPieChart()
+                                } else {
+                                    self.viewSecondPieChart()
+                                }
                             }
                         }
+                        self.scrollViewScrolling = false
+                        return
                     }
-                    break
                 }
             }
         }
@@ -1868,7 +1843,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 carouselScrollingTodayId = 0
             }
         }
-
         if scrollToId != -1 {
             var scrollToIdRAM:Int?
             if scrollToId > collectionCellData.count-1 {
@@ -2340,53 +2314,55 @@ extension graphsVC {
 }
 
 extension graphsVC: UICollectionViewDataSource {
-    func setCellLayout() {
-        
-        if firstCarouselWidthConstraints.count > 0 {
-            for index in 0...(firstCarouselWidthConstraints.count-1) {
-                firstCarouselWidthConstraints[index].isActive = false
-            }
-            firstCarouselWidthConstraints.removeAll()
-        }
-        
-        for index in 0...9999999 {
-            let path = IndexPath(row: index, section: 0)
-            if let cell = carouselView.cellForItem(at: path) {
-                firstCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: carouselView.frame.width))
-                firstCarouselWidthConstraints[index].isActive = true
-            } else {
-                break
-            }
-        }
-        carouselView.layoutIfNeeded()
-        carouselView.collectionViewLayout.invalidateLayout()
-        carouselView.reloadData()
-        if secondGraph {
-            if secondCarouselWidthConstraints.count > 0 {
-                for index in 0...(secondCarouselWidthConstraints.count-1) {
-                    secondCarouselWidthConstraints[index].isActive = false
+    func setCellLayout(appearing: Bool = false) {
+        if !scrollViewScrolling {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                if self.firstCarouselWidthConstraints.count > 0 {
+                    for index in 0...(self.firstCarouselWidthConstraints.count-1) {
+                        self.firstCarouselWidthConstraints[index].isActive = false
+                    }
+                    self.firstCarouselWidthConstraints.removeAll()
                 }
-                secondCarouselWidthConstraints.removeAll()
-            }
-            
-            for index in 0...9999999 {
-                let path = IndexPath(row: index, section: 0)
-                if let cell = secondCarouselView.cellForItem(at: path) {
-                    secondCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: secondCarouselView.frame.width))
-                    secondCarouselWidthConstraints[index].isActive = true
-                } else {
-                    break
+                
+                for index in 0...9999999 {
+                    let path = IndexPath(row: index, section: 0)
+                    if let cell = self.carouselView.cellForItem(at: path) {
+                        self.firstCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: self.carouselView.frame.width))
+                        self.firstCarouselWidthConstraints[index].isActive = true
+                    } else {
+                        break
+                    }
                 }
-            }
-        }
-        secondCarouselView.layoutIfNeeded()
-        secondCarouselView.collectionViewLayout.invalidateLayout()
-        
-        carouselView.scrollToItem(at: IndexPath(row: carouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
-        
-        if secondGraph {
-            secondCarouselView.reloadData()
-            secondCarouselView.scrollToItem(at: IndexPath(row: secondCarouselScrollingId, section: 0), at: .centeredHorizontally, animated: false)
+                self.carouselView.layoutIfNeeded()
+                self.carouselView.collectionViewLayout.invalidateLayout()
+                self.carouselView.reloadData()
+                if self.secondGraph {
+                    if self.secondCarouselWidthConstraints.count > 0 {
+                        for index in 0...(self.secondCarouselWidthConstraints.count-1) {
+                            self.secondCarouselWidthConstraints[index].isActive = false
+                        }
+                        self.secondCarouselWidthConstraints.removeAll()
+                    }
+                    
+                    for index in 0...9999999 {
+                        let path = IndexPath(row: index, section: 0)
+                        if let cell = self.secondCarouselView.cellForItem(at: path) {
+                            self.secondCarouselWidthConstraints.append(cell.widthAnchor.constraint(equalToConstant: self.secondCarouselView.frame.width))
+                            self.secondCarouselWidthConstraints[index].isActive = true
+                        } else {
+                            break
+                        }
+                    }
+                }
+                self.secondCarouselView.layoutIfNeeded()
+                self.secondCarouselView.collectionViewLayout.invalidateLayout()
+                
+                self.carouselView.scrollToItem(at: IndexPath(row: self.carouselScrollingId, section: 0), at: .centeredHorizontally, animated: true)
+                if self.secondGraph {
+                    self.secondCarouselView.reloadData()
+                    self.secondCarouselView.scrollToItem(at: IndexPath(row: self.secondCarouselScrollingId, section: 0), at: .centeredHorizontally, animated: true)
+                }
+            })
         }
     }
     
@@ -2427,7 +2403,7 @@ extension graphsVC: UICollectionViewDataSource {
         
         //cell.setNeedsLayout()
         //cell.layoutIfNeeded()
-        
+        cell.tag = indexPath.row
         return cell
     }
     
