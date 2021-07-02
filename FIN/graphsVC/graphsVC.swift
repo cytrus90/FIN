@@ -326,7 +326,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         secondOutlineView.addSubview(secondChartStackView)
         secondChartStackView.leadingAnchor.constraint(equalTo: secondOutlineView.leadingAnchor, constant: 5).isActive = true
         secondChartStackView.trailingAnchor.constraint(equalTo: secondOutlineView.trailingAnchor, constant: -5).isActive = true
-        secondChartStackView.topAnchor.constraint(equalTo: secondOutlineView.topAnchor, constant: 5).isActive = true
+        secondChartStackView.topAnchor.constraint(equalTo: secondLabel.bottomAnchor, constant: 0).isActive = true
         secondChartStackView.bottomAnchor.constraint(equalTo: secondOutlineView.bottomAnchor, constant: -5).isActive = true
     }
     
