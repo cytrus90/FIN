@@ -149,6 +149,7 @@ class listMasterTVC: UITableViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        updateCellIconAlpha()
         collectionView.updatePosition()
         if !viewDisappear {
             if UIDevice().model.contains("iPhone") && UIDevice.current.orientation.isLandscape {
@@ -415,6 +416,30 @@ class listMasterTVC: UITableViewController {
         activityIndicator.centerXAnchor.constraint(equalTo: listTable.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
         
         toggleListViewContentInset()
+    }
+    
+    func updateCellIconAlpha() {
+        let heightTableView = listTable.visibleSize.height
+        let heightTableViewP = 0.2 * heightTableView
+        
+        for cell in listTable.visibleCells {
+            let cellConverted = cell as! cellListEntry
+            
+            let yTopPosition = listTable.convert(cellConverted.frame, to: nil).maxY
+//            let yBottomPosition = listTable.convert(cellConverted.frame, to: nil).minY
+
+            if yTopPosition > (heightTableView - heightTableViewP) {
+                let alp = ((heightTableView - yTopPosition) / heightTableViewP)
+                cellConverted.outlineView.alpha = alp
+                
+//            } else if yBottomPosition < heightTableViewP {
+//                let alp = ((heightTableView - yBottomPosition) / heightTableViewP)
+//                cellConverted.outlineView.alpha = alp
+            } else {
+                cellConverted.outlineView.alpha = 1.0
+            }
+            
+        }
     }
     
     func setNameDateUser() {

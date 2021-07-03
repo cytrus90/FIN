@@ -87,6 +87,7 @@ class splitMasterTVC: UITableViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         headerView.updatePosition()
+        updateCellIconAlpha()
         if !viewDisappear {
             if UIDevice().model.contains("iPhone") && UIDevice.current.orientation.isLandscape {
                 if headerView.frame.origin.y <= 0 {
@@ -382,6 +383,29 @@ class splitMasterTVC: UITableViewController {
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0), clearRows: false)
         } else {
             initRows(clearRows: true)
+        }
+    }
+    
+    func updateCellIconAlpha() {
+        let heightTableView = splitTableView.visibleSize.height
+        let heightTableViewP = 0.2 * heightTableView
+        
+        for cell in splitTableView.visibleCells {
+            if let cellConverted = cell as? cellSplitGeneral {
+                let yTopPosition = splitTableView.convert(cellConverted.frame, to: nil).maxY
+    //            let yBottomPosition = listTable.convert(cellConverted.frame, to: nil).minY
+
+                if yTopPosition > (heightTableView - heightTableViewP) {
+                    let alp = ((heightTableView - yTopPosition) / heightTableViewP)
+                    cellConverted.outlineView.alpha = alp
+                    
+    //            } else if yBottomPosition < heightTableViewP {
+    //                let alp = ((heightTableView - yBottomPosition) / heightTableViewP)
+    //                cellConverted.outlineView.alpha = alp
+                } else {
+                    cellConverted.outlineView.alpha = 1.0
+                }
+            }
         }
     }
 

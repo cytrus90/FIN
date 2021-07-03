@@ -299,7 +299,7 @@
 "bottomUpdateGroup" = "Edit group";
 "addNewDefaultPersonsText" = "No groups selected";
 "addNewDefaultGroupsText" = "No members selected";
-"addNewGroupText" = "Add groups";
+"addNewGroupText" = "Add to groups";
 "addNewPersonText" = "Add persons";
 "updateGroupsText" = "Edit groups";
 "updatePersonsText" = "Edit persons";
