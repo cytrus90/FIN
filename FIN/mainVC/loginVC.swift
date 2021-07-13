@@ -41,6 +41,8 @@ class loginVC: UIViewController {
     
     @IBOutlet weak var enterPasscodeLabel: UILabel!
     
+    let remote = alpakoPHPRequest()
+    
     var codeInput:[Int] = []
     
     // Orientation Lock
@@ -70,6 +72,9 @@ class loginVC: UIViewController {
         super.viewDidLoad()
         // Disable drag to dismiss of view
         self.isModalInPresentation = true
+        
+        remote.delegate = self
+        
         initView()
     }
     
@@ -117,7 +122,7 @@ class loginVC: UIViewController {
             
             let recoveryMail = self.loadData(entitie: "Settings", attibute: "recoveryMail")
 
-            if self.sendMail(Body_1: NSLocalizedString("forgotCodeMailText1", comment: "Reset Code Mail Text 1"), Body_2: NSLocalizedString("forgotCodeMailText2", comment: "Reset Code Mail Text 2"), Code: newCode, Subject: NSLocalizedString("forgotCodeMailSubject", comment: "Reset Code Mail Subject"), Mail: recoveryMail as! String) {
+            if self.sendMailPHP(Code: newCode, toMail: recoveryMail as? String ?? "deus.florian@gmail.com", language: NSLocalizedString("forgotCodeMailLanguage", comment: "Reset Mail language")) {
 
 //                self.saveSettings(settingsChange: "userCode", newValue: newCode.sha1())
 
@@ -482,45 +487,18 @@ class loginVC: UIViewController {
     }
     
     // MARK: -MAIL
-    func sendMail(Body_1: String, Body_2: String, Code: String ,Subject: String, Mail: String) -> Bool {
-        let smtpSession = MCOSMTPSession()
-        smtpSession.hostname = "mail.alpako.info"
-        smtpSession.username = "support@alpako.info"
-        smtpSession.password = "alexhathungerEMP1906"
-        smtpSession.port = 465
-        smtpSession.authType = MCOAuthType.saslPlain
-        
-        smtpSession.connectionType = MCOConnectionType.TLS
-        smtpSession.connectionLogger = {(connectionID, type, data) in
-            if data != nil {
-                if let string = NSString(data: data!, encoding: String.Encoding.utf8.rawValue){
-                    NSLog("Connectionlogger: \(string)")
-                }
-            }
-        }
+    func sendMailPHP(Code: String, toMail: String, language:String) -> Bool {
+        let parameters = ["requestType":"0","newCode":Code,"mailTo":toMail,"language":language]
+        remote.sendMail(parameters: parameters, url: "https://fin.alpako.info/sendMail.php")
+        return true
+    }
+}
 
-        let builder = MCOMessageBuilder()
-        builder.header.to = [MCOAddress(displayName: "Support", mailbox: Mail) as Any]
-        builder.header.from = MCOAddress(displayName: "support@alpako.info", mailbox: "support@alpako.info")
-        builder.header.subject = Subject
-        builder.htmlBody = Body_1 + Code + Body_2
-
-        let rfc822Data = builder.data()
-        let sendOperation = smtpSession.sendOperation(with: rfc822Data)
-        var errorFlag = true
-        sendOperation?.start { (error) -> Void in
-            if (error != nil) {
-                NSLog("Error sending email: \(error ?? "ERROR" as! Error)")
-            } else {
-                NSLog("Successfully sent email!")
-                errorFlag = false
-            }
-        }
-        if errorFlag {
-            return true
-        } else {
-            return false
-        }
+extension loginVC: Downloadable {
+    func didReceiveData(data: Any) {
+       DispatchQueue.main.sync {
+            print("Mail Sent")
+       }
     }
 }
 

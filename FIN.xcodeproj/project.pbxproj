@@ -54,6 +54,8 @@
 		17434D4C24C6D0D0005FC5E8 /* categoryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17434D4B24C6D0D0005FC5E8 /* categoryPickerView.swift */; };
 		1749721E24BD81850087031F /* cellUserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1749721D24BD81850087031F /* cellUserSettings.swift */; };
 		174A879225DB9F3A009AD6EF /* cellSubtitleStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174A879125DB9F3A009AD6EF /* cellSubtitleStack.swift */; };
+		174C6AEA269D9C7F0037D086 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174C6AE9269D9C7F0037D086 /* Network.swift */; };
+		174C6AEC269D9CDF0037D086 /* remoteRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174C6AEB269D9CDF0037D086 /* remoteRequests.swift */; };
 		174F94F124E42DA000E66659 /* listCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174F94EF24E42DA000E66659 /* listCollectionViewCell.swift */; };
 		174F94F224E42DA000E66659 /* listCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 174F94F024E42DA000E66659 /* listCollectionViewCell.xib */; };
 		175F082724DDD59F00028DF9 /* listSplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175F082624DDD59F00028DF9 /* listSplitVC.swift */; };
@@ -205,6 +207,8 @@
 		17434D4B24C6D0D0005FC5E8 /* categoryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = categoryPickerView.swift; sourceTree = "<group>"; };
 		1749721D24BD81850087031F /* cellUserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellUserSettings.swift; sourceTree = "<group>"; };
 		174A879125DB9F3A009AD6EF /* cellSubtitleStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellSubtitleStack.swift; sourceTree = "<group>"; };
+		174C6AE9269D9C7F0037D086 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		174C6AEB269D9CDF0037D086 /* remoteRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = remoteRequests.swift; sourceTree = "<group>"; };
 		174F94EF24E42DA000E66659 /* listCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listCollectionViewCell.swift; sourceTree = "<group>"; };
 		174F94F024E42DA000E66659 /* listCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = listCollectionViewCell.xib; sourceTree = "<group>"; };
 		175F082624DDD59F00028DF9 /* listSplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listSplitVC.swift; sourceTree = "<group>"; };
@@ -245,7 +249,6 @@
 		17A4B4132520F4E800EBEBDB /* splitAddBottomBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = splitAddBottomBar.xib; sourceTree = "<group>"; };
 		17A4B4162520F4F600EBEBDB /* splitAddBottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = splitAddBottomBar.swift; sourceTree = "<group>"; };
 		17A4B41A2520FCDB00EBEBDB /* cellSplitAddNewPersonsGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellSplitAddNewPersonsGroups.swift; sourceTree = "<group>"; };
-		17A5274424B2080300BC8862 /* sendEmail_Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sendEmail_Bridge.h; sourceTree = "<group>"; };
 		17A5DC0024E0825B001D0494 /* cellListEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellListEntry.swift; sourceTree = "<group>"; };
 		17A8CDFD24BB4753003A2E39 /* userTSB.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = userTSB.storyboard; sourceTree = "<group>"; };
 		17A8CDFF24BB4EE4003A2E39 /* userSplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userSplitVC.swift; sourceTree = "<group>"; };
@@ -468,7 +471,6 @@
 				1786C4AD24A103B000FE36E5 /* FIN */,
 				1786C4AC24A103B000FE36E5 /* Products */,
 				A35BEFED4CE2899A45939CD5 /* Pods */,
-				17A5274524B208B000BC8862 /* sendEmail */,
 				2C2108B60B6CB83B7EB25D71 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -507,6 +509,8 @@
 				171ADE162593BA6200382710 /* timer.swift */,
 				17625E2925A1CAE8002CAF2F /* localNotificationManager.swift */,
 				17ACD20725B0936E0018BC38 /* PKIAHandler.swift */,
+				174C6AE9269D9C7F0037D086 /* Network.swift */,
+				174C6AEB269D9CDF0037D086 /* remoteRequests.swift */,
 			);
 			path = FIN;
 			sourceTree = "<group>";
@@ -565,14 +569,6 @@
 				1731FCC12521A9AE00E4C9FE /* SelectVC */,
 			);
 			path = addNewVC;
-			sourceTree = "<group>";
-		};
-		17A5274524B208B000BC8862 /* sendEmail */ = {
-			isa = PBXGroup;
-			children = (
-				17A5274424B2080300BC8862 /* sendEmail_Bridge.h */,
-			);
-			path = sendEmail;
 			sourceTree = "<group>";
 		};
 		17AF201924BE45EE00223931 /* Passcode */ = {
@@ -998,7 +994,9 @@
 				17F7D8F524D3051C009FF599 /* cellCategoryColor.swift in Sources */,
 				17686AE325DFCB3C007ACD53 /* cellCategoryIcons.swift in Sources */,
 				171338A024A5C2990075189B /* tabControllerVC.swift in Sources */,
+				174C6AEA269D9C7F0037D086 /* Network.swift in Sources */,
 				17A4B40D2520EF5F00EBEBDB /* cellSplitAddNewSelect.swift in Sources */,
+				174C6AEC269D9CDF0037D086 /* remoteRequests.swift in Sources */,
 				171ADE172593BA6200382710 /* timer.swift in Sources */,
 				173B2F4625ACDAC500CADA71 /* cellPurchase.swift in Sources */,
 				1786C4AF24A103B000FE36E5 /* AppDelegate.swift in Sources */,
@@ -1232,13 +1230,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.50;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "${SRCROOT}/sendEmail/sendEmail_bridge.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1265,13 +1262,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.50;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "${SRCROOT}/sendEmail/sendEmail_bridge.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

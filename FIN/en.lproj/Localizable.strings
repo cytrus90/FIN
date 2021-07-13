@@ -75,6 +75,7 @@
 "forgotCodeConfirmText" = "The new code will be sent to you by email. Use this code to unlock FIN.";
 "forgotCodeConfirmAction" = "Reset";
 "forgotCodeCancel" = "Cancel";
+"forgotCodeMailLanguage" = "EN";
 "forgotCodeMailText1" = "Thank you for using FIN. Your new code to unlock the app is: <b>";
 "forgotCodeMailText2" = "</b><br><br>Your Alpako Support Team";
 "forgotCodeMailSubject" = "Recovery code - FIN";

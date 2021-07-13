@@ -149,7 +149,7 @@ class listMasterTVC: UITableViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        updateCellIconAlpha()
+//        updateCellIconAlpha()
         collectionView.updatePosition()
         if !viewDisappear {
             if UIDevice().model.contains("iPhone") && UIDevice.current.orientation.isLandscape {

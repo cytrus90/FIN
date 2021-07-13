@@ -1175,17 +1175,17 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func sendEmail() {
-      if MFMailComposeViewController.canSendMail() {
-        let mail = MFMailComposeViewController()
-        mail.mailComposeDelegate = self
-        mail.setToRecipients(["support@alpako.info"])
-        mail.setSubject("Feedback - FIN")
+      //if MFMailComposeViewController.canSendMail() {
+      //  let mail = MFMailComposeViewController()
+      //  mail.mailComposeDelegate = self
+      //  mail.setToRecipients(["support@alpako.info"])
+      //  mail.setSubject("Feedback - FIN")
 //        mail.setMessageBody("Thank you for your Feedback.", isHTML: true)
 
-        present(mail, animated: true)
-      } else {
+       // present(mail, animated: true)
+      //} else {
         // show failure alert
-      }
+      //}
     }
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {

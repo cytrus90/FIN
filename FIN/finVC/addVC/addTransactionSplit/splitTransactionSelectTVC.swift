@@ -94,6 +94,7 @@ class splitTransactionSelectTVC: UITableViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         headerView.updatePosition()
+//        updateCellIconAlpha()
         if !viewDisappear {
             if UIDevice().model.contains("iPhone") && UIDevice.current.orientation.isLandscape {
                 if headerView.frame.origin.y <= 0 {
@@ -357,6 +358,29 @@ class splitTransactionSelectTVC: UITableViewController {
         }
     }
 
+    func updateCellIconAlpha() {
+        let heightTableView = splitSelectTableview.visibleSize.height
+        let heightTableViewP = 0.01 * heightTableView
+        
+        for cell in splitSelectTableview.visibleCells {
+            if let cellConverted = cell as? cellSplitTransactionGeneral {
+                let yTopPosition = splitSelectTableview.convert(cellConverted.frame, to: nil).maxY
+    //            let yBottomPosition = listTable.convert(cellConverted.frame, to: nil).minY
+
+                if yTopPosition > (heightTableView - heightTableViewP) {
+                    let alp = ((heightTableView - yTopPosition) / heightTableViewP)
+                    cellConverted.outlineView.alpha = alp
+                    
+    //            } else if yBottomPosition < heightTableViewP {
+    //                let alp = ((heightTableView - yBottomPosition) / heightTableViewP)
+    //                cellConverted.outlineView.alpha = alp
+                } else {
+                    cellConverted.outlineView.alpha = 1.0
+                }
+            }
+        }
+    }
+    
     // MARK: -TABLE DATA & FUNCTIONS
     func createDataForRows() {
         rowData.removeAll()

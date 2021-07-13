@@ -75,6 +75,7 @@
 "forgotCodeConfirmText" = "Ein neuer Code wird Ihnen per eMail zugesendet. Bitte verwenden Sie diesen neuen Code um FIN zu entsperren.";
 "forgotCodeConfirmAction" = "Zurücksetzen";
 "forgotCodeCancel" = "Abbrechen";
+"forgotCodeMailLanguage" = "DE";
 "forgotCodeMailText1" = "Vielen Dank, dass Sie FIN nutzen. Ihr neuer Code zum Entsperren der App ist: <b>";
 "forgotCodeMailText2" = "</b><br><br>Ihr Alpako Support Team";
 "forgotCodeMailSubject" = "Wiederherstellungs Code - FIN";

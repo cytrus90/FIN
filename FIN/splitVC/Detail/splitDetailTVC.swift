@@ -100,7 +100,7 @@ class splitDetailTVC: UITableViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         headerView.updatePosition()
-        updateCellIconAlpha()
+//        updateCellIconAlpha()
         if !viewDisappear {
             if UIDevice().model.contains("iPhone") && UIDevice.current.orientation.isLandscape {
                 if headerView.frame.origin.y <= 0 {
