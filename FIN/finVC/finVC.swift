@@ -457,7 +457,7 @@ class finTVC: UITableViewController {
     
     // MARK: -Init Data
     func initData() {
-        activeBudget = loadIfBudget()
+        activeBudget = dataHandler.loadIfBudget()
         
         topOverviewCellData.removeAll()
         splitOverviewCellData.removeAll()
@@ -480,21 +480,21 @@ class finTVC: UITableViewController {
         var isLight = true
         
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
-        if let transaction = loadBulkSortedOneEntry(entitie: "Transactions", sort: [dateSort]) as? NSManagedObject {
+        if let transaction = dataHandler.loadBulkSortedOneEntry(entitie: "Transactions", sort: [dateSort]) as? NSManagedObject {
             realAmount = transaction.value(forKey: "realAmount") as? Double ?? 0.00
             descriptionNote = transaction.value(forKey: "descriptionNote") as? String ?? ""
             dateTime = transaction.value(forKey: "dateTime") as? Date ?? Date()
             isSplit = transaction.value(forKey: "isSplit") as? Int16 ?? 0
             
             let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-            color = loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0
-            categoryName = loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""
-            isSave = loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false
-            if !isSave && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+            color = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0
+            categoryName = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""
+            isSave = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false
+            if !isSave && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                 realAmount = -realAmount
             }
-            icon = loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? ""
-            isLight = loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? true
+            icon = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: queryCategory) as? String ?? ""
+            isLight = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: queryCategory) as? Bool ?? true
         }
         
         topOverviewCellData = [
@@ -531,11 +531,11 @@ class finTVC: UITableViewController {
         // get Category IDs which are Expenses
         var expensesIDsArray = [Int16]()
         let queryExpenses = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: false))
-        for expense in loadBulkQueried(entitie: "Categories", query: queryExpenses) {
+        for expense in dataHandler.loadBulkQueried(entitie: "Categories", query: queryExpenses) {
             expensesIDsArray.append(expense.value(forKey: "cID") as? Int16 ?? 0)
         }
         let queryExpensesSum = NSPredicate(format: "categoryID IN %@ AND dateTime != nil", expensesIDsArray)
-        let ramValueExpenses = (loadDataSUM(entitie: "Transactions", query: queryExpensesSum) as? [[String:Any]])
+        let ramValueExpenses = (dataHandler.loadDataSUM(entitie: "Transactions", query: queryExpensesSum) as? [[String:Any]])
         if (ramValueExpenses?.count ?? 0) > 0 {
             balance = (ramValueExpenses?[0]["sum"] as? Double ?? 0.00)
         }
@@ -544,11 +544,11 @@ class finTVC: UITableViewController {
         // get Category IDs which are Income
         var incomeIDsArray = [Int16]()
         let queryIncome = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: true))
-        for income in loadBulkQueried(entitie: "Categories", query: queryIncome) {
+        for income in dataHandler.loadBulkQueried(entitie: "Categories", query: queryIncome) {
             incomeIDsArray.append(income.value(forKey: "cID") as? Int16 ?? 0)
         }
         let queryIncomeSum = NSPredicate(format: "categoryID IN %@ AND dateTime != nil", incomeIDsArray)
-        let ramValueIncome = (loadDataSUM(entitie: "Transactions", query: queryIncomeSum) as? [[String:Any]])
+        let ramValueIncome = (dataHandler.loadDataSUM(entitie: "Transactions", query: queryIncomeSum) as? [[String:Any]])
         if (ramValueIncome?.count ?? 0) > 0 {
             balance = (ramValueIncome?[0]["sum"] as? Double ?? 0.00) - balance
         }
@@ -556,20 +556,20 @@ class finTVC: UITableViewController {
         // get Sum Savings
         var savingsIDsArray = [Int16]()
         let querySavings = NSPredicate(format: "isSave == %@", NSNumber(value: true))
-        for saving in loadBulkQueried(entitie: "Categories", query: querySavings) {
+        for saving in dataHandler.loadBulkQueried(entitie: "Categories", query: querySavings) {
             savingsIDsArray.append(saving.value(forKey: "cID") as? Int16 ?? 0)
         }
         let querySavingsSum = NSPredicate(format: "categoryID IN %@ AND isLiquid == %@ AND dateTime != nil", savingsIDsArray, NSNumber(value: true))
-        let ramValueSave = (loadDataSUM(entitie: "Transactions", query: querySavingsSum) as? [[String:Any]])
+        let ramValueSave = (dataHandler.loadDataSUM(entitie: "Transactions", query: querySavingsSum) as? [[String:Any]])
         if (ramValueSave?.count ?? 0) > 0 {
             balance = balance - (ramValueSave?[0]["sum"] as? Double ?? 0.00)
         }
         
         // Get Initial Payments
         let queryInitialExpense = NSPredicate(format: "dateTime == nil")
-        for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitialExpense) {
+        for initialTransaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryInitialExpense) {
             let queryCategory = NSPredicate(format: "cID == %i", (initialTransaction.value(forKey: "categoryID") as? Int16 ?? -1))
-            let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+            let isIncome = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
             
             if (initialTransaction.value(forKey: "isLiquid") as? Bool ?? false) {
                 if isIncome {
@@ -592,7 +592,7 @@ class finTVC: UITableViewController {
         
         var expensesIDsArray = [Int16]()
         let queryExpenses = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: false))
-        for expense in loadBulkQueried(entitie: "Categories", query: queryExpenses) {
+        for expense in dataHandler.loadBulkQueried(entitie: "Categories", query: queryExpenses) {
             expensesIDsArray.append(expense.value(forKey: "cID") as? Int16 ?? 0)
         }
         
@@ -610,20 +610,20 @@ class finTVC: UITableViewController {
         var sumBudget = 0.00
         var sumSpent = 0.00
         
-        let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
+        let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
         if (data?.count ?? 0) > 0 {
             for i in 0...((data?.count ?? 1)-1) {
                 let queryCategory = NSPredicate(format: "cID == %i", (data?[i]["categoryID"] as? Int16 ?? 0))
                 if selectedSecond == 0 && activeBudget {
-                    if !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false) && (loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00 > 0.00) {
+                    if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: queryCategory) as? Bool ?? false) && (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00 > 0.00) {
                         sumSpent = sumSpent + (data?[i]["sum"] as? Double ?? 0.00)
-                        sumBudget = sumBudget + (loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00)
+                        sumBudget = sumBudget + (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "budget", query: queryCategory) as? Double ?? 0.00)
                     } else {
                         continue
                     }
                 } else {
-                    entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                    colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                    entries.append(PieChartDataEntry(value: (data?[i]["sum"] as? Double ?? 0.00), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                    colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                 }
             }
         }
@@ -647,7 +647,7 @@ class finTVC: UITableViewController {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryIsUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryIsUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -658,7 +658,7 @@ class finTVC: UITableViewController {
         let dateSort = NSSortDescriptor(key: "createDate", ascending: false)
         let queryUser = NSPredicate(format: "isUser == %@", NSNumber(value: false))
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [dateSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [dateSort]) {
             var sum = 0.00
 
             let createDatePerson = (data.value(forKey: "createDate") as? Date ?? Date())
@@ -671,7 +671,7 @@ class finTVC: UITableViewController {
             
             var userIsPartOfSplit:Bool?
             
-            for split in loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [dateSort]) {
+            for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [dateSort]) {
                 if userPartOfSplit(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date())) {
                     userIsPartOfSplit = true
                 } else {
@@ -688,7 +688,7 @@ class finTVC: UITableViewController {
                 let query = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
                 let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
                 
-                for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+                for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                     let exchangeRate = (transaction.value(forKey: "exchangeRate") as? Double ?? 1.00)
                     
                     let settled = (split.value(forKey: "settled") as? Double ?? 0.00)/exchangeRate
@@ -700,8 +700,8 @@ class finTVC: UITableViewController {
                             sum = sum - (sumTransaction*ratio) + settled
                         } else {
                             let queryUserRatio = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND dateTimeTransaction < %@ AND dateTimeTransaction > %@", (userDateUserPlus as NSDate), (userDateUserMinus as NSDate), (nameUser ?? "") as NSString, (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
-                            let ratio = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryUserRatio) as? Double ?? (1-(split.value(forKey: "ratio") as? Double ?? 0.00))
-                            let settledUser = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryUserRatio) as? Double ?? (1-(split.value(forKey: "ratio") as? Double ?? 0.00)))/exchangeRate
+                            let ratio = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryUserRatio) as? Double ?? (1-(split.value(forKey: "ratio") as? Double ?? 0.00))
+                            let settledUser = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryUserRatio) as? Double ?? (1-(split.value(forKey: "ratio") as? Double ?? 0.00)))/exchangeRate
                             sum = sum + sumTransaction*ratio - settledUser
                         }
                     }
@@ -918,7 +918,7 @@ class finTVC: UITableViewController {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -930,7 +930,7 @@ class finTVC: UITableViewController {
         let dateMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePerson == %@ AND createDatePerson > %@ AND createDatePerson < %@", (dateMinus as NSDate), (datePlus as NSDate), ((nameUser ?? "") as NSString), ((userDateMinus) as NSDate), ((userDatePlus) as NSDate))
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         } else {
             return false
@@ -948,7 +948,7 @@ class finTVC: UITableViewController {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), (namePerson as NSString), (personDateMinus as NSDate), (personDatePlus as NSDate))
         
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         }
         
@@ -957,7 +957,7 @@ class finTVC: UITableViewController {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -967,7 +967,7 @@ class finTVC: UITableViewController {
             
         let queryUserPaid = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), ((nameUser ?? "") as NSString), (userDateMinus as NSDate), (userDatePlus as NSDate))
             
-        if loadBulkQueriedSorted(entitie: "Splits", query: queryUserPaid, sort: [nameSort]).count <= 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: queryUserPaid, sort: [nameSort]).count <= 0 {
             return false
         } else {
             return true
@@ -1075,10 +1075,10 @@ extension finTVC: UIContextMenuInteractionDelegate {
         let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: topOverviewCellData[7] as? Date ?? Date())!
         
         let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
-        deleteDataQueried(entity: "Transactions", query: queryDelete)
+        dataHandler.deleteData(entity: "Transactions", query: queryDelete)
         
         let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
-        deleteDataQueried(entity: "Splits", query: querySplits)
+        dataHandler.deleteData(entity: "Splits", query: querySplits)
         
         let nc = NotificationCenter.default
         nc.post(name: Notification.Name("transactionDeleted"), object: nil)
@@ -1087,434 +1087,19 @@ extension finTVC: UIContextMenuInteractionDelegate {
 
 // MARK: -DATA
 extension finTVC {
-    func saveInitialTransaction(amount: Double, descriptionNote: String?,isSave: Bool = false, isLiquid:Bool = true) -> Bool {
-        let currencyCodeSave = Locale.current.currencyCode ?? "EUR"
-        let isSplit:Int16 = 0
-
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let transactionSave = Transactions(context: managedContext)
-        
-        transactionSave.amount = amount
-        transactionSave.realAmount = amount
-        transactionSave.categoryID = 0
-        transactionSave.currencyCode = currencyCodeSave
-        transactionSave.dateTime = nil
-        transactionSave.descriptionNote = descriptionNote ?? ""
-        transactionSave.exchangeRate = 1.0
-        transactionSave.tags = ""
-        transactionSave.isSave = isSave
-        transactionSave.isSplit = isSplit
-        transactionSave.isLiquid = isLiquid
-                
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-            return false
-        }
-        return true
-    }
-    
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadDataSUM(entitie:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToFetch = [sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkSortedOneEntry(entitie:String, sort:[NSSortDescriptor]) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = NSPredicate(format: "dateTime != nil")
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData[0]
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let keypathExp2 = NSExpression(forKeyPath: groupByColumn) // can be any column
-        let expression2 = NSExpression(forFunction: "count:", arguments: [keypathExp2])
-        
-        let countDesc = NSExpressionDescription()
-        countDesc.expression = expression2
-        countDesc.name = "count"
-        countDesc.expressionResultType = .integer64AttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToGroupBy = [groupByColumn]
-        fetchRequest.propertiesToFetch = [groupByColumn, countDesc ,sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadIfBudget() -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.01)
-        fetchRequest.fetchLimit = 1
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return true
-            } else {
-                return false
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func deleteDataQueried(entity: String, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.predicate = query
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
     
     // MARK: -INIT DATA
     func initSettingsAndData() {
-        saveNewSettings()
+        dataHandler.saveNewSettings()
         
-        let numberCurrencies = loadBulk(entitie: "Currency").count
+        let numberCurrencies = dataHandler.loadDataBulk(entity: "Currency").count
         if numberCurrencies != 33 {
-            deleteData(entity: "Currency")
+            dataHandler.deleteDataBulk(entity: "Currency")
             saveExchangeRates()
         }
 
-        if loadBulk(entitie: "GraphSettings").count <= 0 {
-            saveNewGraphs()
-        }
-    }
-    
-    func saveNewSettings() {
-        let countSettings = loadBulk(entitie: "Settings").count
-        var firstDate = Date()
-        var showAddsRAM:Bool = true
-        var trueUserName = NSLocalizedString("userTitle", comment: "User")
-    
-        let loginEnabledSafe = false
-        var firstLaunch = true
-        var filteredTagsZero = false
-        var filteredCategoriesZero = false
-        var recoveryMail = ""
-        var lastCurrencyCodeSafe = Locale.current.currencyCode ?? "EUR"
-        var userColorSafe = Int16(0)
-        var userCodeSafe = ""
-        
-        if countSettings > 1 {
-            trueUserName = loadSettingsOldest(entitie: "Settings", attibute: "userName") as? String ?? NSLocalizedString("userTitle", comment: "User")
-            firstDate = loadSettingsOldest(entitie: "Settings", attibute: "firstLaunchDate") as? Date ?? Date()
-            showAddsRAM = loadSettingsOldest(entitie: "Settings", attibute: "showAdds") as? Bool ?? true
-//            loginEnabledSafe = loadSettingsOldest(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false
-            firstLaunch = loadSettingsOldest(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
-            filteredTagsZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
-            filteredCategoriesZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
-            recoveryMail = loadSettingsOldest(entitie: "Settings", attibute: "recoveryMail") as? String ?? ""
-            lastCurrencyCodeSafe = loadSettingsOldest(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? ""
-            userColorSafe = loadSettingsOldest(entitie: "Settings", attibute: "userColor") as? Int16 ?? 0
-            userCodeSafe = loadSettingsOldest(entitie: "Settings", attibute: "userCode") as? String ?? ""
-            
-            deleteData(entity: "Settings")
-        }
-        
-        let countSettings2 = loadBulk(entitie: "Settings").count
-        if countSettings2 <= 0 {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            let managedContext = appDelegate!.persistentContainer.viewContext
-            managedContext.automaticallyMergesChangesFromParent = true
-            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-            let settingsSave = Settings(context: managedContext)
-            
-            settingsSave.userCode = ""
-            settingsSave.showAdds = true
-            settingsSave.firstLaunchDate = Date()
-                
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        }
-        
-        if countSettings > 1 {
-            saveSettings(settingsChange: "firstLaunch", newValue: false)
-            saveSettings(settingsChange: "firstLaunchDate", newValue: firstDate)
-            saveSettings(settingsChange: "showAdds", newValue: showAddsRAM)
-            saveSettings(settingsChange: "userName", newValue: trueUserName)
-            saveSettings(settingsChange: "loginEnabled", newValue: loginEnabledSafe)
-            saveSettings(settingsChange: "firstLaunch", newValue: firstLaunch)
-            saveSettings(settingsChange: "filteredTagsZero", newValue: filteredTagsZero)
-            saveSettings(settingsChange: "filteredCategoriesZero", newValue: filteredCategoriesZero)
-            saveSettings(settingsChange: "recoveryMail", newValue: recoveryMail)
-            saveSettings(settingsChange: "lastCurrencyCode", newValue: lastCurrencyCodeSafe)
-            saveSettings(settingsChange: "userColor", newValue: userColorSafe)
-            saveSettings(settingsChange: "userCode", newValue: userCodeSafe)
-        }
-    }
-    
-    func loadBulk(entitie:String) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func deleteData(entity: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedSettings.count > 0 {
-                fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-            }
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func loadSettings(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadSettingsOldest(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "firstLaunchDate", ascending: true)]
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func saveNewGraphs() {
-        for i in 0...1 {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            let managedContext = appDelegate!.persistentContainer.viewContext
-            managedContext.automaticallyMergesChangesFromParent = true
-            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-            let graphSave = GraphSettings(context: managedContext)
-            
-            graphSave.graphID = Int16(i)
-            if i == 0 {
-                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
-                graphSave.graphActive = false
-            } else if i == 1 {
-                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
-                graphSave.graphActive = true
-            }
-            graphSave.graphOption1 = Int16(0)
-            graphSave.graphOption2 = Int16(0)
-            
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
+        if dataHandler.loadDataBulk(entity: "GraphSettings").count <= 0 {
+            dataHandler.saveNewGraphs()
         }
     }
     
@@ -1525,7 +1110,7 @@ extension finTVC {
         
         var j:Int16 = 0
         for currency in csvRows {
-            self.saveCurrency(currencyCode: currency[0], exchangeRate: 1.0, automated: false, id: j)
+            dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: 1.0, automated: false, id: j)
             j = j+1
         }
     }
@@ -1560,48 +1145,6 @@ extension finTVC {
         cleanFile = cleanFile.replacingOccurrences(of: "\r", with: "\n")
         cleanFile = cleanFile.replacingOccurrences(of: "\n\n", with: "\n")
         return cleanFile
-    }
-    
-    func saveCurrency(currencyCode: String, exchangeRate: Double?, automated: Bool, id: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let currencySave = Currency(context: managedContext)
-        
-        currencySave.currencyCode = currencyCode
-        currencySave.exchangeRate = exchangeRate ?? 1.0
-        currencySave.automated = automated
-        currencySave.saved = Date()
-        currencySave.id = id
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
-    func loadBulkData(entitie:String, orderBy:String) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: orderBy, ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                    return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
     }
 }
 

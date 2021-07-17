@@ -17,6 +17,7 @@
 		1713389324A520440075189B /* loginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1713389224A520440075189B /* loginVC.swift */; };
 		171338A024A5C2990075189B /* tabControllerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1713389F24A5C2990075189B /* tabControllerVC.swift */; };
 		171338A324A5C6B40075189B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 171338A524A5C6B40075189B /* Localizable.strings */; };
+		1716926C269DEBD5007E11BB /* dataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1716926B269DEBD5007E11BB /* dataClass.swift */; };
 		171ADE172593BA6200382710 /* timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171ADE162593BA6200382710 /* timer.swift */; };
 		171ADE1B25949F7C00382710 /* exportTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171ADE1A25949F7C00382710 /* exportTVC.swift */; };
 		171ADE1E2594A83D00382710 /* cellExportTextTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171ADE1D2594A83D00382710 /* cellExportTextTVC.swift */; };
@@ -171,6 +172,7 @@
 		1713389F24A5C2990075189B /* tabControllerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabControllerVC.swift; sourceTree = "<group>"; };
 		171338A424A5C6B40075189B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		171338AC24A5CA840075189B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1716926B269DEBD5007E11BB /* dataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dataClass.swift; sourceTree = "<group>"; };
 		171ADE162593BA6200382710 /* timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timer.swift; sourceTree = "<group>"; };
 		171ADE1A25949F7C00382710 /* exportTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = exportTVC.swift; sourceTree = "<group>"; };
 		171ADE1D2594A83D00382710 /* cellExportTextTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellExportTextTVC.swift; sourceTree = "<group>"; };
@@ -511,6 +513,7 @@
 				17ACD20725B0936E0018BC38 /* PKIAHandler.swift */,
 				174C6AE9269D9C7F0037D086 /* Network.swift */,
 				174C6AEB269D9CDF0037D086 /* remoteRequests.swift */,
+				1716926B269DEBD5007E11BB /* dataClass.swift */,
 			);
 			path = FIN;
 			sourceTree = "<group>";
@@ -1040,6 +1043,7 @@
 				17087DC2253CBCFF00FD2034 /* splitTransactionSelectWhoPaid.swift in Sources */,
 				17117DDB25750F41001A143E /* cellAmountDetailTVC.swift in Sources */,
 				173CDF1624D0BB25008E2E63 /* cellDetailCategory.swift in Sources */,
+				1716926C269DEBD5007E11BB /* dataClass.swift in Sources */,
 				173AE5AF25A4A0B800D8F7D2 /* cellSplitTopOverview.swift in Sources */,
 				17CB2BD125A50D000015A85F /* categoryCarouselCell.swift in Sources */,
 				17EB5ED825D95E7A00F9281B /* cellCategoryInitial.swift in Sources */,
@@ -1235,7 +1239,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1267,7 +1271,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

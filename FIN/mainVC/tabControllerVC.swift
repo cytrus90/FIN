@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import CoreData
 import StoreKit
 
 class tabController: UITabBarController {
@@ -18,7 +17,7 @@ class tabController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        showAdds = (loadSettings(entitie: "Settings", attibute: "showAdds") as? Bool ?? true)
+        showAdds = (dataHandler.loadSettings(entitie: "Settings", attibute: "showAdds") as? Bool ?? true)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appear), name: UIApplication.didBecomeActiveNotification, object: nil)
         
@@ -81,7 +80,7 @@ class tabController: UITabBarController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
-        loginEnabled = loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -126,8 +125,18 @@ class tabController: UITabBarController {
             UserDefaults.standard.setValue((11), forKey: "numbersOpened")
         }
         
+        let update150 = 0//UserDefaults.standard.integer(forKey: "update150")
         
-        
+        if update150 == 0 {
+            
+            for data in dataHandler.loadDataBulk(entity: "Transactions") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    print(UUID().uuidString)
+                }
+            }
+            
+            UserDefaults.standard.setValue(1, forKey: "update150")
+        }
     }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
@@ -149,7 +158,7 @@ class tabController: UITabBarController {
     }
     
     @objc func appear() {
-        loginEnabled = loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -163,69 +172,7 @@ class tabController: UITabBarController {
             self.present(navigationVC, animated: true, completion: nil)
         }
     }
-    
-    // MARK: - DATA
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
         
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedSettings.count > 0 {
-                fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-            }
-            
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func loadSettings(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "firstLaunchDate", ascending: true)]
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
     // MARK: - Navigation
     // MARK: Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?)

@@ -952,7 +952,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         graphOption1 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
         graphOption2 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
         
-        if UIDevice().model.contains("iPad") {
+        if !UIDevice().model.contains("iPhone") {
             secondGraph = (loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
             graphOption3 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
         } else {

@@ -31,7 +31,7 @@ class cellSubtitleStack: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        activeBudget = loadIfBudget()
+        activeBudget = dataHandler.loadIfBudget()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -207,28 +207,5 @@ class cellSubtitleStack: UITableViewCell {
                 })
             }
         }
-    }
-    
-    // -MARK: Data
-    func loadIfBudget() -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = NSPredicate(format: "budget != nil AND budget > %f", 0.01)
-        fetchRequest.fetchLimit = 1
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return true
-            } else {
-                return false
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
     }
 }

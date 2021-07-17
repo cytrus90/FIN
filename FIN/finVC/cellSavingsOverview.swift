@@ -44,13 +44,13 @@ class cellSavingsOverview: UITableViewCell, UICollectionViewDataSource, UICollec
         // Get sum grouped-by catID - isSave = true
         // for each entry, get category color & name and add to array
         let queryCategoryGroup = NSPredicate(format: "isSave == %@", NSNumber(value: true))
-        let groupedData = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
+        let groupedData = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryCategoryGroup) as? [[String:Any]]
         if (groupedData?.count ?? 0) > 0 {
             for i in 0...(groupedData?.count ?? 0)-1 {
                 let queryCategory = NSPredicate(format: "cID == %i", (groupedData?[i]["categoryID"] as? Int16 ?? 0))
                 let ramDict = [
-                    0:loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "",
-                    1:loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? "",
+                    0:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "",
+                    1:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? "",
                     2:(groupedData?[i]["sum"] as? Double ?? 0.00)
                 ] as [Int:Any]
                 savingsData.append(ramDict)
@@ -82,68 +82,5 @@ class cellSavingsOverview: UITableViewCell, UICollectionViewDataSource, UICollec
         cell.amountLabel.text = numberFormatter.string(from: NSNumber(value: savingsData[indexPath.row][2] as? Double ?? 0.00))
         
         return cell
-    }
-}
-
-// MARK: -DATA
-extension cellSavingsOverview {
-    func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let keypathExp2 = NSExpression(forKeyPath: groupByColumn) // can be any column
-        let expression2 = NSExpression(forFunction: "count:", arguments: [keypathExp2])
-        
-        let countDesc = NSExpressionDescription()
-        countDesc.expression = expression2
-        countDesc.name = "count"
-        countDesc.expressionResultType = .integer64AttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToGroupBy = [groupByColumn]
-        fetchRequest.propertiesToFetch = [groupByColumn, countDesc ,sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
     }
 }

@@ -64,8 +64,7 @@ class loginVC: UIViewController {
     override func loadView() {
         super.loadView()
         // MARK: PUT TO FIRST LAUNCH VIEW
-        loadSettings()
-        //
+//        dataHandler.loadSettingsFirstLaunch()
     }
     
     override func viewDidLoad() {
@@ -107,7 +106,7 @@ class loginVC: UIViewController {
         confirm.addAction(UIAlertAction(title: NSLocalizedString("forgotCodeConfirmAction", comment: "Reset Code Confim"), style: .default, handler: { action in
             
             let RAM = Int.random(in: 0..<9999)
-            self.saveSettings(settingsChange: "userCode", newValue: String(RAM).sha1())
+            dataHandler.saveSettings(settingsChange: "userCode", newValue: String(RAM).sha1())
             
             var newCode = "0"
             if RAM < 10 {
@@ -120,7 +119,7 @@ class loginVC: UIViewController {
                 newCode = String(RAM)
             }
             
-            let recoveryMail = self.loadData(entitie: "Settings", attibute: "recoveryMail")
+            let recoveryMail = dataHandler.loadData(entitie: "Settings", attibute: "recoveryMail")
 
             if self.sendMailPHP(Code: newCode, toMail: recoveryMail as? String ?? "deus.florian@gmail.com", language: NSLocalizedString("forgotCodeMailLanguage", comment: "Reset Mail language")) {
 
@@ -223,7 +222,7 @@ class loginVC: UIViewController {
     func checkCode() {
         let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
         
-        if loadData(entitie: "Settings", attibute: "userCode") as? String == userInputCode {
+        if dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String == userInputCode {
             loginSuccessfull = true
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
@@ -323,8 +322,8 @@ class loginVC: UIViewController {
     
     func getGreetingString() -> String {
         var str2 = ""
-        if (loadData(entitie: "Settings", attibute: "userName") as? String ?? "User") != NSLocalizedString("userText", comment: "User") {
-            str2 = ", " + (loadData(entitie: "Settings", attibute: "userName") as? String ?? "User")
+        if (dataHandler.loadData(entitie: "Settings", attibute: "userName") as? String ?? "User") != NSLocalizedString("userText", comment: "User") {
+            str2 = ", " + (dataHandler.loadData(entitie: "Settings", attibute: "userName") as? String ?? "User")
         }
         
         let hour = Calendar.current.component(.hour, from: Date())
@@ -396,26 +395,6 @@ class loginVC: UIViewController {
         }
     }
     
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -426,63 +405,6 @@ class loginVC: UIViewController {
             break
         default:
             fatalError("Unexpected Segue Identifier; \(String(describing: segue.identifier))")
-        }
-    }
-    // MARK: PUT TO FIRST LAUNCH VIEW
-    
-    func saveNewSettings() {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let settingsSave = Settings(context: managedContext)
-        // MARK: -REMOVE:
-        settingsSave.userCode = String("")
-//        settingsSave.recoveryMail = "flori@nriel.com"
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
-    func loadSettings() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let settings = try managedContext.fetch(fetchRequest)
-            if settings.count > 0 {
-                saveSettings(settingsChange: "firstLaunch", newValue: false)
-                saveSettings(settingsChange: "firstLaunchDate", newValue: Date())
-            } else {
-                saveNewSettings()
-            }
-        } catch let error as NSError {
-            print("Could not fetch. \(error), \(error.userInfo)")
-        }
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
         }
     }
     
