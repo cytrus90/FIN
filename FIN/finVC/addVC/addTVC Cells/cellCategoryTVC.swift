@@ -163,7 +163,7 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
         var i = 0
         // Get Expense Categories
         let predicateExpenses:NSPredicate = NSPredicate(format: "isIncome == false && isSave == false")
-        let expenses = loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses)
+        let expenses = dataHandler.loadBulkQueried(entitie: "Categories", query: predicateExpenses)
         if expenses.count != 0 {
             for expense in expenses {
                 categories[i] = [
@@ -178,7 +178,7 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
         }
         // Get Income Categories
         let predicateIncome:NSPredicate = NSPredicate(format: "isIncome == true && isSave == false")
-        let incomes = loadBulkDataWithQuery(entitie: "Categories", query: predicateIncome)
+        let incomes = dataHandler.loadBulkQueried(entitie: "Categories", query: predicateIncome)
         if incomes.count != 0 {
             for income in incomes {
                 categories[i] = [
@@ -193,7 +193,7 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
         }
         // Get Savings Income Categories
         let predicateSaveDeposit:NSPredicate = NSPredicate(format: "isIncome == false && isSave == true")
-        let savesDeposit = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit)
+        let savesDeposit = dataHandler.loadBulkQueried(entitie: "Categories", query: predicateSaveDeposit)
         if savesDeposit.count != 0 {
             for saveIncome in savesDeposit {
                 categories[i] = [
@@ -208,7 +208,7 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
         }
         // Get Savings Expense Categories
         let predicateSaveWithdraw:NSPredicate = NSPredicate(format: "isIncome == true && isSave == true")
-        let savesWithdraw = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveWithdraw)
+        let savesWithdraw = dataHandler.loadBulkQueried(entitie: "Categories", query: predicateSaveWithdraw)
         if savesWithdraw.count != 0 {
             for saveExpense in savesWithdraw {
                 categories[i] = [
@@ -262,94 +262,6 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
 //                }
 //            }
 //        }
-    
-    func loadBulkData(entitie:String, orderBy:String) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: orderBy, ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                    return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let categorySave = Categories(context: managedContext)
-        let id = loadNextCategoryID()
-        
-        categorySave.cID = id
-        categorySave.name = name
-        categorySave.color = color
-        categorySave.countEntries = countEntries
-        categorySave.isIncome = isIncome
-        categorySave.isSave = isSave
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
-    func loadNextCategoryID() -> Int16 {
-        var i:Int16 = 0
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: #keyPath(Categories.cID), ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        do {
-            let loadCategories = try managedContext.fetch(fetchRequest) as! [Categories]
-            for data in loadCategories {
-                if data.cID == i {
-                    i = i + 1
-                } else {
-                    break
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return i
-    }
-    
-    func loadBulkDataWithQuery(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
 }
 
 protocol cellCategoryTVCDelecate: AnyObject {

@@ -941,20 +941,20 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     func initChartSettings() {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
-        if loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count <= 0 {
-            saveNewGraphs()
+        if dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count <= 0 {
+            dataHandler.saveNewGraphs()
         }
         
         let queryGraphActive = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
         
-        graphName = loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphName", query: queryGraphActive) as? String ?? "Line"
-        graphIDActive = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphID", query: queryGraphActive) as? Int16 ?? 0)
-        graphOption1 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
-        graphOption2 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
+        graphName = dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphName", query: queryGraphActive) as? String ?? "Line"
+        graphIDActive = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphID", query: queryGraphActive) as? Int16 ?? 0)
+        graphOption1 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
+        graphOption2 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
         
         if !UIDevice().model.contains("iPhone") {
-            secondGraph = (loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
-            graphOption3 = Int(loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
+            secondGraph = (dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
+            graphOption3 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
         } else {
             secondGraph = false
             graphOption3 = nil
@@ -1109,7 +1109,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             }
             
             let queryCountEntriesExpenses = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: false))
-            let countEntriesExpenses = (loadDataSUMEntries(entitie: "Categories", query: queryCountEntriesExpenses) as? [[String:Any]])?[0]["sum"] as? Double ?? 1.00
+            let countEntriesExpenses = (dataHandler.loadDataSUMEntries(entitie: "Categories", query: queryCountEntriesExpenses) as? [[String:Any]])?[0]["sum"] as? Double ?? 1.00
             var numberEntriesExpeses:Double = 1000.00
             if countEntriesExpenses > 1000 && countEntriesExpenses <= 3000 {
                 numberEntriesExpeses = (0.9 * countEntriesExpenses)
@@ -1123,7 +1123,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             let nEntriesExpenses = Int(countEntriesExpenses/numberEntriesExpeses)
             
             let queryCountEntriesIncome = NSPredicate(format: "isSave == %@ AND isIncome == %@", NSNumber(value: false), NSNumber(value: true))
-            let countEntriesIncome = (loadDataSUMEntries(entitie: "Categories", query: queryCountEntriesIncome) as? [[String:Any]])?[0]["sum"] as? Double ?? 1.00
+            let countEntriesIncome = (dataHandler.loadDataSUMEntries(entitie: "Categories", query: queryCountEntriesIncome) as? [[String:Any]])?[0]["sum"] as? Double ?? 1.00
             var numberEntriesIncome:Double = 1000.00
             if countEntriesIncome > 1000 && countEntriesIncome <= 3000 {
                 numberEntriesIncome = (0.9 * countEntriesIncome)
@@ -1151,10 +1151,10 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             lineChartEntries.append(LineChartEntry(value: 0.00, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0)) // Income
             lineChartEntriesExpenses.append(LineChartEntry(value: 0.00, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0)) // Expenses
             
-            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+            for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
                 
-                if !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) { // Income
+                if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) && (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) { // Income
                     if preDateIncome.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                         repeat {
                             lineChartEntries.append(LineChartEntry(value: income, dateTime: preDateIncome.endOfMonth, index: indexIncome))
@@ -1175,7 +1175,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                         i = 0
                     }
                     
-                } else if !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) { // expense
+                } else if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) { // expense
                     if preDateExpense.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                         repeat {
                             lineChartEntries.append(LineChartEntry(value: expenses, dateTime: preDateExpense.endOfMonth, index: indexExpenses))
@@ -1245,7 +1245,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
             let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == true" + tagFilterPredicateString, -1)
             
-            for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+            for initialTransaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryInitial) {
                 savings = savings + (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
             }
 //            var i = 0
@@ -1254,7 +1254,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
             lineChartEntries.append(LineChartEntry(value: savings, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
-            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+            for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                     repeat {
                         if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
@@ -1266,7 +1266,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
                 let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-                if (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
                     savings = savings + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                     lineChartEntries.append(LineChartEntry(value: savings, dateTime: (transaction.value(forKey: "dateTime") as? Date ?? Date()), index: index))
                     index = index + 1
@@ -1305,9 +1305,9 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var balance:Double = 0.00
             var index = 1
             let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == false" + tagFilterPredicateString, -1)
-            for transaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+            for transaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryInitial) {
                 let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? -1))
-                let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+                let isIncome = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
                 if isIncome {
                     balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                 } else {
@@ -1317,7 +1317,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
             lineChartEntries.append(LineChartEntry(value: balance, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
-            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+            for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                     repeat {
                         if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
@@ -1329,8 +1329,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
                 let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-                if !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) {
+                if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) {
                         balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                     } else {
                         balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
@@ -1516,7 +1516,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             let query = NSPredicate(format: "categoryID != %i AND dateTime != nil" + tagFilterPredicateString, -1)
             let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == true" + tagFilterPredicateString, -1)
             
-            for initialTransaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+            for initialTransaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryInitial) {
                 savings = savings + (initialTransaction.value(forKey: "realAmount") as? Double ?? 0.00)
             }
 //            var i = 0
@@ -1525,7 +1525,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
             secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
-            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+            for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                     repeat {
                         if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
@@ -1537,7 +1537,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
                 let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-                if (loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
                     savings = savings + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                     secondLineChartEntries.append(LineChartEntry(value: savings, dateTime: (transaction.value(forKey: "dateTime") as? Date ?? Date()), index: index))
                     index = index + 1
@@ -1576,9 +1576,9 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var balance:Double = 0.00
             var index = 1
             let queryInitial = NSPredicate(format: "categoryID != %i AND dateTime == nil AND isSave == false" + tagFilterPredicateString, -1)
-            for transaction in loadBulkQueried(entitie: "Transactions", query: queryInitial) {
+            for transaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryInitial) {
                 let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? -1))
-                let isIncome = loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
+                let isIncome = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false
                 if isIncome {
                     balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                 } else {
@@ -1588,7 +1588,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             var preDate:Date = (Calendar.current.date(byAdding: .minute, value: -1, to: (fromDateMax ?? Date()))!)
             secondLineChartEntries.append(LineChartEntry(value: balance, dateTime: (fromDateMax ?? Date()).startOfMonth, index: 0))
             
-            for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
+            for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: query, sort: [dateSort]) {
                 if preDate.compare(transaction.value(forKey: "dateTime") as? Date ?? Date()) == .orderedAscending {
                     repeat {
                         if preDate.endOfMonth < (transaction.value(forKey: "dateTime") as? Date ?? Date()) {
@@ -1600,8 +1600,8 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
                 
                 let query = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-                if !(loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) {
+                if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isSave", query: query) as? Bool ?? false) {
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: query) as? Bool ?? false) {
                         balance = balance + (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
                     } else {
                         balance = balance - (transaction.value(forKey: "realAmount") as? Double ?? 0.00)
@@ -1649,32 +1649,32 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
 
         let queryPieChart = NSPredicate(format: ("dateTime >= %@ AND dateTime <= %@" + tagFilterPredicateString), fromDate as NSDate, toDate as NSDate)
         
-        let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
+        let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
         if (data?.count ?? 0) > 0 {
             if graphOption1 == 2 {
                 for i in 0...((data?.count ?? 1)-1) {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: true))
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                        entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                        colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                         sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                        labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                     }
                 }
             } else {
                 for i in 0...((data?.count ?? 1)-1) {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: false))
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                        if (graphOption1 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        if (graphOption1 == 1) && (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
-                        } else if (graphOption1 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                            labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        } else if (graphOption1 == 0) && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                            labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         }
                     }
                 }
@@ -1713,32 +1713,32 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
 
         let queryPieChart = NSPredicate(format: ("dateTime >= %@ AND dateTime <= %@" + tagFilterPredicateString), fromDate as NSDate, toDate as NSDate)
         
-        let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
+        let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryPieChart) as? [[String:Any]]
         if (data?.count ?? 0) > 0 {
             if graphOption3 == 2 {
                 for i in 0...((data?.count ?? 1)-1) {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: true))
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                        entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                        colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                         sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                        labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                     }
                 }
             } else {
                 for i in 0...((data?.count ?? 1)-1) {
                     let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: false))
-                    if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                        if (graphOption3 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                    if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                        if (graphOption3 == 1) && (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
-                        } else if (graphOption3 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
-                            colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                            labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                        } else if (graphOption3 == 0) && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                            entries.append(PieChartDataEntry(value: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100), label: (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")))
+                            colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
                             sum = sum + (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100)
-                            labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                            labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         }
                     }
                 }
@@ -1757,21 +1757,21 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         
         let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@", fromDate as NSDate, toDate as NSDate)
         
-        let data = loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
+        let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
         
         var j = -1
         if (data?.count ?? 0) > 0 {
             for i in 0...((data?.count ?? 1)-1) {
                 let queryCategory = NSPredicate(format: "cID == %i", (data?[i]["categoryID"] as? Int16 ?? 0))
-                if (loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                    if (graphOption1 == 1) && (loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
+                    if (graphOption1 == 1) && (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
                         entries.append((BarChartDataEntry(x: Double(j), y: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100))))
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
-                        labels.append(loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")
+                        colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                        labels.append(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? "")
                         j = j + 1
-                    } else if (graphOption1 == 0) && !(loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
-                        colors.append(UIColor.randomColor(color: Int((loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
-                        labels.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
+                    } else if (graphOption1 == 0) && !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) {
+                        colors.append(UIColor.randomColor(color: Int((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0))))
+                        labels.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? ""))
                         entries.append((BarChartDataEntry(x: Double(j), y: (round(100*(data?[i]["sum"] as? Double ?? 0.00))/100))))
                         j = j + 1
                     }
@@ -1884,7 +1884,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func setInitialToFromMaxDates(scrollToId: Int = -1, reload: Bool = false) {
         //if fromDateMax == nil || toDateMax == nil || reload {
             let dateSortHighestFirst = NSSortDescriptor(key: "dateTime", ascending: false)
-            let highestDate = loadBulkQueriedSorted(entitie: "Transactions", sort: [dateSortHighestFirst], query: NSPredicate(format: "dateTime != nil"))
+        let highestDate = dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: NSPredicate(format: "dateTime != nil"), sort: [dateSortHighestFirst])
             if highestDate.count <= 0 {
                 toDateMax = Date()
             } else {
@@ -1901,7 +1901,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 }
             }
             let dateSortLowestFirst = NSSortDescriptor(key: "dateTime", ascending: true)
-            let lowestDate = loadBulkQueriedSorted(entitie: "Transactions", sort: [dateSortLowestFirst], query: NSPredicate(format: "dateTime != nil"))
+        let lowestDate = dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: NSPredicate(format: "dateTime != nil"), sort: [dateSortLowestFirst])
             if lowestDate.count <= 0 {
                 fromDateMax = Date()
             } else {
@@ -1930,7 +1930,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         let nameSort = NSSortDescriptor(key: "namePerson", ascending: false)
         let queryUser = NSPredicate(format: "isUser == %@", NSNumber(value: true))
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -1946,7 +1946,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         let dateMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePerson == %@ AND createDatePerson > %@ AND createDatePerson < %@", (dateMinus as NSDate), (datePlus as NSDate), ((nameUser ?? "") as NSString), ((userDateMinus) as NSDate), ((userDatePlus) as NSDate))
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         } else {
             return false
@@ -1956,13 +1956,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     func transactionsZero() -> Bool {
         let transCategoriesPredicate = NSPredicate(format: "selectedForFilter == %@", NSNumber(value: true))
         var transCategories = [Int]()
-        for data in loadBulkQueried(entitie: "Categories", query: transCategoriesPredicate) {
+        for data in dataHandler.loadBulkQueried(entitie: "Categories", query: transCategoriesPredicate) {
             transCategories.append(Int((data.value(forKey: "cID") as? Int16 ?? 0)))
         }
         
         if transCategories.count > 0 {
             let predicate = NSPredicate(format: "dateTime >= %@ AND dateTime <= %@", fromDateShown! as NSDate, toDateShown! as NSDate)
-            for data in loadBulkQueried(entitie: "Transactions", query: predicate) {
+            for data in dataHandler.loadBulkQueried(entitie: "Transactions", query: predicate) {
                 if transCategories.contains(Int(data.value(forKey: "categoryID") as? Int16 ?? -1)) && tagIsSelectedInFilter(tag: (data.value(forKey: "tags") as? String ?? "-1y")) {
                     return false
                 }
@@ -1989,7 +1989,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         filteredTagsArray.removeAll()
         if filteredTagsZero {
             let tagsPredicate = NSPredicate(format: "selectedForFilter == %@", NSNumber(value: true))
-            for data in loadBulkQueried(entitie: "Tags", query: tagsPredicate) {
+            for data in dataHandler.loadBulkQueried(entitie: "Tags", query: tagsPredicate) {
                 filteredTagsArray.append(data.value(forKey: "tagName") as? String ?? "")
             }
         }
@@ -2083,234 +2083,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         // Pass the selected object to the new view controller.
     }
     */
-}
-
-// MARK: -DATA
-extension graphsVC {
-    func saveNewGraphs() {
-        for i in 0...1 {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            let managedContext = appDelegate!.persistentContainer.viewContext
-            managedContext.automaticallyMergesChangesFromParent = true
-            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-            let graphSave = GraphSettings(context: managedContext)
-            
-            graphSave.graphID = Int16(i)
-            if i == 0 {
-                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
-            } else if i == 1 {
-                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
-            }
-            graphSave.graphOption1 = Int16(0)
-            graphSave.graphOption2 = Int16(0)
-            
-            do {
-                try managedContext.save()
-                initChartSettings()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        }
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, sort:[NSSortDescriptor], query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let keypathExp2 = NSExpression(forKeyPath: groupByColumn) // can be any column
-        let expression2 = NSExpression(forFunction: "count:", arguments: [keypathExp2])
-        
-        let countDesc = NSExpressionDescription()
-        countDesc.expression = expression2
-        countDesc.name = "count"
-        countDesc.expressionResultType = .integer64AttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToGroupBy = [groupByColumn]
-        fetchRequest.propertiesToFetch = [groupByColumn, countDesc ,sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadDataSUM(entitie:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToFetch = [sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadDataSUMEntries(entitie:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "countEntries") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToFetch = [sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
 }
 
 extension graphsVC: UICollectionViewDataSource {

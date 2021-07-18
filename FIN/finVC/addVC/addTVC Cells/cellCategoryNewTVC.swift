@@ -63,7 +63,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         let categorySortOrder = NSSortDescriptor(key: "order", ascending: true)
         // Get Expense Categories
         let predicateExpenses:NSPredicate = NSPredicate(format: "isIncome == false && isSave == false")
-        let expenses = loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses, sort: [categorySortOrder])
+        let expenses = dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: predicateExpenses, sort: [categorySortOrder])
         if expenses.count != 0 {
             for expense in expenses {
                 let ramDict = [
@@ -78,7 +78,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Income Categories
         let predicateIncome:NSPredicate = NSPredicate(format: "isIncome == true && isSave == false")
-        let incomes = loadBulkDataWithQuery(entitie: "Categories", query: predicateIncome, sort: [categorySortOrder])
+        let incomes = dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: predicateIncome, sort: [categorySortOrder])
         if incomes.count != 0 {
             for income in incomes {
                 let ramDict = [
@@ -93,7 +93,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Savings Income Categories
         let predicateSaveDeposit:NSPredicate = NSPredicate(format: "isIncome == false && isSave == true")
-        let savesDeposit = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit, sort: [categorySortOrder])
+        let savesDeposit = dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveDeposit, sort: [categorySortOrder])
         if savesDeposit.count != 0 {
             for saveIncome in savesDeposit {
                 let ramDict = [
@@ -108,7 +108,7 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
         // Get Savings Expense Categories
         let predicateSaveWithdraw:NSPredicate = NSPredicate(format: "isIncome == true && isSave == true")
-        let savesWithdraw = loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveWithdraw, sort: [categorySortOrder])
+        let savesWithdraw = dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: predicateSaveWithdraw, sort: [categorySortOrder])
         if savesWithdraw.count != 0 {
             for saveExpense in savesWithdraw {
                 let ramDict = [
@@ -190,27 +190,6 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
                 cell.label.textColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
             }
         }
-    }
-}
-
-// Mark: DATA
-extension cellCategoryNewTVC {
-    func loadBulkDataWithQuery(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
     }
 }
 

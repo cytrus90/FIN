@@ -153,7 +153,7 @@ class splitAddNewSelectTVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let cell = splitAddNewTableView.cellForRow(at: indexPath) as? cellSplitAddSelectPersonsGroup {
-            if !isUser(createDate: (tableData[indexPath.row]?[0] as? Date ?? Date()), namePerson: (tableData[indexPath.row]?[1] as? String ?? "")) {
+            if !dataHandler.isUser(createDate: (tableData[indexPath.row]?[0] as? Date ?? Date()), namePerson: (tableData[indexPath.row]?[1] as? String ?? "")) {
                 if selectedDict.count > 0 {
                     if (tableData[indexPath.row]?[3] as? Bool ?? false) == false {
                         setCellSelected(indexPath: indexPath)
@@ -171,7 +171,7 @@ class splitAddNewSelectTVC: UITableViewController {
     func getCell(indexPath: IndexPath) -> cellSplitAddSelectPersonsGroup {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellSplitAddSelectPersonsGroup", for: indexPath) as! cellSplitAddSelectPersonsGroup
         
-        if isUser(createDate: (tableData[indexPath.row]?[0] as? Date ?? Date()), namePerson: (tableData[indexPath.row]?[1] as? String ?? "")) {
+        if dataHandler.isUser(createDate: (tableData[indexPath.row]?[0] as? Date ?? Date()), namePerson: (tableData[indexPath.row]?[1] as? String ?? "")) {
             cell.label.text = (tableData[indexPath.row]?[1] as? String ?? "") + " [" + NSLocalizedString("youTheUser", comment: "I") + "]"
         } else {
             cell.label.text = (tableData[indexPath.row]?[1] as? String ?? "")
@@ -267,7 +267,7 @@ class splitAddNewSelectTVC: UITableViewController {
                 let dateSort = NSSortDescriptor(key: "createDatePerson", ascending: true)
                 let query = NSPredicate(format: "createDatePerson > %@ AND createDatePerson < %@ AND namePerson == %@ AND nameGroup == %@ AND createDateGroup > %@ AND createDateGroup < %@ AND settled < 0.9999", ((createDatePersonMinus ?? Date()) as NSDate), ((createDatePersonPlus ?? Date()) as NSDate), (personName ?? "") as NSString, ((groupName ?? "") as NSString), ((createDateGroupMinus ?? Date()) as NSDate), ((createDateGroupPlus ?? Date())as NSDate))
                 
-                if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [dateSort]).count > 0 {
+                if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [dateSort]).count > 0 {
                     let answerError = UIAlertController(title: NSLocalizedString("openSplitsOfPersonInGroupTitle", comment: "Open Splits of Person in Group Title"), message: NSLocalizedString("openSplitsOfPersonInGroupText", comment: "Open Splits of Person in Group Text"), preferredStyle: .alert)
                     answerError.addAction(UIAlertAction(title: NSLocalizedString("forgotCodeOK", comment: "forgotCodeOK"), style: .cancel, handler: nil))
                     answerError.popoverPresentationController?.sourceView = self.view
@@ -346,75 +346,4 @@ class splitAddNewSelectTVC: UITableViewController {
     }
     */
 
-}
-
-extension splitAddNewSelectTVC {
-    // MARK: -DATA
-    
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func isUser(createDate:Date, namePerson:String) -> Bool {
-        let plusCreateDate = Calendar.current.date(byAdding: .second, value: 1, to: createDate)!
-        let minusCreateDate = Calendar.current.date(byAdding: .second, value: -1, to: createDate)!
-        
-        let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (plusCreateDate as NSDate), (minusCreateDate as NSDate) , (namePerson as NSString))
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: "isUser") != nil {
-                    return data.value(forKey: "isUser") as? Bool ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        
-        return false
-    }
 }

@@ -194,7 +194,7 @@ class splitTransactionTVC: UITableViewController {
                 
                 let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (datePlusPerson as NSDate), (dateMinusPerson as NSDate), ((split[i]?[0] as? String ?? "") as NSString))
                 
-                let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
+                let colorInt = Int(dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
                 
                 cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
                 cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
@@ -387,7 +387,7 @@ class splitTransactionTVC: UITableViewController {
             var userIcon:String?
             var userIconLight:Bool?
             
-            for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+            for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                 userName = data.value(forKey: "namePerson") as? String ?? ""
                 userCreateDate = data.value(forKey: "createDate") as? Date ?? Date()
                 userIcon = data.value(forKey: "icon") as? String ?? ""
@@ -454,8 +454,8 @@ class splitTransactionTVC: UITableViewController {
                     7:0.5,
                     8:0.00,
                     9:false,
-                    10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
-                    11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
+                    10:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                    11:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                 ]
                 break
             case 2: // Multiple Persons Split
@@ -481,7 +481,7 @@ class splitTransactionTVC: UITableViewController {
                     let personName = person.components(separatedBy: "*&*")[0]
                     let personCreateDate = dateFormatter.date(from: (person.components(separatedBy: "*&*")[1])) ?? Date()
                     
-                    let isUserTag = isUser(createDate: personCreateDate, namePerson: personName)
+                    let isUserTag = dataHandler.isUser(createDate: personCreateDate, namePerson: personName)
                     
                     if i == 0 {
                         firstPersonName = personName
@@ -514,8 +514,8 @@ class splitTransactionTVC: UITableViewController {
                         7:(1.00 / Double(persons.count)),
                         8:0.00,
                         9:isUserTag,
-                        10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
-                        11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
+                        10:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                        11:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                     ]
                     missing = (missing ?? 0.00) - ((split[0]?[7] as? Double ?? 0.00)*(amount ?? 0.00))
                     
@@ -543,7 +543,7 @@ class splitTransactionTVC: UITableViewController {
                 
                 let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND nameGroup == %@", (datePlus as NSDate), (dateMinus as NSDate), ((groupName) as NSString))
                 
-                let persons = (loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "").components(separatedBy: "*;*")
+                let persons = (dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "").components(separatedBy: "*;*")
 
                 var firstPersonName:String?
                 var firstPersonCreateDate:Date?
@@ -562,7 +562,7 @@ class splitTransactionTVC: UITableViewController {
                     let personName = person.name
                     let personCreateDate = person.dateTime
                     
-                    let isUserTag = isUser(createDate: personCreateDate, namePerson: personName)
+                    let isUserTag = dataHandler.isUser(createDate: personCreateDate, namePerson: personName)
                     
                     if i == 0 {
                         firstPersonName = personName
@@ -597,8 +597,8 @@ class splitTransactionTVC: UITableViewController {
                         7:(1.00 / Double(persons.count)),
                         8:0.00,
                         9:isUserTag,
-                        10:loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
-                        11:loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
+                        10:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryOtherPerson) as? String ?? "",
+                        11:dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryOtherPerson) as? Bool ?? true
                     ]
                     missing = (missing ?? 0.00) - ((split[0]?[7] as? Double ?? 0.00)*(amount ?? 0.00))
                     
@@ -672,7 +672,7 @@ class splitTransactionTVC: UITableViewController {
                     
                     let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (datePlusPerson as NSDate), (dateMinusPerson as NSDate), ((split[i]?[0] as? String ?? "") as NSString))
                     
-                    let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
+                    let colorInt = Int(dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
                     
                     cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
                     cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
@@ -887,98 +887,6 @@ class splitTransactionTVC: UITableViewController {
     }
     */
 
-}
-
-// MARK: -DATA
-extension splitTransactionTVC {
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func isUser(createDate:Date, namePerson:String) -> Bool {
-        let plusCreateDate = Calendar.current.date(byAdding: .second, value: 1, to: createDate)!
-        let minusCreateDate = Calendar.current.date(byAdding: .second, value: -1, to: createDate)!
-        
-        let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (plusCreateDate as NSDate), (minusCreateDate as NSDate) , (namePerson as NSString))
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: "isUser") != nil {
-                    return data.value(forKey: "isUser") as? Bool ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        
-        return false
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
 }
 
 extension splitTransactionTVC: cellSplitTransactionSplitTypeDelegate {

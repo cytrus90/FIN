@@ -319,51 +319,12 @@ class userMasterVC: UITableViewController {
     }
     
     @objc func updateUserHeader() {
-        let userName = loadData(entitie: "Settings", attibute: "userName") as? String ?? "User"
+        let userName = dataHandler.loadData(entitie: "Settings", attibute: "userName") as? String ?? "User"
         if userName == "User" {
             headerView.headerLabel.text = navTitle
         } else {
             headerView.headerLabel.text = userName
             navTitle = userName
-        }
-    }
-    
-    // MARK: -DATA
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
         }
     }
     
@@ -401,7 +362,7 @@ extension userMasterVC {
     @objc func purchaseDone() {
         transactionInProgress = false
         showAdds = false
-        saveSettings(settingsChange: "showAdds", newValue: false)
+        dataHandler.saveSettings(settingsChange: "showAdds", newValue: false)
         activityIndicator.stopAnimating()
         
         let nc = NotificationCenter.default
@@ -413,7 +374,7 @@ extension userMasterVC {
     
     @objc func purchaseRestored() {
         showAdds = false
-        saveSettings(settingsChange: "showAdds", newValue: false)
+        dataHandler.saveSettings(settingsChange: "showAdds", newValue: false)
         activityIndicator.stopAnimating()
         let nc = NotificationCenter.default
         nc.post(name: Notification.Name("updateFinVC"), object: nil) // reload finVC

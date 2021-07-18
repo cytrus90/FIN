@@ -201,14 +201,14 @@ class settleSplitTVC: UITableViewController {
             cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[5] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
-            if isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
                 firstName = NSLocalizedString("youTheUser", comment: "You")
                 firstUser = true
             } else {
                 firstName = (rowData[indexPath.row]?[4] as? String ?? "")
             }
             
-            if isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
                 let langStr = Locale.current.languageCode
                 if langStr == "DE" || langStr == "de" {
                     secondName = NSLocalizedString("youTheUserDir", comment: "Dir")
@@ -282,14 +282,14 @@ class settleSplitTVC: UITableViewController {
             cell.leftCircleView.backgroundColor = UIColor.randomColor(color: Int(rowData[indexPath.row]?[2] as? Int16 ?? 0))
             cell.leftCircleView.layer.borderColor = cell.leftCircleView.backgroundColor?.cgColor
             
-            if isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[1] as? String ?? "")) {
                 firstName = NSLocalizedString("youTheUser", comment: "You")
                 firstUser = true
             } else {
                 firstName = (rowData[indexPath.row]?[1] as? String ?? "")
             }
             
-            if isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[indexPath.row]?[6] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[4] as? String ?? "")) {
                 let langStr = Locale.current.languageCode
                 if langStr == "DE" || langStr == "de" {
                     secondName = NSLocalizedString("youTheUserDir", comment: "Dir")
@@ -395,7 +395,7 @@ class settleSplitTVC: UITableViewController {
             
             let query = NSPredicate(format: "nameGroup == %@ AND createDate > %@ AND createDate < %@", (groupName ?? ""), (createDateMinus as NSDate), (createDatePlus as NSDate))
 
-            let personsLoad = (loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "")
+            let personsLoad = (dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "")
             let persons = personsLoad.components(separatedBy: "*;*")
             
             var i = 0
@@ -440,7 +440,7 @@ class settleSplitTVC: UITableViewController {
             
             let query = NSPredicate(format: "nameGroup == %@ AND createDate > %@ AND createDate < %@", (groupName ?? ""), (createDateGroupMinus as NSDate), (createDateGroupPlus as NSDate))
 
-            let personsLoad = (loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "")
+            let personsLoad = (dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "persons", query: query) as? String ?? "")
             let persons = personsLoad.components(separatedBy: "*;*")
             
             var i = 0
@@ -487,7 +487,7 @@ class settleSplitTVC: UITableViewController {
             
             let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             var i = 0
-            for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplits, sort: [NSSortDescriptor(key: "ratio", ascending: false)]) {
+            for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplits, sort: [NSSortDescriptor(key: "ratio", ascending: false)]) {
                 let plusCreateDatePersonWhoPaid = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDatePersonWhoPaid") as? Date ?? Date()))!
                 let minusCreateDatePersonWhoPaid = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDatePersonWhoPaid") as? Date ?? Date()))!
                 
@@ -506,7 +506,7 @@ class settleSplitTVC: UITableViewController {
             
             let queryTransactionDescription = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (createDateTransactionPlus as NSDate), (createDateTransactionMinus as NSDate))
             
-            navTitle = loadQueriedAttribute(entitie: "Transactions", attibute: "descriptionNote", query: queryTransactionDescription) as? String ?? NSLocalizedString("transactionDefaultTitle", comment: "Transaction")
+            navTitle = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "descriptionNote", query: queryTransactionDescription) as? String ?? NSLocalizedString("transactionDefaultTitle", comment: "Transaction")
             headerView.headerLabel.text = navTitle
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -524,9 +524,9 @@ class settleSplitTVC: UITableViewController {
         let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
-        let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
-        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
-        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
+        let personColor = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get user data
         let nameSort = NSSortDescriptor(key: "namePerson", ascending: false)
@@ -538,7 +538,7 @@ class settleSplitTVC: UITableViewController {
         var userIcon:String?
         var userIconLight:Bool?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             userName = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
             userColor = data.value(forKey: "color") as? Int16 ?? 0
@@ -554,7 +554,7 @@ class settleSplitTVC: UITableViewController {
         
         let querySplits = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         
-        for split in loadBulkQueried(entitie: "Splits", query: querySplits) {
+        for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplits) {
             if !personOrOtherPersonPaid(dateTimeTransaction: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()), namePerson: personName, dateTimePerson: personCreateDate, nameOtherPerson: userName ?? "", dateTimeOtherPerson: createDateUser ?? Date()) {
                 continue
             } else {
@@ -564,15 +564,15 @@ class settleSplitTVC: UITableViewController {
                 
                 let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                 
-                let exchangeRate = (loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
+                let exchangeRate = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
                 
-                let amountTransaction = ((loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00) / exchangeRate) // Home Currency
+                let amountTransaction = ((dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00) / exchangeRate) // Home Currency
                
                 if personPaid(dateTimeTransaction: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()), namePerson: personName, dateTimePerson: personCreateDate) {
                     let querySplitOtherPerson = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateUserPlus as NSDate, createDateUserMinus as NSDate, (userName ?? ";") as NSString, createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                     
-                    let ratioUser = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitOtherPerson) as? Double ?? 0.00
-                    let settledUser = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitOtherPerson) as? Double ?? 0.00)/exchangeRate // Home Currency
+                    let ratioUser = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitOtherPerson) as? Double ?? 0.00
+                    let settledUser = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitOtherPerson) as? Double ?? 0.00)/exchangeRate // Home Currency
 
                     let amountRAM = (amountTransaction*ratioUser) - settledUser
                     sumOwed = sumOwed - amountRAM
@@ -608,9 +608,9 @@ class settleSplitTVC: UITableViewController {
         let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
-        let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
-        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
-        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
+        let personColor = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get outerPaid Data
         let createDateOuterPlus = Calendar.current.date(byAdding: .second, value: 1, to: outerPersonCreateDate)!
@@ -618,9 +618,9 @@ class settleSplitTVC: UITableViewController {
         
         let queryPersonWhoPaid = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDateOuterPlus as NSDate, createDateOuterMinus as NSDate, outerPersonName as NSString)
         
-        let outerPersonColor = (loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
-        let outerPersonIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
-        let outerPersonIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
+        let outerPersonColor = (dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
+        let outerPersonIcon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
+        let outerPersonIconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
         
         // Get owed Amount:
         // Per Split where Group, Person
@@ -630,7 +630,7 @@ class settleSplitTVC: UITableViewController {
         
         let querySplits = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND createDateGroup < %@ AND createDateGroup > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, createDateGroupPlus as NSDate, createDateGroupMinus as NSDate, personName as NSString)
         
-        for split in loadBulkQueried(entitie: "Splits", query: querySplits) {
+        for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplits) {
             if !personOrOtherPersonPaid(dateTimeTransaction: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()), namePerson: personName, dateTimePerson: personCreateDate, nameOtherPerson: outerPersonName, dateTimeOtherPerson: outerPersonCreateDate) {
                 continue
             } else {
@@ -640,14 +640,14 @@ class settleSplitTVC: UITableViewController {
                 
                 let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                 
-                let exchangeRate = (loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
-                let amountTransaction = ((loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)/exchangeRate) // Home Currency
+                let exchangeRate = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
+                let amountTransaction = ((dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)/exchangeRate) // Home Currency
                
                 if personPaid(dateTimeTransaction: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()), namePerson: personName, dateTimePerson: personCreateDate) {
                     let querySplitOtherPerson = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND createDateGroup < %@ AND createDateGroup > %@ AND namePerson == %@ AND dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateOuterPlus as NSDate, createDateOuterMinus as NSDate, createDateGroupPlus as NSDate, createDateGroupMinus as NSDate, outerPersonName as NSString, createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                     
-                    let ratioOuterPerson = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitOtherPerson) as? Double ?? 0.00
-                    let settledOuterPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitOtherPerson) as? Double ?? 0.00)/exchangeRate // Home Currency
+                    let ratioOuterPerson = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitOtherPerson) as? Double ?? 0.00
+                    let settledOuterPerson = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitOtherPerson) as? Double ?? 0.00)/exchangeRate // Home Currency
 
                     let amountRAM = (amountTransaction*ratioOuterPerson) - settledOuterPerson
                     sumOwed = sumOwed - amountRAM
@@ -683,9 +683,9 @@ class settleSplitTVC: UITableViewController {
         let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: personCreateDate)!
         // Get Person Color
         let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
-        let personColor = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
-        let personIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
-        let personIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
+        let personColor = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPerson) as? Int16 ?? 0
+        let personIcon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPerson) as? String ?? ""
+        let personIconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPerson) as? Bool ?? true
         
         // Get open amount
         // for sumOwed: (TransactionAmount/ExchangeRate)*Ratio - Settled
@@ -694,26 +694,26 @@ class settleSplitTVC: UITableViewController {
         
         let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
         
-        let exchangeRate = (loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 0.00)
-        let sumAmount = (loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)/exchangeRate
+        let exchangeRate = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 0.00)
+        let sumAmount = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)/exchangeRate
         
         let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         
-        sumOwed = (sumAmount*(loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplit) as? Double ?? 0.00)) - ((loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplit) as? Double ?? 0.00)/exchangeRate)
+        sumOwed = (sumAmount*(dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplit) as? Double ?? 0.00)) - ((dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplit) as? Double ?? 0.00)/exchangeRate)
         
         // Get personWhoPaid Data
-        let personWhoPaidCreateDate = (loadQueriedAttribute(entitie: "Splits", attibute: "createDatePersonWhoPaid", query: querySplit) as? Date ?? Date())
+        let personWhoPaidCreateDate = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "createDatePersonWhoPaid", query: querySplit) as? Date ?? Date())
         
         let createDatePersonWhoPaidPlus = Calendar.current.date(byAdding: .second, value: 1, to: personWhoPaidCreateDate)!
         let createDatePersonWhoPaidMinus = Calendar.current.date(byAdding: .second, value: -1, to: personWhoPaidCreateDate)!
         
-        let personWhoPaidName = (loadQueriedAttribute(entitie: "Splits", attibute: "namePersonWhoPaid", query: querySplit) as? String ?? "")
+        let personWhoPaidName = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "namePersonWhoPaid", query: querySplit) as? String ?? "")
         
         let queryPersonWhoPaid = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonWhoPaidPlus as NSDate, createDatePersonWhoPaidMinus as NSDate, personWhoPaidName as NSString)
         
-        let personWhoPaidColor = (loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
-        let personWhoPaidIcon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
-        let personWhoPaidIconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
+        let personWhoPaidColor = (dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: queryPersonWhoPaid) as? Int16 ?? 0)
+        let personWhoPaidIcon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: queryPersonWhoPaid) as? String ?? ""
+        let personWhoPaidIconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: queryPersonWhoPaid) as? Bool ?? true
         
         return [
             0:sumOwed, // Amount Owed as it is now in the DB
@@ -742,8 +742,8 @@ class settleSplitTVC: UITableViewController {
         let createDateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: transactionDateTime)!
         
         let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
-        let exchangeRate = (loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
-        let amountTransaction = (loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)
+        let exchangeRate = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00)
+        let amountTransaction = (dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00)
         let sumAmount = amountTransaction / exchangeRate // Home Currency
         
         let createDatePersonPlus = Calendar.current.date(byAdding: .second, value: 1, to: personCreateDate)!
@@ -751,8 +751,8 @@ class settleSplitTVC: UITableViewController {
         
         let querySplitPerson = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         
-        let settled = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitPerson) as? Double ?? 0.00) / exchangeRate // Home Currency
-        let sumOwedWithoutSettled = (sumAmount*(loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitPerson) as? Double ?? 0.00)) // Home Currency
+        let settled = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitPerson) as? Double ?? 0.00) / exchangeRate // Home Currency
+        let sumOwedWithoutSettled = (sumAmount*(dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitPerson) as? Double ?? 0.00)) // Home Currency
         
         var amountSettledNew = abs(amountToBeSettled) + abs(settled)
         
@@ -762,17 +762,17 @@ class settleSplitTVC: UITableViewController {
         var amountSettledPlusPersonWhoPaid = min(abs(amountToBeSettled),sumOwedWithoutSettled) // Home Currency
         amountSettledPlusPersonWhoPaid = amountSettledPlusPersonWhoPaid * exchangeRate // Transaction Currency
         
-        let personWhoPaid = loadQueriedAttribute(entitie: "Splits", attibute: "namePersonWhoPaid", query: querySplitPerson) as? String ?? ""
-        let personWhoPaidCreateDate = loadQueriedAttribute(entitie: "Splits", attibute: "createDatePersonWhoPaid", query: querySplitPerson) as? Date ?? Date()
+        let personWhoPaid = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "namePersonWhoPaid", query: querySplitPerson) as? String ?? ""
+        let personWhoPaidCreateDate = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "createDatePersonWhoPaid", query: querySplitPerson) as? Date ?? Date()
         
         let createDatePersonWhoPaidPlus = Calendar.current.date(byAdding: .second, value: 1, to: personWhoPaidCreateDate)!
         let createDatePersonWhoPaidMinus = Calendar.current.date(byAdding: .second, value: -1, to: personWhoPaidCreateDate)!
         
         let querySplitPersonWhoPaid = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDatePersonWhoPaidPlus as NSDate, createDatePersonWhoPaidMinus as NSDate, personWhoPaid as NSString)
         
-        let personWhoPaidSettled = loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitPersonWhoPaid) as? Double ?? 0.00 // Transaction Currency
+        let personWhoPaidSettled = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: querySplitPersonWhoPaid) as? Double ?? 0.00 // Transaction Currency
         
-        if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: querySplitPerson, value: amountSettledNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: querySplitPersonWhoPaid, value: (personWhoPaidSettled+amountSettledPlusPersonWhoPaid))) {
+        if (dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: querySplitPerson, value: amountSettledNew) && dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: querySplitPersonWhoPaid, value: (personWhoPaidSettled+amountSettledPlusPersonWhoPaid))) {
             
             if saveRealAmount(dateTime: transactionDateTime) {
                 // Delete if open Split
@@ -780,7 +780,7 @@ class settleSplitTVC: UITableViewController {
                 
                 let querySplitDelete = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                 
-                for split in loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
+                for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
                     if ((amountTransaction*(split.value(forKey: "ratio") as? Double ?? 0.00)) - (split.value(forKey: "settled") as? Double ?? 0.00)) > 0.005 {
                         let personCreateDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
                         let personCreateDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
@@ -804,7 +804,7 @@ class settleSplitTVC: UITableViewController {
                     var userName:String = ""
                     var createDateUser:Date = Date()
                     
-                    for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+                    for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                         userName = data.value(forKey: "namePerson") as? String ?? ""
                         createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
                     }
@@ -814,10 +814,10 @@ class settleSplitTVC: UITableViewController {
                     
                     let querySplitUser = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDateUserPlus as NSDate, createDateUserMinus as NSDate, userName as NSString)
                     
-                    let ratioUser = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
+                    let ratioUser = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
                     
-                    if saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
-                        if deleteDataReturn(entity: "Splits", query: querySplitDelete) {
+                    if dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
+                        if dataHandler.deleteDataReturn(entity: "Splits", query: querySplitDelete) {
                             _ = saveRealAmount(dateTime: transactionDateTime)
                         }
                     }
@@ -908,21 +908,21 @@ class settleSplitTVC: UITableViewController {
         // Settle each entry until amountToBeSettled = 0 (dont forget already settled amount)
         // go through each split, if there are still open splits. If not, delete
         let querySplitPaid = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@ AND createDateGroup < %@ AND createDateGroup > %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString, createDateGroupPlus as NSDate, createDateGroupMinus as NSDate)
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplitPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplitPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
             let createDateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             let createDateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
-            let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
             
             let amountTransaction = amount / exchangeRate // Home Currency
             // ratio other person
             let queryRatioOther = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND createDateGroup < %@ AND createDateGroup > %@ AND dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString, createDateGroupPlus as NSDate, createDateGroupMinus as NSDate, createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            let settledOtherPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryRatioOther) as? Double ?? 0.00) / exchangeRate // Home Currency
-            let amountTransactionOtherPerson = amountTransaction * (loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
+            let settledOtherPerson = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryRatioOther) as? Double ?? 0.00) / exchangeRate // Home Currency
+            let amountTransactionOtherPerson = amountTransaction * (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
             
             let amountLeft = amountTransactionOtherPerson - settledOtherPerson
 //            let amountSettledTransaction = min(amountLeft,amountTransactionOtherPerson)
@@ -937,12 +937,12 @@ class settleSplitTVC: UITableViewController {
             
             let queryPerson = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
             
-            if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryRatioOther, value: settledOtherPersonNew)) {
+            if (dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryRatioOther, value: settledOtherPersonNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
         }
         let querySplitsNotPaid = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND createDateGroup < %@ AND createDateGroup > %@ AND namePerson == %@ AND createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, createDateGroupPlus as NSDate, createDateGroupMinus as NSDate, personName as NSString, createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString)
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplitsNotPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplitsNotPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
             if abs(amountToBeSettled) <= 0.005 {
                 break
             }
@@ -952,8 +952,8 @@ class settleSplitTVC: UITableViewController {
             
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
-            let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
             
             let amountTransaction = amount / exchangeRate // Home Currency
             let settled = (split.value(forKey: "settled") as? Double ?? 0.00)/exchangeRate // Home Currency
@@ -991,10 +991,10 @@ class settleSplitTVC: UITableViewController {
             
             let queryPersonWhoPaid = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, plusCreateDatePersonWhoPaid as NSDate, minusCreateDatePersonWhoPaid as NSDate, (split.value(forKey: "namePersonWhoPaid") as? String ?? "") as NSString)
             
-            let settledPersonWhoPaid = loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryPersonWhoPaid) as? Double ?? 0.00
+            let settledPersonWhoPaid = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryPersonWhoPaid) as? Double ?? 0.00
             let settledPersonWhoPaidNew = settledPersonWhoPaid+settledNew // Transaction Currency
 
-            if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
+            if (dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
         }
@@ -1003,7 +1003,7 @@ class settleSplitTVC: UITableViewController {
         
         let querySplits = NSPredicate(format: "createDateGroup < %@ AND createDateGroup > %@", createDateGroupPlus as NSDate, createDateGroupMinus as NSDate)
         
-        let datesSplitsArray = loadDataGroupedQueriedSorted(entitie: "Splits", groupByColumn: "dateTimeTransaction", query: querySplits, sort: [dateSort]) as? [[String:Any]]
+        let datesSplitsArray = dataHandler.loadDataGroupedQueriedSorted(entitie: "Splits", groupByColumn: "dateTimeTransaction", query: querySplits, sort: [dateSort]) as? [[String:Any]]
         if (datesSplitsArray?.count ?? 0) > 0 {
             for i in 0...((datesSplitsArray?.count ?? 1)-1) {
                 if let createDateTransaction = datesSplitsArray?[i]["dateTimeTransaction"] as? Date {
@@ -1017,9 +1017,9 @@ class settleSplitTVC: UITableViewController {
                     
                     let querySplitDelete = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                     
-                    let amountTransaction = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+                    let amountTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
                     
-                    for split in loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
+                    for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
                         if abs(((amountTransaction*(split.value(forKey: "ratio") as? Double ?? 0.00)) - (split.value(forKey: "settled") as? Double ?? 0.00))) > 0.005 {
                             
                             let personCreateDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
@@ -1044,7 +1044,7 @@ class settleSplitTVC: UITableViewController {
                         var userName:String = ""
                         var createDateUser:Date = Date()
                     
-                        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+                        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                             userName = data.value(forKey: "namePerson") as? String ?? ""
                             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
                         }
@@ -1054,10 +1054,10 @@ class settleSplitTVC: UITableViewController {
                     
                         let querySplitUser = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDateUserPlus as NSDate, createDateUserMinus as NSDate, userName as NSString)
                     
-                        let ratioUser = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
+                        let ratioUser = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
                     
-                        if saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
-                            if deleteDataReturn(entity: "Splits", query: querySplitDelete) {
+                        if dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
+                            if dataHandler.deleteDataReturn(entity: "Splits", query: querySplitDelete) {
                                 _ = saveRealAmount(dateTime: createDateTransaction)
                             }
                         }
@@ -1158,20 +1158,20 @@ class settleSplitTVC: UITableViewController {
         // Settle each entry until amountToBeSettled = 0 (dont forget already settled amount)
         // go through each split, if there are still open splits. If not, delete
         let querySplitPaid = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplitPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplitPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
             let createDateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             let createDateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
-            let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
             
             let amountTransaction = amount / exchangeRate // Home Currency
             // ratio other person
             let queryRatioOther = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString)
-            let settledOtherPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryRatioOther) as? Double ?? 0.00) / exchangeRate // Home Currency
-            let ratioOtherPerson = (loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
+            let settledOtherPerson = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryRatioOther) as? Double ?? 0.00) / exchangeRate // Home Currency
+            let ratioOtherPerson = (dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: queryRatioOther) as? Double ?? 0.00)
 
             if ratioOtherPerson == 0.00 {
                 continue
@@ -1192,13 +1192,13 @@ class settleSplitTVC: UITableViewController {
 //            let queryPerson = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
             let queryPerson = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString, createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryRatioOther, value: settledOtherPersonNew)) {
+            if (dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settlePersonNew) && dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryRatioOther, value: settledOtherPersonNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
             
         }
         let querySplitsNotPaid = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@ AND createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString, createDateOtherPersonPlus as NSDate, createDateOtherPersonMinus as NSDate, otherPersonName as NSString)
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplitsNotPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplitsNotPaid, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
             if abs(amountToBeSettled) <= 0.005 {
                 break
             }
@@ -1208,8 +1208,8 @@ class settleSplitTVC: UITableViewController {
             
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
             
-            let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
-            let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00 // Transaction Currency
             
             let amountTransaction = amount / exchangeRate // Home Currency
             let settled = (split.value(forKey: "settled") as? Double ?? 0.00) / exchangeRate // Home Currency
@@ -1246,10 +1246,10 @@ class settleSplitTVC: UITableViewController {
             
             let queryPersonWhoPaid = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, plusCreateDatePersonWhoPaid as NSDate, minusCreateDatePersonWhoPaid as NSDate, (split.value(forKey: "namePersonWhoPaid") as? String ?? "") as NSString)
             
-            let settledPersonWhoPaid = loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryPersonWhoPaid) as? Double ?? 0.00
+            let settledPersonWhoPaid = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "settled", query: queryPersonWhoPaid) as? Double ?? 0.00
             let settledPersonWhoPaidNew = settledPersonWhoPaid+settledNew // Transaction Currency
 
-            if (saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settledPersonNew) && saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
+            if (dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPerson, value: settledPersonNew) && dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "settled", query: queryPersonWhoPaid, value: settledPersonWhoPaidNew)) {
                 _ = saveRealAmount(dateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))
             }
             
@@ -1257,7 +1257,7 @@ class settleSplitTVC: UITableViewController {
         let dateSort = NSSortDescriptor(key: "dateTimeTransaction", ascending: true)
         let querySplits = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, personName as NSString)
         
-        let datesSplitsArray = loadDataGroupedQueriedSorted(entitie: "Splits", groupByColumn: "dateTimeTransaction", query: querySplits, sort: [dateSort]) as? [[String:Any]]
+        let datesSplitsArray = dataHandler.loadDataGroupedQueriedSorted(entitie: "Splits", groupByColumn: "dateTimeTransaction", query: querySplits, sort: [dateSort]) as? [[String:Any]]
         if (datesSplitsArray?.count ?? 0) > 0 {
             for i in 0...((datesSplitsArray?.count ?? 1)-1) {
                 if let createDateTransaction = datesSplitsArray?[i]["dateTimeTransaction"] as? Date {
@@ -1271,9 +1271,9 @@ class settleSplitTVC: UITableViewController {
                     
                     let querySplitDelete = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate)
                     
-                    let amountTransaction = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+                    let amountTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
                     
-                    for split in loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
+                    for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplitDelete) {
                         if abs(((amountTransaction*(split.value(forKey: "ratio") as? Double ?? 0.00)) - (split.value(forKey: "settled") as? Double ?? 0.00))) > 0.005 {
                             
                             let personCreateDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
@@ -1298,7 +1298,7 @@ class settleSplitTVC: UITableViewController {
                         var userName:String = ""
                         var createDateUser:Date = Date()
                     
-                        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+                        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                             userName = data.value(forKey: "namePerson") as? String ?? ""
                             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
                         }
@@ -1308,10 +1308,10 @@ class settleSplitTVC: UITableViewController {
                     
                         let querySplitUser = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", createDateTransactionPlus as NSDate, createDateTransactionMinus as NSDate, createDateUserPlus as NSDate, createDateUserMinus as NSDate, userName as NSString)
                     
-                        let ratioUser = loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
+                        let ratioUser = dataHandler.loadQueriedAttribute(entitie: "Splits", attibute: "ratio", query: querySplitUser) as? Double ?? 0.00
                     
-                        if saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
-                            if deleteDataReturn(entity: "Splits", query: querySplitDelete) {
+                        if dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "isSplit", query: queryTransaction, value: Int16(0)) && dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "amount", query: queryTransaction, value: (amountTransaction*ratioUser)) {
+                            if dataHandler.deleteDataReturn(entity: "Splits", query: querySplitDelete) {
                                 _ = saveRealAmount(dateTime: createDateTransaction)
                             }
                         }
@@ -1411,8 +1411,8 @@ class settleSplitTVC: UITableViewController {
         
         let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
         
-        let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
-        let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+        let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+        let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
         
         if isSplit(transactionDateTime: dateTime) > 0 {
             
@@ -1422,7 +1422,7 @@ class settleSplitTVC: UITableViewController {
             var nameUser:String?
             var createDateUser:Date?
             
-            for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+            for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                 nameUser = data.value(forKey: "namePerson") as? String ?? ""
                 createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
             }
@@ -1438,7 +1438,7 @@ class settleSplitTVC: UITableViewController {
             var paidByUser:Bool?
             var settledUser:Double?
             
-            for dataUser in loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
+            for dataUser in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
                 settledUser = (dataUser.value(forKey: "settled") as? Double ?? 0.00)
                 paidByUser = (dataUser.value(forKey: "paidByUser") as? Bool ?? true)
             }
@@ -1448,8 +1448,8 @@ class settleSplitTVC: UITableViewController {
                 
                 let queryOthers = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ ", (dateMinus as NSDate), (datePlus as NSDate))
                 
-                for dataOthers in loadBulkQueriedSorted(entitie: "Splits", query: queryOthers, sort: [nameSort]) {
-                    if !isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
+                for dataOthers in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: queryOthers, sort: [nameSort]) {
+                    if !dataHandler.isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
                         let settledOther = (dataOthers.value(forKey: "settled") as? Double ?? 0.00)
                         settledByOthers = settledByOthers + settledOther
                     }
@@ -1461,14 +1461,14 @@ class settleSplitTVC: UITableViewController {
         } else {
             realAmount = amount/exchangeRate
         }
-        return saveQueriedAttribute(entity: "Transactions", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
+        return dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
     }
     
     func isSplit(transactionDateTime: Date) -> Int {
         let query = NSPredicate(format: "dateTimeTransaction == %@", transactionDateTime as NSDate)
         var isSplit = 0
         
-        for split in loadBulkQueried(entitie: "Splits", query: query) {
+        for split in dataHandler.loadBulkQueried(entitie: "Splits", query: query) {
             if (split.value(forKey: "nameGroup") as? String ?? "").count > 0 {
                 isSplit = 2
             } else {
@@ -1506,88 +1506,6 @@ class settleSplitTVC: UITableViewController {
 
 // MARK: -DATA
 extension settleSplitTVC {
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count > 1 || fetchedData.count <= 0 {
-                return false
-            } else {
-                fetchedData[0].setValue(value, forKey: attribute)
-                try managedContext.save()
-                return true
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
     func personPaid(dateTimeTransaction: Date, namePerson: String, dateTimePerson:Date) -> Bool {
         let nameSort = NSSortDescriptor(key: "namePerson", ascending: false)
         
@@ -1599,7 +1517,7 @@ extension settleSplitTVC {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), (namePerson as NSString), (personDateMinus as NSDate), (personDatePlus as NSDate))
 
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         } else {
             return false
@@ -1617,7 +1535,7 @@ extension settleSplitTVC {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), (namePerson as NSString), (personDateMinus as NSDate), (personDatePlus as NSDate))
         
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         }
         
@@ -1626,7 +1544,7 @@ extension settleSplitTVC {
         var nameUser:String?
         var createDateUser:Date?
             
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -1636,7 +1554,7 @@ extension settleSplitTVC {
             
         let queryUserPaid = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), ((nameUser ?? "") as NSString), (userDateMinus as NSDate), (userDatePlus as NSDate))
             
-        if loadBulkQueriedSorted(entitie: "Splits", query: queryUserPaid, sort: [nameSort]).count <= 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: queryUserPaid, sort: [nameSort]).count <= 0 {
             return false
         } else {
             return true
@@ -1654,7 +1572,7 @@ extension settleSplitTVC {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), (namePerson as NSString), (personDateMinus as NSDate), (personDatePlus as NSDate))
         
-        if loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]).count > 0 {
             return true
         }
             
@@ -1663,39 +1581,11 @@ extension settleSplitTVC {
             
         let queryOtherPersonPaid = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePersonWhoPaid == %@ AND createDatePersonWhoPaid > %@ AND createDatePersonWhoPaid < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), (nameOtherPerson as NSString), (otherPersonDateMinus as NSDate), (otherPersonDatePlus as NSDate))
             
-        if loadBulkQueriedSorted(entitie: "Splits", query: queryOtherPersonPaid, sort: [nameSort]).count <= 0 {
+        if dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: queryOtherPersonPaid, sort: [nameSort]).count <= 0 {
             return false
         } else {
             return true
         }
-    }
-    
-    func isUser(createDate:Date, namePerson:String) -> Bool {
-        let plusCreateDate = Calendar.current.date(byAdding: .second, value: 1, to: createDate)!
-        let minusCreateDate = Calendar.current.date(byAdding: .second, value: -1, to: createDate)!
-        
-        let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (plusCreateDate as NSDate), (minusCreateDate as NSDate) , (namePerson as NSString))
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: "isUser") != nil {
-                    return data.value(forKey: "isUser") as? Bool ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        
-        return false
     }
     
     func getUserAmount(dateTimeTransaction: Date) -> Double {
@@ -1709,7 +1599,7 @@ extension settleSplitTVC {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -1723,7 +1613,7 @@ extension settleSplitTVC {
         let dateSortSplit = NSSortDescriptor(key: "dateTimeTransaction", ascending: false)
         let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@ AND namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@", (dateTimeTransactionPlus as NSDate), (dateTimeTransactionMinus as NSDate), ((nameUser ?? "User") as NSString), (userDatePlus as NSDate), (userDateMinus as NSDate))
         
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: querySplit, sort: [dateSortSplit]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: querySplit, sort: [dateSortSplit]) {
             ratio = split.value(forKey: "ratio") as? Double ?? 0.00
             settled = (split.value(forKey: "settled") as? Double ?? 1.00)
         }
@@ -1731,7 +1621,7 @@ extension settleSplitTVC {
         let dateSortTransaction = NSSortDescriptor(key: "dateTime", ascending: false)
         let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
         
-        for transaction in loadBulkQueriedSorted(entitie: "Transactions", query: queryTransaction, sort: [dateSortTransaction]) {
+        for transaction in dataHandler.loadBulkQueriedSorted(entitie: "Transactions", query: queryTransaction, sort: [dateSortTransaction]) {
             transactionAmount = (transaction.value(forKey: "amount") as? Double ?? 0.00)/(transaction.value(forKey: "exchangeRate") as? Double ?? 1.00)
         }
         
@@ -1745,7 +1635,7 @@ extension settleSplitTVC {
         var nameUser:String?
         var createDateUser:Date?
             
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -1758,89 +1648,10 @@ extension settleSplitTVC {
         
         let query = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ AND namePerson == %@ AND createDatePerson > %@ AND createDatePerson < %@", (dateTransactionMinus as NSDate), (dateTransactionPlus as NSDate), ((nameUser ?? "") as NSString), (userDateMinus as NSDate), (userDatePlus as NSDate))
         
-        for split in loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
             return (split.value(forKey: "ratio") as? Double ?? 0.00)
         }
         return 0.00
-    }
-    
-    func loadDataGroupedQueriedSorted(entitie:String, groupByColumn:String, query:NSPredicate, sort:[NSSortDescriptor]) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp = NSExpression(forKeyPath: groupByColumn) // can be any column
-        let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
-        
-        let countDesc = NSExpressionDescription()
-        countDesc.expression = expression
-        countDesc.name = "count"
-        countDesc.expressionResultType = .integer64AttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToGroupBy = [groupByColumn]
-        fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        fetchRequest.sortDescriptors = sort
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func deleteData(entity: String, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.predicate = query
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
-    
-    func deleteDataReturn(entity: String, query: NSPredicate) -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.predicate = query
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-                return true
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-                return false
-            }
-        } catch {
-            print(error)
-            return false
-        }
     }
 }
 
@@ -1885,28 +1696,28 @@ extension settleSplitTVC: cellSettleSplitTVCDelegate {
         var secondYou = false
         
         if (rowData[buttonTag]?[0] as? Double ?? 0.00) >= 0 {
-            if isUser(createDate: (rowData[buttonTag]?[6] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[4] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[buttonTag]?[6] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[4] as? String ?? "")) {
                 firstName = NSLocalizedString("youTheUser", comment: "You")
                 firstYou = true
             } else {
                 firstName = (rowData[buttonTag]?[4] as? String ?? "")
             }
             
-            if isUser(createDate: (rowData[buttonTag]?[3] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[1] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[buttonTag]?[3] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[1] as? String ?? "")) {
                 secondName = NSLocalizedString("youTheUser", comment: "You")
                 secondYou = true
             } else {
                 secondName = (rowData[buttonTag]?[1] as? String ?? "")
             }
         } else {
-            if isUser(createDate: (rowData[buttonTag]?[3] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[1] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[buttonTag]?[3] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[1] as? String ?? "")) {
                 firstName = NSLocalizedString("youTheUserSmall", comment: "You")
                 firstYou = true
             } else {
                 firstName = (rowData[buttonTag]?[1] as? String ?? "")
             }
             
-            if isUser(createDate: (rowData[buttonTag]?[6] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[4] as? String ?? "")) {
+            if dataHandler.isUser(createDate: (rowData[buttonTag]?[6] as? Date ?? Date()), namePerson: (rowData[buttonTag]?[4] as? String ?? "")) {
                 secondName = NSLocalizedString("youTheUserSmall", comment: "You")
                 secondYou = true
             } else {

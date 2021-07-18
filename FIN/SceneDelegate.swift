@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
         // Load Login Settings
-        if (loadData(entitie: "Settings", attibute: "userCode") as? String ?? nil != nil) && (loadData(entitie: "Settings", attibute: "userCode") as? String != "") && (loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false) {
+        if (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String ?? nil != nil) && (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String != "") && (dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false) {
             loginEnabled = true
             loginSuccessfull = false
             AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
@@ -81,8 +81,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             loginSuccessfull = true
             AppUtility.lockOrientation(.all)
         }
-        filteredTagsZero = loadSettings(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
-        filteredCategoriesZero = loadSettings(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
+        filteredTagsZero = dataHandler.loadSettings(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
+        filteredCategoriesZero = dataHandler.loadSettings(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
         
         regularPayments()
     }
@@ -93,7 +93,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
 
         // Save changes in the application's managed object context when the application transitions to the background.
-        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+        dataHandler.saveContext()
     }
     
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -110,7 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let dummyDate = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: 1900, month: 1, day: 1, hour: 1, minute: 1, second: 1)) ?? Date()
         
-        for regularPayment in loadBulkQueriedSorted(entitie: "RegularPayments", query: query, sort: [NSSortDescriptor(key: "dateTimeNext", ascending: true)]) {
+        for regularPayment in dataHandler.loadBulkQueriedSorted(entitie: "RegularPayments", query: query, sort: [NSSortDescriptor(key: "dateTimeNext", ascending: true)]) {
             let amount = regularPayment.value(forKey: "amount") as? Double ?? 0.00
             let categoryID = regularPayment.value(forKey: "categoryID") as? Int16 ?? 0
             let currencyCode = regularPayment.value(forKey: "currencyCode") as? String ?? "EUR"
@@ -123,13 +123,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let realAmount = regularPayment.value(forKey: "realAmount") as? Double ?? 0.00
             let tags = regularPayment.value(forKey: "tags") as? String ?? ""
             
-            if saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit) {
+            if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit) {
                 let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
                 let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
                 
                 let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
                 
-                for split in loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: querySplit, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+                for split in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: querySplit, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
                     let createDateGroup = split.value(forKey: "createDateGroup") as? Date ?? dummyDate
                     let createDatePerson = split.value(forKey: "createDatePerson") as? Date ?? dummyDate
                     let createDatePersonWhoPaid = split.value(forKey: "createDatePersonWhoPaid") as? Date ?? dummyDate
@@ -141,7 +141,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let ratio = split.value(forKey: "ratio") as? Double ?? 0.00
                     let settled = split.value(forKey: "settled") as? Double ?? 0.00
                     
-                    saveSplit(createDateGroup: createDateGroup, createDatePerson: createDatePerson, createDatePersonWhoPaid: createDatePersonWhoPaid, dateTimeTransaction: dateTimeTransaction, nameGroup: nameGroup, namePerson: namePerson, namePersonWhoPaid: namePersonWhoPaid, paidByUser: paidByUser, ratio: ratio, settled: settled)
+                    dataHandler.saveSplit(createDateGroup: createDateGroup, createDatePerson: createDatePerson, createDatePersonWhoPaid: createDatePersonWhoPaid, dateTimeTransaction: dateTimeTransaction, nameGroup: nameGroup, namePerson: namePerson, namePersonWhoPaid: namePersonWhoPaid, paidByUser: paidByUser, ratio: ratio, settled: settled)
                 }
                 
                 var nextDateTime:Date?
@@ -170,7 +170,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     
                     let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
                     
-                    if loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
+                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
                         doubleTransaction = true
                         nextDateTime = dateTimeTransactionPlus
                     } else {
@@ -180,8 +180,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 
                 let querySaveRegularPayment = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
                 
-                saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
-                saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
+                dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
+                dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
                 
                 let manager = LocalNotificationManager()
                 
@@ -194,185 +194,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
                 manager.schedule()
             }
-        }
-    }
-    
-    
-    // MARK: Data
-    func loadSettings(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String, dateTime: Date, descriptionNote: String, exchangeRate: Double, tags: String, isSave: Bool = false, isLiquid:Bool, isSplit:Int16) -> Bool {
-
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let transactionSave = Transactions(context: managedContext)
-        
-        transactionSave.amount = amount
-        transactionSave.realAmount = realAmount
-        transactionSave.categoryID = category
-        transactionSave.currencyCode = currencyCode
-        transactionSave.dateTime = dateTime
-        transactionSave.descriptionNote = descriptionNote
-        transactionSave.exchangeRate = exchangeRate
-        transactionSave.tags = tags
-        transactionSave.isSave = isSave
-        transactionSave.isSplit = isSplit
-        transactionSave.isLiquid = isLiquid
-                
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-            return false
-        }
-        return true
-    }
-    
-    func saveSplit(createDateGroup: Date, createDatePerson: Date, createDatePersonWhoPaid:Date, dateTimeTransaction: Date, nameGroup: String, namePerson: String, namePersonWhoPaid:String, paidByUser:Bool, ratio:Double, settled:Double) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let splitSave = Splits(context: managedContext)
-        
-        splitSave.createDateGroup = createDateGroup
-        splitSave.createDatePerson = createDatePerson
-        splitSave.createDatePersonWhoPaid = createDatePersonWhoPaid
-        splitSave.dateTimeTransaction = dateTimeTransaction
-        splitSave.nameGroup = nameGroup
-        splitSave.namePerson = namePerson
-        splitSave.namePersonWhoPaid = namePersonWhoPaid
-        splitSave.paidByUser = paidByUser
-        splitSave.ratio = ratio
-        splitSave.settled = settled
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
-    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count <= 0 {
-                return
-            } else {
-                for data in fetchedData {
-                    data.setValue(value, forKey: attribute)
-                }
-                try managedContext.save()
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedSettings.count > 0 {
-                fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-            }
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
         }
     }
 }

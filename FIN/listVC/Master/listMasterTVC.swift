@@ -1089,12 +1089,12 @@ class listMasterTVC: UITableViewController {
     // MARK: -GET TRANSACTIONS
     func createTransactionDataFromCoreData(result: [NSManagedObject]) -> [Int:[Int:Any]] {
         var ramDictionary = [Int:[Int:Any]]()
-        var light = false
-        
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        if userInterfaceStyle == .light {
-            light = true
-        }
+//        var light = false
+//
+//        let userInterfaceStyle = traitCollection.userInterfaceStyle
+//        if userInterfaceStyle == .light {
+//            light = true
+//        }
         
         var i = 0
         

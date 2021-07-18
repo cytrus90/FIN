@@ -107,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func checkTags() {
         for tag in dataHandler.loadDataBulk(entity: "Tags") {
             let query = NSPredicate(format: "tags CONTAINS %@", (tag.value(forKey: "tagName") as? String ?? "*;*") as NSString)
-            if (dataHandler.loadBulkDataWithQueryLimited(entitie: "Transactions", query: query).count <= 0) && (data.loadBulkDataWithQueryLimited(entitie: "RegularPayments", query: query).count <= 0) {
+            if (dataHandler.loadBulkDataWithQueryLimited(entitie: "Transactions", query: query).count <= 0) && (dataHandler.loadBulkDataWithQueryLimited(entitie: "RegularPayments", query: query).count <= 0) {
                 let queryDelete = NSPredicate(format: "tagName == %@", (tag.value(forKey: "tagName") as? String ?? "*;*") as NSString)
                 if dataHandler.loadBulkDataWithQueryLimited(entitie: "Tags", query: queryDelete).count == 1 {
                     dataHandler.deleteData(entity: "Tags", query: queryDelete)

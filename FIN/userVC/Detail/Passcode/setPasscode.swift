@@ -142,7 +142,7 @@ class setPasscode: UIViewController {
         case 2:
             let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
             if userInputCode == firstInput {
-                saveSettings(settingsChange: "userCode", newValue: userInputCode)
+                dataHandler.saveSettings(settingsChange: "userCode", newValue: userInputCode)
                 loginSuccessfull = false
                 loginEnabled = true
                 enterPasscodeLabel.text = NSLocalizedString("New Passcode Success", comment: "Enter New Passcode Success Title")
@@ -165,7 +165,7 @@ class setPasscode: UIViewController {
             break
         default:
             let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
-            if loadData(entitie: "Settings", attibute: "userCode") as? String == userInputCode {
+            if dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String == userInputCode {
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                 stage = 1
                 codeInput.removeAll()
@@ -379,45 +379,6 @@ class setPasscode: UIViewController {
             buttonEight.isUserInteractionEnabled = false
             buttonNine.isUserInteractionEnabled = false
             buttonZero.isUserInteractionEnabled = false
-        }
-    }
-    
-    // MARK: -DATA
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
         }
     }
     

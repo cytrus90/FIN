@@ -205,7 +205,7 @@ class listFilterTVC: UITableViewController {
 
         // Get Expenses
         let expensesCategoriesPredicate = NSPredicate(format: "isIncome == %@ AND isSave == %@", NSNumber(value: false), NSNumber(value: false))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: expensesCategoriesPredicate, sort: [categorySortOrder]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "Categories", query: expensesCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",
@@ -218,7 +218,7 @@ class listFilterTVC: UITableViewController {
         
         // Get Incomes
         let incomesCategoriesPredicate = NSPredicate(format: "isIncome == %@ AND isSave == %@", NSNumber(value: true), NSNumber(value: false))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: incomesCategoriesPredicate, sort: [categorySortOrder]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "Categories", query: incomesCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",
@@ -231,7 +231,7 @@ class listFilterTVC: UITableViewController {
         
         // Get Save
         let savingsCategoriesPredicate = NSPredicate(format: "isSave == %@", NSNumber(value: true))
-        for data in loadBulkQueriedSorted(entitie: "Categories", query: savingsCategoriesPredicate, sort: [categorySortOrder]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "Categories", query: savingsCategoriesPredicate, sort: [categorySortOrder]) {
             fileredCategories[i] = [
                 0:data.value(forKey: "cID") as? Int16 ?? 0,
                 1:data.value(forKey: "name") as? String ?? "",
@@ -247,94 +247,12 @@ class listFilterTVC: UITableViewController {
         filteredTags.removeAll()
         var i = 1
         let tagSortDate = NSSortDescriptor(key: "lastUsed", ascending: false)
-        for data in loadBulkSorted(entitie: "Tags", sort: [tagSortDate]) {
+        for data in dataHandler.loadBulkSorted(entitie: "Tags", sort: [tagSortDate]) {
             filteredTags[i] = [
                 0:data.value(forKey: "tagName") as? String ?? "",
                 1:data.value(forKey: "selectedForFilter") as? Bool ?? true
             ]
             i = i + 1
-        }
-    }
-}
-
-// MARK: -DATA
-extension listFilterTVC {
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count > 1 || fetchedData.count <= 0 {
-                return false
-            } else {
-                fetchedData[0].setValue(value, forKey: attribute)
-                try managedContext.save()
-                return true
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
         }
     }
 }
@@ -352,10 +270,10 @@ extension listFilterTVC: listFilterCellDelegate {
         filterData[cellTag]?[1] = newState
         if cellTag == 0 {
             if selectedSegment == 0 {
-                saveSettings(settingsChange: "filteredCategoriesZero", newValue: !newState)
+                dataHandler.saveSettings(settingsChange: "filteredCategoriesZero", newValue: !newState)
                 filteredCategoriesZero = !newState
             } else {
-                saveSettings(settingsChange: "filteredTagsZero", newValue: !newState)
+                dataHandler.saveSettings(settingsChange: "filteredTagsZero", newValue: !newState)
                 filteredTagsZero = !newState
             }
             
@@ -374,10 +292,10 @@ extension listFilterTVC: listFilterCellDelegate {
                             listFilterTable.deleteRows(at: [IndexPath(row: i, section: 0)], with: .fade)
                             if selectedSegment == 0 {
                                 let savingsCategoriesPredicate = NSPredicate(format: "cID == %@", NSNumber(value: fileredCategories[i]?[0] as? Int16 ?? 0))
-                                _ = saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? true)
+                                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? true)
                             } else {
                                 let savingsCategoriesPredicate = NSPredicate(format: "tagName == %@", filteredTags[i]?[0] as? String ?? "")
-                                _ = saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? true)
+                                _ = dataHandler.saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? true)
                             }
                         }
                     }
@@ -393,10 +311,10 @@ extension listFilterTVC: listFilterCellDelegate {
                             indexPathsInsert.append(IndexPath(row: i, section: 0))
                             if selectedSegment == 0 {
                                 let savingsCategoriesPredicate = NSPredicate(format: "cID == %@", NSNumber(value: fileredCategories[i]?[0] as? Int16 ?? 0))
-                                _ = saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? false)
+                                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? false)
                             } else {
                                 let savingsCategoriesPredicate = NSPredicate(format: "tagName == %@", filteredTags[i]?[0] as? String ?? "")
-                                _ = saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? false)
+                                _ = dataHandler.saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: filterData[i]?[1] as? Bool ?? false)
                             }
                         }
                     }
@@ -407,10 +325,10 @@ extension listFilterTVC: listFilterCellDelegate {
         } else {
             if selectedSegment == 0 {
                 let savingsCategoriesPredicate = NSPredicate(format: "cID == %@", NSNumber(value: fileredCategories[cellTag]?[0] as? Int16 ?? 0))
-                _ = saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: newState)
+                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: newState)
             } else {
                 let savingsCategoriesPredicate = NSPredicate(format: "tagName == %@", filterData[cellTag]?[0] as? String ?? "")
-                _ = saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: newState)
+                _ = dataHandler.saveQueriedAttribute(entity: "Tags", attribute: "selectedForFilter", query: savingsCategoriesPredicate, value: newState)
             }
             if !newState {
                 filterData[0]?[1] = false

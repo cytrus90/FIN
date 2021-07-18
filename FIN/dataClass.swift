@@ -69,6 +69,23 @@ class dataClass {
         return [NSManagedObject]()
     }
     
+    func loadBulk(entitie:String) -> [NSManagedObject] {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
     func loadBulkData(entitie:String, orderBy:String) -> [NSManagedObject] {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -231,6 +248,35 @@ class dataClass {
         return false
     }
     
+    func loadDataSUMEntries(entitie:String, query:NSPredicate) -> Any {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        
+        let keypathExp1 = NSExpression(forKeyPath: "countEntries") // can be any column
+        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
+        
+        let sumDesc = NSExpressionDescription()
+        sumDesc.expression = expression1
+        sumDesc.name = "sum"
+        sumDesc.expressionResultType = .doubleAttributeType
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.propertiesToFetch = [sumDesc]
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest)
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
     func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -291,6 +337,56 @@ class dataClass {
         return false
     }
     
+    func loadBulkDataWithQuery(entitie:String, query:NSPredicate) -> [NSManagedObject] {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
+    func loadBulkDataWithQuery(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+        let managedContext = dataHandler.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        fetchRequest.sortDescriptors = sort
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
+    func loadBulkDataSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = sort
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
     func loadBulkDataWithQueryLimited(entitie:String, query:NSPredicate) -> [NSManagedObject] {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -329,6 +425,27 @@ class dataClass {
         return false
     }
     
+    func loadQueriedAttributeSorted(entitie:String, attibute:String, query:NSPredicate, sort:[NSSortDescriptor]) -> Any {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        fetchRequest.sortDescriptors = sort
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    return data.value(forKey: attibute) ?? false
+                }
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
     func loadBulkSortedOneEntry(entitie:String, sort:[NSSortDescriptor]) -> Any {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -346,6 +463,27 @@ class dataClass {
             print("Could not fetch. \(error)")
         }
         return false
+    }
+    
+    func loadBulkQueriedSortedCount(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.sortDescriptors = sort
+        fetchRequest.predicate = query
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
     }
     
     func loadDataGrouped(entitie:String, groupByColumn:String) -> Any {
@@ -367,6 +505,37 @@ class dataClass {
         fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
         fetchRequest.resultType = .dictionaryResultType
         fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest)
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
+    func loadDataGroupedQueriedSorted(entitie:String, groupByColumn:String, query:NSPredicate, sort:[NSSortDescriptor]) -> Any {
+        let managedContext = dataHandler.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        
+        let keypathExp = NSExpression(forKeyPath: groupByColumn) // can be any column
+        let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer64AttributeType
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.propertiesToGroupBy = [groupByColumn]
+        fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        fetchRequest.sortDescriptors = sort
         
         do {
             let loadData = try managedContext.fetch(fetchRequest)
@@ -479,6 +648,8 @@ class dataClass {
         return false
     }
     
+    
+    
     func loadIfBudget() -> Bool {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -560,10 +731,52 @@ class dataClass {
         return false
     }
     
+    func loadBulkQueriedLimited(entitie:String, query: NSPredicate) -> [NSManagedObject] {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        fetchRequest.fetchLimit = 2
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if loadData.count > 0 {
+                return loadData
+            }
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return [NSManagedObject]()
+    }
+    
     // MARK: -SAVE
+    
+    func saveQueriedAttributeReturn(entity: String, attribute: String, query: NSPredicate ,value: Any) -> Bool {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if fetchedData.count > 1 || fetchedData.count <= 0 {
+                return false
+            } else {
+                fetchedData[0].setValue(value, forKey: attribute)
+                try managedContext.save()
+                return true
+            }
+        } catch {
+            fatalError("Failed to fetch recordings: \(error)")
+        }
+    }
     
     // MARK: SAVE GRAPHS
     func saveNewGraphs() {
+        deleteData(entity: "GraphSettings")
         for i in 0...1 {
             let managedContext = persistentContainer.viewContext
             managedContext.automaticallyMergesChangesFromParent = true
@@ -588,6 +801,8 @@ class dataClass {
             }
         }
     }
+    
+    
     
     // MARK: SAVE CURRENCY
     func saveCurrency(currencyCode: String, exchangeRate: Double?, automated: Bool, id: Int16) {
@@ -715,6 +930,27 @@ class dataClass {
         }
     }
     
+    func saveSingleData(entity:String, attibute: String, newValue: Any, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                let managedObject = data
+                managedObject.setValue(newValue, forKey: attibute)
+                try managedContext.save()
+                break
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
     func saveSingleDataInt16(entity:String, attibute: String, newValue: Int16, query: NSPredicate, sort: [NSSortDescriptor]) {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -736,6 +972,164 @@ class dataClass {
             }
         } catch {
             print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleDataInt64(entity:String, attibute: String, newValue: Int64, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleDataInt(entity:String, attibute: String, newValue: Int, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleDataDouble(entity:String, attibute: String, newValue: Double, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleDataString(entity:String, attibute: String, newValue: String, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleInt(entity:String, attibute: String, newValue: Int64, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveSingleDate(entity:String, attibute: String, newValue: Date, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            for data in loadData {
+                if data.value(forKey: attibute) != nil {
+                    let managedObject = data
+                    managedObject.setValue(newValue, forKey: attibute)
+                    try managedContext.save()
+                }
+            }
+        } catch {
+            print("ERROR. \(error)")
+        }
+    }
+    
+    func saveInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
+        let managedContext = dataHandler.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let transactionSave = Transactions(context: managedContext)
+        
+        transactionSave.amount = amount
+        transactionSave.realAmount = amount
+        transactionSave.categoryID = categoryID
+        transactionSave.currencyCode = Locale.current.currencyCode ?? "EUR"
+        transactionSave.dateTime = nil
+        transactionSave.descriptionNote = "Initial"
+        transactionSave.exchangeRate = 1.0
+        transactionSave.tags = ""
+        transactionSave.isSave = isSave
+        transactionSave.isSplit = 0
+        transactionSave.isLiquid = !isSave
+                
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+            return
         }
     }
     
@@ -846,6 +1240,48 @@ class dataClass {
         }
     }
     
+    func saveCategoryWithID(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let categorySave = Categories(context: managedContext)
+        
+        categorySave.cID = Int16(2)
+        categorySave.name = name
+        categorySave.color = color
+        categorySave.countEntries = countEntries
+        categorySave.isIncome = isIncome
+        categorySave.isSave = isSave
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    // No Icon
+    func saveCategory(name: String, color: Int16 = 0, countEntries: Int64 = 0, isIncome: Bool, isSave: Bool) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let categorySave = Categories(context: managedContext)
+        let id = loadNextCategoryID()
+        
+        categorySave.cID = id
+        categorySave.name = name
+        categorySave.color = color
+        categorySave.countEntries = countEntries
+        categorySave.isIncome = isIncome
+        categorySave.isSave = isSave
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
     func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -867,6 +1303,49 @@ class dataClass {
             fatalError("Failed to fetch recordings: \(error)")
         }
     }
+    
+    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) -> Bool {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if fetchedData.count > 1 || fetchedData.count <= 0 {
+                return false
+            } else {
+                fetchedData[0].setValue(value, forKey: attribute)
+                try managedContext.save()
+                return true
+            }
+        } catch {
+            fatalError("Failed to fetch recordings: \(error)")
+        }
+    }
+    
+    func initUserSplitPerson() {
+        if (loadBulkData(entitie: "SplitPersons", orderBy: "createDate")).count <= 0 {
+            let managedContext = persistentContainer.viewContext
+            managedContext.automaticallyMergesChangesFromParent = true
+            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+            let userSplitPersonSave = SplitPersons(context: managedContext)
+            
+            userSplitPersonSave.isUser = true
+            userSplitPersonSave.createDate = Date()
+            userSplitPersonSave.color = Int16(21)
+            userSplitPersonSave.namePerson = loadSettings(entitie: "Settings", attibute: "userName") as? String ?? "User"
+            
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        }
+    }
+    
+    
     
     // MARK: -DELETE
     func deleteDataBulk(entity: String) {
@@ -910,6 +1389,26 @@ class dataClass {
         }
     }
     
+    func deleteData(entity: String) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        do {
+            let delete = try managedContext.fetch(fetchRequest)
+            for data in delete {
+                managedContext.delete(data as! NSManagedObject)
+            }
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
     func deleteDataSingle(entity: String, query: NSPredicate) {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -929,6 +1428,51 @@ class dataClass {
             }
         } catch {
             print(error)
+        }
+    }
+    
+    func deleteDataQueried(entity: String, query: NSPredicate) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.predicate = query
+        do {
+            let delete = try managedContext.fetch(fetchRequest)
+            for data in delete {
+                managedContext.delete(data as! NSManagedObject)
+            }
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
+    func deleteDataReturn(entity: String, query: NSPredicate) -> Bool {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.predicate = query
+        do {
+            let delete = try managedContext.fetch(fetchRequest)
+            for data in delete {
+                managedContext.delete(data as! NSManagedObject)
+            }
+            do {
+                try managedContext.save()
+                return true
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+                return false
+            }
+        } catch {
+            print(error)
+            return false
         }
     }
     
@@ -1069,6 +1613,36 @@ class dataClass {
         }
     }
     
+    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String?, dateTime: Date?, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false) {
+        let currencyCodeSave: String?
+        if currencyCode == nil {
+            currencyCodeSave = Locale.current.currencyCode ?? "EUR"
+        } else {
+            currencyCodeSave = currencyCode
+        }
+
+        let managedContext = dataHandler.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let transactionSave = Transactions(context: managedContext)
+        
+        transactionSave.amount = amount
+        transactionSave.realAmount = realAmount
+        transactionSave.categoryID = category
+        transactionSave.currencyCode = currencyCodeSave ?? ""
+        transactionSave.dateTime = dateTime ?? Date()
+        transactionSave.descriptionNote = descriptionNote ?? ""
+        transactionSave.exchangeRate = exchangeRate
+        transactionSave.tags = tags ?? ""
+        transactionSave.isSave = isSave
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
     func saveRepeatSplit(dateTime:Date) -> Int16 {
         var groupSplit:Bool = false
         for (_,value) in split.enumerated() {
@@ -1171,8 +1745,7 @@ class dataClass {
                     return false
                 }
             } else {
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                let managedContext = appDelegate!.persistentContainer.viewContext
+                let managedContext = persistentContainer.viewContext
                 managedContext.automaticallyMergesChangesFromParent = true
                 managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
                 let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Categories")

@@ -211,7 +211,7 @@ class categoryTVC: UITableViewController {
             categoryData[10] = true // Light?
         } else {
             let categoryPredicate:NSPredicate = NSPredicate(format: "cID == \(selectedCategoryDetail)")
-            let categoryLoaded = loadBulkDataWithQuery(entitie: "Categories", query: categoryPredicate)
+            let categoryLoaded = dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: categoryPredicate)
             categoryData[0] = categoryLoaded[0].value(forKey: "name") as? String ?? ""
             categoryData[1] = categoryLoaded[0].value(forKey: "isIncome") as? Bool ?? false
             categoryData[2] = categoryLoaded[0].value(forKey: "isSave") as? Bool ?? false
@@ -220,7 +220,7 @@ class categoryTVC: UITableViewController {
             categoryData[5] = categoryLoaded[0].value(forKey: "cID") as? Int16 ?? 0
             
             let queryInitialTransaction = NSPredicate(format: "dateTime == nil AND categoryID == \(selectedCategoryDetail)")
-            categoryData[6] = loadQueriedAttribute(entitie: "Transactions", attibute: "realAmount", query: queryInitialTransaction) as? Double ?? 0.00
+            categoryData[6] = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "realAmount", query: queryInitialTransaction) as? Double ?? 0.00
             
             categoryData[7] = categoryLoaded[0].value(forKey: "budget") as? Double ?? 0.00
             categoryData[8] = getBudgetSuggestion()
@@ -239,7 +239,7 @@ class categoryTVC: UITableViewController {
         for i in 1...12 {
             let pastDate = Calendar.current.date(byAdding: .month, value: -i, to: Date()) ?? Date()
             let querySUM = NSPredicate(format: "categoryID == \(selectedCategoryDetail) AND dateTime <= %@ AND dateTime >= %@", pastDate.endOfMonth as NSDate, pastDate.startOfMonth as NSDate)
-            let loadedSUM = (loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySUM) as? [[String:Any]])
+            let loadedSUM = (dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: querySUM) as? [[String:Any]])
             if (loadedSUM?.count ?? 0) > 0 {
                 pastValue.append((loadedSUM?[0]["sum"] as? Double ?? 0.00))
             }
@@ -264,23 +264,23 @@ class categoryTVC: UITableViewController {
                 let createDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (self.categoryData[4]) as? Date ?? Date())!
                 
                 var query = NSPredicate(format: "cID == %i AND createDate < %@ AND createDate > %@", (self.categoryData[5] as? Int16 ?? -1), createDatePlus as NSDate, createDateMinus as NSDate)
-                if self.loadBulkDataWithQuery(entitie: "Categories", query: query).count <= 0 {
+                if dataHandler.loadBulkDataWithQuery(entitie: "Categories", query: query).count <= 0 {
                     query = NSPredicate(format: "cID == %i", (self.categoryData[5] as? Int16 ?? -1))
                 }
-                self.deleteData(entity: "Categories", query: query)
+                dataHandler.deleteData(entity: "Categories", query: query)
                 
                 let queryDeleteTransactions = NSPredicate(format: "categoryID == %i", (self.categoryData[5] as? Int16 ?? -1))
-                self.deleteData(entity: "Transactions", query: queryDeleteTransactions)
+                dataHandler.deleteData(entity: "Transactions", query: queryDeleteTransactions)
                 
-                for regularPayment in self.loadBulkDataWithQuery(entitie: "RegularPayments", query: queryDeleteTransactions) {
+                for regularPayment in dataHandler.loadBulkDataWithQuery(entitie: "RegularPayments", query: queryDeleteTransactions) {
                     
                     let createDateRegularPlus = Calendar.current.date(byAdding: .second, value: 1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
                     let createDateRegularMinus = Calendar.current.date(byAdding: .second, value: -1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
                     let queryDeleteSplitsRegularPayments = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateRegularPlus as NSDate, createDateRegularMinus as NSDate)
                     
-                    self.deleteData(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
+                    dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
                 }
-                self.deleteData(entity: "RegularPayments", query: queryDeleteTransactions)
+                dataHandler.deleteData(entity: "RegularPayments", query: queryDeleteTransactions)
                 
                 self.updateCategoryOrder()
                 
@@ -306,7 +306,7 @@ class categoryTVC: UITableViewController {
         var income = [CategoryEntry]()
         var savings = [CategoryEntry]()
         
-        for category in loadBulkDataSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
+        for category in dataHandler.loadBulkDataSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
             if (category.value(forKey: "isSave") as? Bool ?? false) { // isSave
                 savings.append(CategoryEntry(
                                 cID: category.value(forKey: "cID") as? Int16 ?? -1,
@@ -339,7 +339,7 @@ class categoryTVC: UITableViewController {
                 j = j + 1
                 
                 let querySave = NSPredicate(format: "cID == %i", expensesSorted[i].cID)
-                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: expensesSorted[i].order)
+                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: expensesSorted[i].order)
             }
         }
         
@@ -349,7 +349,7 @@ class categoryTVC: UITableViewController {
                 j = j + 1
                 
                 let querySave = NSPredicate(format: "cID == %i", incomeSorted[i].cID)
-                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: incomeSorted[i].order)
+                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: incomeSorted[i].order)
             }
         }
         
@@ -359,7 +359,7 @@ class categoryTVC: UITableViewController {
                 j = j + 1
                 
                 let querySave = NSPredicate(format: "cID == %i", savingsSorted[i].cID)
-                saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
+                _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
             }
         }
     }
@@ -421,13 +421,12 @@ extension categoryTVC {
     // MARK: SAVE
     func saveNewCategory() -> Bool {
         if categoryData[0] as? String ?? "" != "" {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            let managedContext = appDelegate!.persistentContainer.viewContext
+            let managedContext = dataHandler.persistentContainer.viewContext
             managedContext.automaticallyMergesChangesFromParent = true
             managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
             let categorySave = Categories(context: managedContext)
             
-            let nextID = loadNextCategoryID()
+            let nextID = dataHandler.loadNextCategoryID()
             categorySave.cID = nextID
             categorySave.name = categoryData[0] as? String ?? ""
             categorySave.isIncome = categoryData[1] as? Bool ?? false
@@ -449,7 +448,7 @@ extension categoryTVC {
                 print("Could not save. \(error), \(error.userInfo)")
             }
             
-            saveInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: nextID)
+            dataHandler.saveInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: nextID)
             
             return true
         } else {
@@ -463,8 +462,7 @@ extension categoryTVC {
     }
     
     func updateCategory() -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Categories")
@@ -487,7 +485,7 @@ extension categoryTVC {
                 } else {
                     data.setValue(nil, forKey: "budget")
                 }
-                saveQueriedAttributeMultiple(entity: "Transactions", attribute: "isSave", query: queryTransactions, value: (categoryData[2] as? Bool ?? false))
+                dataHandler.saveQueriedAttributeMultiple(entity: "Transactions", attribute: "isSave", query: queryTransactions, value: (categoryData[2] as? Bool ?? false))
                 
                 updateInitialTransaction(amount: (categoryData[6] as? Double ?? 0.00), isSave: (categoryData[2] as? Bool ?? false), categoryID: selectedCategoryDetail)
             }
@@ -504,36 +502,8 @@ extension categoryTVC {
         }
     }
     
-    func saveInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let transactionSave = Transactions(context: managedContext)
-        
-        transactionSave.amount = amount
-        transactionSave.realAmount = amount
-        transactionSave.categoryID = categoryID
-        transactionSave.currencyCode = Locale.current.currencyCode ?? "EUR"
-        transactionSave.dateTime = nil
-        transactionSave.descriptionNote = "Initial"
-        transactionSave.exchangeRate = 1.0
-        transactionSave.tags = ""
-        transactionSave.isSave = isSave
-        transactionSave.isSplit = 0
-        transactionSave.isLiquid = !isSave
-                
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-            return
-        }
-    }
-    
     func updateInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Transactions")
@@ -556,7 +526,7 @@ extension categoryTVC {
                     transactionSave.setValue(!isSave, forKey: "isLiquid")
                 }
             } else {
-                saveInitialTransaction(amount: amount, isSave: isSave, categoryID: selectedCategoryDetail)
+                dataHandler.saveInitialTransaction(amount: amount, isSave: isSave, categoryID: selectedCategoryDetail)
             }
             
         } catch let error as NSError {
@@ -572,195 +542,10 @@ extension categoryTVC {
         }
     }
     
-    // MARK: LOAD
-    func loadBulkDataWithQuery(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
     
-    func loadBulkDataSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
     
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadNextCategoryID() -> Int16 {
-        var i:Int16 = 0
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Categories")
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: #keyPath(Categories.cID), ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        do {
-            let loadCategories = try managedContext.fetch(fetchRequest) as! [Categories]
-            for data in loadCategories {
-                if data.cID == i {
-                    i = i + 1
-                } else {
-                    break
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return i
-    }
-    
-    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count > 1 || fetchedData.count <= 0 {
-                return
-            } else {
-                fetchedData[0].setValue(value, forKey: attribute)
-                try managedContext.save()
-                return
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.newBackgroundContext()
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count <= 0 {
-                return
-            } else {
-                for data in fetchedData {
-                    data.setValue(value, forKey: attribute)
-                }
-                try managedContext.save()
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func loadDataGroupedSUM(entitie:String, groupByColumn:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        
-        let keypathExp1 = NSExpression(forKeyPath: "realAmount") // can be any column
-        let expression1 = NSExpression(forFunction: "sum:", arguments: [keypathExp1])
-        
-        let sumDesc = NSExpressionDescription()
-        sumDesc.expression = expression1
-        sumDesc.name = "sum"
-        sumDesc.expressionResultType = .doubleAttributeType
-        
-        let keypathExp2 = NSExpression(forKeyPath: groupByColumn) // can be any column
-        let expression2 = NSExpression(forFunction: "count:", arguments: [keypathExp2])
-        
-        let countDesc = NSExpressionDescription()
-        countDesc.expression = expression2
-        countDesc.name = "count"
-        countDesc.expressionResultType = .integer64AttributeType
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.propertiesToGroupBy = [groupByColumn]
-        fetchRequest.propertiesToFetch = [groupByColumn, countDesc ,sumDesc]
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest)
-            return loadData
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    // MARK: DELETE
-    func deleteData(entity: String, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.predicate = query
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
+
+
 }
 
 extension categoryTVC: cellCategoryInitialDelegate {

@@ -85,7 +85,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         currencyTable.delegate = self
         
         if (lastCurrencyCode?.count ?? 0) <= 0 {
-            lastCurrencyCode = loadSettings(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? "EUR"
+            lastCurrencyCode = dataHandler.loadSettings(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? "EUR"
         }
         
         initView()
@@ -129,7 +129,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         exchangeRateTextField.text = currencyData[indexPath.row]?["exchangeRate"] as? String ?? ""
         currencyExchangeRate = (exchangeRateTextField.text! as NSString).doubleValue
         currencyCodeSet = currencyData[indexPath.row]?["currencyCode"] as? String ?? "EUR"
-        saveSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
+        dataHandler.saveSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
         if (lastCurrencyCode?.count ?? 0) > 0 { lastCurrencyCode = "" }
     }
     
@@ -169,7 +169,8 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         formatter.minimumFractionDigits = 3
         formatter.maximumFractionDigits = 3
         
-        if let currencyDB = loadBulkData(entitie: "Currency", orderBy: "currencyCode") as? [NSManagedObject] {
+        let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
+        if currencyDB.count > 0 {
             for data in currencyDB {
                 currencyData[data.value(forKey: "id") as? Int ?? 0] = [
                     "currencyName": NSLocalizedString((data.value(forKey: "currencyCode") as? String ?? ""), comment: "Country"),
@@ -193,7 +194,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
             } else {
                 currencyExchangeRate = 1.00
             }
-            saveSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
+            dataHandler.saveSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
             let nc = NotificationCenter.default
             nc.post(name: Notification.Name("currencyChanged"), object: nil)
             self.dismiss(animated: true, completion: nil)
@@ -250,7 +251,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
     func updateExchangeRates(completion: (Bool) -> ()) {
         let query = NSPredicate(format: "id == %i", 0)
         
-        if let lastSavedDate = loadQueriedAttribute(entitie: "Currency", attibute: "saved", query: query) as? Date {
+        if let lastSavedDate = dataHandler.loadQueriedAttribute(entitie: "Currency", attibute: "saved", query: query) as? Date {
             if Date().timeIntervalSince(lastSavedDate) > 1 {
                 let config = URLSessionConfiguration.default
                 config.waitsForConnectivity = true
@@ -334,131 +335,111 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         for currency in csvRows {
             switch currency[0] {
             case "CAD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CAD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CAD ?? 1.0, automated: true, id: j)
                 break
             case "HKD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HKD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HKD ?? 1.0, automated: true, id: j)
                 break
             case "ISK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ISK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ISK ?? 1.0, automated: true, id: j)
                 break
             case "PHP":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.PHP ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.PHP ?? 1.0, automated: true, id: j)
                 break
             case "DKK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.DKK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.DKK ?? 1.0, automated: true, id: j)
                 break
             case "HUF":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HUF ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HUF ?? 1.0, automated: true, id: j)
                 break
             case "CZK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CZK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CZK ?? 1.0, automated: true, id: j)
                 break
             case "GBP":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.GBP ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.GBP ?? 1.0, automated: true, id: j)
                 break
             case "RON":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.RON ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.RON ?? 1.0, automated: true, id: j)
                 break
             case "SEK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.SEK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.SEK ?? 1.0, automated: true, id: j)
                 break
             case "IDR":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.IDR ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.IDR ?? 1.0, automated: true, id: j)
                 break
             case "INR":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.INR ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.INR ?? 1.0, automated: true, id: j)
                 break
             case "BRL":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.BRL ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.BRL ?? 1.0, automated: true, id: j)
                 break
             case "RUB":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.RUB ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.RUB ?? 1.0, automated: true, id: j)
                 break
             case "HRK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HRK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.HRK ?? 1.0, automated: true, id: j)
                 break
             case "JPY":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.JPY ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.JPY ?? 1.0, automated: true, id: j)
                 break
             case "THB":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.THB ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.THB ?? 1.0, automated: true, id: j)
                 break
             case "CHF":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CHF ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CHF ?? 1.0, automated: true, id: j)
                 break
             case "EUR":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.EUR ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.EUR ?? 1.0, automated: true, id: j)
                 break
             case "MYR":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.MYR ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.MYR ?? 1.0, automated: true, id: j)
                 break
             case "BGN":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.BGN ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.BGN ?? 1.0, automated: true, id: j)
                 break
             case "TRY":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.TRY ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.TRY ?? 1.0, automated: true, id: j)
                 break
             case "CNY":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CNY ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.CNY ?? 1.0, automated: true, id: j)
                 break
             case "NOK":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.NOK ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.NOK ?? 1.0, automated: true, id: j)
                 break
             case "NZD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.NZD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.NZD ?? 1.0, automated: true, id: j)
                 break
             case "ZAR":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ZAR ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ZAR ?? 1.0, automated: true, id: j)
                 break
             case "USD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.USD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.USD ?? 1.0, automated: true, id: j)
                 break
             case "MXN":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.MXN ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.MXN ?? 1.0, automated: true, id: j)
                 break
             case "SGD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.SGD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.SGD ?? 1.0, automated: true, id: j)
                 break
             case "AUD":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.AUD ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.AUD ?? 1.0, automated: true, id: j)
                 break
             case "ILS":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ILS ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.ILS ?? 1.0, automated: true, id: j)
                 break
             case "KRW":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.KRW ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.KRW ?? 1.0, automated: true, id: j)
                 break
             case "PLN":
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.PLN ?? 1.0, automated: true, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: currenciesRAM?.PLN ?? 1.0, automated: true, id: j)
                 break
             default:
-                self.saveCurrency(currencyCode: currency[0], exchangeRate: 1.0, automated: false, id: j)
+                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: 1.0, automated: false, id: j)
                 break
             }
             j = j+1
         }
         self.getCurrencyData()
-    }
-
-    func saveCurrency(currencyCode: String, exchangeRate: Double?, automated: Bool, id: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let currencySave = Currency(context: managedContext)
-        
-        currencySave.currencyCode = currencyCode
-        currencySave.exchangeRate = exchangeRate ?? 1.0
-        currencySave.automated = automated
-        currencySave.saved = Date()
-        currencySave.id = id
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
     }
     
     
@@ -473,87 +454,4 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
     }
     */
 
-}
-
-extension currencyPickerVC {
-    func loadBulkData(entitie:String, orderBy:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: orderBy, ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadSettings(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
 }

@@ -71,7 +71,7 @@ class splitAddNewTVC: UITableViewController {
         
         self.title = ""
         
-        editUser = isUser(createDate: (updateCreateDate ?? Date()), namePerson: (updateGroupOrPersonName ?? ""))
+        editUser = dataHandler.isUser(createDate: (updateCreateDate ?? Date()), namePerson: (updateGroupOrPersonName ?? ""))
         
         if selection == 1 {
             navTitle = NSLocalizedString("bottomAddNewUser", comment: "Add New User Text")
@@ -353,15 +353,15 @@ class splitAddNewTVC: UITableViewController {
             if update == 0 {
                 selection = 2
                 let query = NSPredicate(format: "createDate > %@ AND createDate < %@ AND nameGroup == %@", (updateCreateDateMinus as NSDate), (updateCreateDatePlus as NSDate), ((updateGroupOrPersonName ?? "") as NSString))
-                color = loadQueriedAttribute(entitie: "SplitGroups", attibute: "color", query: query) as? Int16 ?? 0
-                icon = loadQueriedAttribute(entitie: "SplitGroups", attibute: "icon", query: query) as? String ?? ""
-                iconLight = loadQueriedAttribute(entitie: "SplitGroups", attibute: "iconLight", query: query) as? Bool ?? true
+                color = dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "color", query: query) as? Int16 ?? 0
+                icon = dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "icon", query: query) as? String ?? ""
+                iconLight = dataHandler.loadQueriedAttribute(entitie: "SplitGroups", attibute: "iconLight", query: query) as? Bool ?? true
             } else {
                 selection = 3
                 let query = NSPredicate(format: "createDate > %@ AND createDate < %@ AND namePerson == %@", (updateCreateDateMinus as NSDate), (updateCreateDatePlus as NSDate), ((updateGroupOrPersonName ?? "") as NSString))
-                color = loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0
-                icon = loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: query) as? String ?? ""
-                iconLight = loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: query) as? Bool ?? true
+                color = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0
+                icon = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "icon", query: query) as? String ?? ""
+                iconLight = dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "iconLight", query: query) as? Bool ?? true
             }
             
             textfieldText = updateGroupOrPersonName
@@ -419,7 +419,7 @@ class splitAddNewTVC: UITableViewController {
                 let updateCreateDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: updateCreateDate ?? Date())!
                 
                 let query = NSPredicate(format: "nameGroup == %@ AND createDate < %@ AND createDate > %@", ((updateGroupOrPersonName ?? "") as NSString), (updateCreateDatePlus as NSDate), (updateCreateDateMinus as NSDate))
-                if let personsInGroup = loadQueriedAttributeSorted(entitie: entity ?? "SplitGroups", attibute: "persons", query: query, sort: [dateSort]) as? String {
+                if let personsInGroup = dataHandler.loadQueriedAttributeSorted(entitie: entity ?? "SplitGroups", attibute: "persons", query: query, sort: [dateSort]) as? String {
                     for data in personsInGroup.components(separatedBy: "*;*") {
                         let RAM = data.components(separatedBy: "*&*")
                         if RAM.count == 2 {
@@ -432,7 +432,7 @@ class splitAddNewTVC: UITableViewController {
                     }
                 }
                 var i = 0
-                for data in loadBulkSorted(entitie: entity2 ?? "SplitPersons", sort: [userSort,dateSort]) {
+                for data in dataHandler.loadBulkSorted(entitie: entity2 ?? "SplitPersons", sort: [userSort,dateSort]) {
                     var isSelected = false
                     for (_,value) in persons.enumerated() {
                         let createDatePersonPlus = Calendar.current.date(byAdding: .second, value: 1, to: (value.value[1] as? Date ?? Date()))!
@@ -463,7 +463,7 @@ class splitAddNewTVC: UITableViewController {
                 let createDatePersonPlus = Calendar.current.date(byAdding: .second, value: 1, to: updateCreateDate ?? Date())!
                 let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: updateCreateDate ?? Date())!
                 
-                for data in loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
+                for data in dataHandler.loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
                     var isSelected:Bool = false
 
                     let persons = (data.value(forKey: "persons") as? String ?? "-")
@@ -499,9 +499,9 @@ class splitAddNewTVC: UITableViewController {
             var i = 0
             
             if selection == 0 {
-                for data in loadBulkSorted(entitie: entity ?? "SplitPersons", sort: [userSort,dateSort]) {
+                for data in dataHandler.loadBulkSorted(entitie: entity ?? "SplitPersons", sort: [userSort,dateSort]) {
                     
-                    let user = isUser(createDate: (data.value(forKey: "createDate") as? Date ?? Date()), namePerson: (data.value(forKey: "namePerson") as? String ?? ""))
+                    let user = dataHandler.isUser(createDate: (data.value(forKey: "createDate") as? Date ?? Date()), namePerson: (data.value(forKey: "namePerson") as? String ?? ""))
                     
                     selectedDict[i] = [
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
@@ -514,7 +514,7 @@ class splitAddNewTVC: UITableViewController {
                     i = i + 1
                 }
             } else {
-                for data in loadBulkSorted(entitie: entity ?? "SplitGroups", sort: [dateSort]) {
+                for data in dataHandler.loadBulkSorted(entitie: entity ?? "SplitGroups", sort: [dateSort]) {
                     selectedDict[i] = [
                         0:(data.value(forKey: "createDate") as? Date ?? Date()),
                         1:(data.value(forKey: attribute ?? "") as? String ?? ""),
@@ -588,7 +588,7 @@ class splitAddNewTVC: UITableViewController {
                     let dateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (selectedDict[i]?[0] as? Date ?? Date()))!
                     
                     let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND nameGroup == %@", (datePlus as NSDate), (dateMinus as NSDate), ((selectedDict[i]?[1] as? String ?? "") as NSString))
-                    for groups in loadBulkQueried(entitie: "SplitGroups", query: query) {
+                    for groups in dataHandler.loadBulkQueried(entitie: "SplitGroups", query: query) {
                         // PersonName & CreateDate
                         if isInputtextValid() {
                             var newPersons = groups.value(forKey: "persons") as? String ?? ""
@@ -597,7 +597,7 @@ class splitAddNewTVC: UITableViewController {
                             } else {
                                 newPersons = inputText + "*&*" + dateFormatter.string(from: Date())
                             }
-                            saveSingleDataString(entity: "SplitGroups", attibute: "persons", newValue: newPersons, query: query)
+                            dataHandler.saveSingleDataString(entity: "SplitGroups", attibute: "persons", newValue: newPersons, query: query)
                         }
                     }
                 }
@@ -772,7 +772,7 @@ class splitAddNewTVC: UITableViewController {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -785,7 +785,7 @@ class splitAddNewTVC: UITableViewController {
         
         let querySplitsUpdateTransactions = NSPredicate(format: "nameGroup == %@ AND createDateGroup < %@ AND createDateGroup > %@ AND namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@", ((updateGroupOrPersonName ?? "") as NSString), (createGroupPlus as NSDate), (createGroupMinus as NSDate), ((nameUser ?? "") as NSString), (userDateUserPlus as NSDate), (userDateUserMinus as NSDate))
         
-        for split in loadBulkQueried(entitie: "Splits", query: querySplitsUpdateTransactions) {
+        for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplitsUpdateTransactions) {
             var amount:Double?
             let ratio = split.value(forKey: "ratio") as? Double ?? 0.00
             
@@ -794,19 +794,19 @@ class splitAddNewTVC: UITableViewController {
             
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (transactionDatePlus as NSDate), (transactionDateMinus as NSDate))
             
-            for transaction in loadBulkQueried(entitie: "Transactions", query: queryTransaction) {
+            for transaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransaction) {
                 amount = transaction.value(forKey: "amount") as? Double ?? 0.00
             }
             
-            saveSingleDataDouble(entity: "Transactions", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
+            dataHandler.saveSingleDataDouble(entity: "Transactions", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
         }
         
         let querySplitDelete = NSPredicate(format: "nameGroup == %@ AND createDateGroup < %@ AND createDateGroup > %@", ((updateGroupOrPersonName ?? "") as NSString), (createGroupPlus as NSDate), (createGroupMinus as NSDate))
-        deleteData(entity: "Splits", query: querySplitDelete)
-        deleteData(entity: "SplitsRegularPayments", query: querySplitDelete)
+        dataHandler.deleteData(entity: "Splits", query: querySplitDelete)
+        dataHandler.deleteData(entity: "SplitsRegularPayments", query: querySplitDelete)
         
         let querySplitGroupsDelete = NSPredicate(format: "nameGroup == %@ AND createDate < %@ AND createDate > %@", ((updateGroupOrPersonName ?? "") as NSString), (createGroupPlus as NSDate), (createGroupMinus as NSDate))
-        deleteData(entity: "SplitGroups", query: querySplitGroupsDelete)
+        dataHandler.deleteData(entity: "SplitGroups", query: querySplitGroupsDelete)
         
         let nc = NotificationCenter.default
         nc.post(name: Notification.Name("groupPersonUpdated"), object: nil)
@@ -839,17 +839,17 @@ class splitAddNewTVC: UITableViewController {
         
         let queryRegularSplitsUpdateTransactions = NSPredicate(format: "namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@", ((updateGroupOrPersonName ?? "") as NSString), (createPersonPlus as NSDate), (createPersonMinus as NSDate))
         
-        for split in loadBulkQueried(entitie: "SplitsRegularPayments", query: queryRegularSplitsUpdateTransactions) {
+        for split in dataHandler.loadBulkQueried(entitie: "SplitsRegularPayments", query: queryRegularSplitsUpdateTransactions) {
             let splitDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             let splitDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             
             let queryNumberSplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", splitDatePlus as NSDate, splitDateMinus as NSDate)
             // If more than 2 Persons (so, User & the Person to be deleted) are part of a Split, then the Split of the Person to be deleted is distributed among the others and deleted. If only the User & Person to be deleted are part of a Split, it is transformed to a Transaction without a split and the splits are deleted.
-            let countPeople = loadBulkQueried(entitie: "SplitsRegularPayments", query: queryNumberSplits).count
+            let countPeople = dataHandler.loadBulkQueried(entitie: "SplitsRegularPayments", query: queryNumberSplits).count
             if countPeople > 2 {
                 let toBeDistributedRatio = (split.value(forKey: "ratio") as? Double ?? 0.00) / Double(countPeople-1)
                 
-                for splitUpdate in loadBulkQueried(entitie: "SplitsRegularPayments", query: queryNumberSplits) {
+                for splitUpdate in dataHandler.loadBulkQueried(entitie: "SplitsRegularPayments", query: queryNumberSplits) {
                     let splitDatePersonPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
                     let splitDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
                     
@@ -859,9 +859,9 @@ class splitAddNewTVC: UITableViewController {
                     let down = (updateCreateDate ?? Date()).compare(splitDatePersonMinus) == .orderedDescending
                     
                     if up && down && ((updateGroupOrPersonName ?? "") == (splitUpdate.value(forKey: "namePerson") as? String ?? "")) {
-                        deleteData(entity: "SplitsRegularPayments", query: queryPerson)
+                        dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryPerson)
                     } else {
-                        saveSingleDataDouble(entity: "SplitsRegularPayments", attibute: "ratio", newValue: ((splitUpdate.value(forKey: "ratio") as? Double ?? 0.00) + toBeDistributedRatio), query: queryPerson)
+                        dataHandler.saveSingleDataDouble(entity: "SplitsRegularPayments", attibute: "ratio", newValue: ((splitUpdate.value(forKey: "ratio") as? Double ?? 0.00) + toBeDistributedRatio), query: queryPerson)
                     }
                 }
             } else {
@@ -874,16 +874,16 @@ class splitAddNewTVC: UITableViewController {
                 
                 let queryTransaction = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", (transactionDatePlus as NSDate), (transactionDateMinus as NSDate))
                 
-                for transaction in loadBulkQueried(entitie: "RegularPayments", query: queryTransaction) {
+                for transaction in dataHandler.loadBulkQueried(entitie: "RegularPayments", query: queryTransaction) {
                     amount = transaction.value(forKey: "amount") as? Double ?? 0.00
                     exchangeRate = transaction.value(forKey: "exchangeRate") as? Double ?? 1.00
                 }
                 
-                saveSingleDataDouble(entity: "RegularPayments", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
-                saveSingleDataDouble(entity: "RegularPayments", attibute: "realAmount", newValue: ((amount ?? 0.00)*ratio)/(exchangeRate ?? 1.00), query: queryTransaction)
-                saveSingleDataInt(entity: "RegularPayments", attibute: "isSplit", newValue: 0, query: queryTransaction)
+                dataHandler.saveSingleDataDouble(entity: "RegularPayments", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
+                dataHandler.saveSingleDataDouble(entity: "RegularPayments", attibute: "realAmount", newValue: ((amount ?? 0.00)*ratio)/(exchangeRate ?? 1.00), query: queryTransaction)
+                dataHandler.saveSingleDataInt(entity: "RegularPayments", attibute: "isSplit", newValue: 0, query: queryTransaction)
                 
-                deleteData(entity: "SplitsRegularPayments", query: queryNumberSplits)
+                dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryNumberSplits)
             }
         }
     }
@@ -894,23 +894,23 @@ class splitAddNewTVC: UITableViewController {
         
         let querySplitsUpdateTransactions = NSPredicate(format: "namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@", ((updateGroupOrPersonName ?? "") as NSString), (createPersonPlus as NSDate), (createPersonMinus as NSDate))
         
-        for split in loadBulkQueried(entitie: "Splits", query: querySplitsUpdateTransactions) {
+        for split in dataHandler.loadBulkQueried(entitie: "Splits", query: querySplitsUpdateTransactions) {
             let splitDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             let splitDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
             
             let queryNumberSplits = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@", splitDatePlus as NSDate, splitDateMinus as NSDate)
             // If more than 2 Persons (so, User & the Person to be deleted) are part of a Split, then the Split of the Person to be deleted is set to settled = 100%, but not deleted (since the other splits are still open). If only the User & Person to be deleted are part of a Split, it is transformed to a Transaction without a split and the splits are deleted.
-            if loadBulkQueried(entitie: "Splits", query: queryNumberSplits).count > 2 {
+            if dataHandler.loadBulkQueried(entitie: "Splits", query: queryNumberSplits).count > 2 {
                 let transactionDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
                 let transactionDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
                 
                 let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (transactionDatePlus as NSDate), (transactionDateMinus as NSDate))
                 
-                let amountTransaction = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
-                let exRateTransaction = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+                let amountTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+                let exRateTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
                 
                 let querySplitSettle = NSPredicate(format: "namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@ AND dateTimeTransaction == %@", ((updateGroupOrPersonName ?? "") as NSString), (createPersonPlus as NSDate), (createPersonMinus as NSDate), (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()) as NSDate)
-                saveSingleDataDouble(entity: "Splits", attibute: "settled", newValue: (amountTransaction * (split.value(forKey: "ration") as? Double ?? 0.00))/exRateTransaction, query: querySplitSettle)
+                dataHandler.saveSingleDataDouble(entity: "Splits", attibute: "settled", newValue: (amountTransaction * (split.value(forKey: "ration") as? Double ?? 0.00))/exRateTransaction, query: querySplitSettle)
             } else {
                 var amount:Double?
                 let ratio = getUserRatio(dateTimeTransaction: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date()), repeatedTransaction: false)
@@ -921,24 +921,24 @@ class splitAddNewTVC: UITableViewController {
                 
                 let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (transactionDatePlus as NSDate), (transactionDateMinus as NSDate))
                 
-                for transaction in loadBulkQueried(entitie: "Transactions", query: queryTransaction) {
+                for transaction in dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransaction) {
                     amount = transaction.value(forKey: "amount") as? Double ?? 0.00
                     exchangeRate = transaction.value(forKey: "exchangeRate") as? Double ?? 1.00
                 }
                 
-                saveSingleDataDouble(entity: "Transactions", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
-                saveSingleDataDouble(entity: "Transactions", attibute: "realAmount", newValue: ((amount ?? 0.00)*ratio)/(exchangeRate ?? 1.00), query: queryTransaction)
-                saveSingleDataInt(entity: "Transactions", attibute: "isSplit", newValue: 0, query: queryTransaction)
+                dataHandler.saveSingleDataDouble(entity: "Transactions", attibute: "amount", newValue: ((amount ?? 0.00)*ratio), query: queryTransaction)
+                dataHandler.saveSingleDataDouble(entity: "Transactions", attibute: "realAmount", newValue: ((amount ?? 0.00)*ratio)/(exchangeRate ?? 1.00), query: queryTransaction)
+                dataHandler.saveSingleDataInt(entity: "Transactions", attibute: "isSplit", newValue: 0, query: queryTransaction)
                 
                 let queryDeleteSplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", transactionDatePlus as NSDate, transactionDateMinus as NSDate)
-                deleteData(entity: "Splits", query: queryDeleteSplit)
+                dataHandler.deleteData(entity: "Splits", query: queryDeleteSplit)
             }
         }
         
         // Remove Person from Groups
         var persons = [Int:[Int:Any]]()
         
-        for groups in loadBulkData(entitie: "SplitGroups", orderBy: "nameGroup") {
+        for groups in dataHandler.loadBulkData(entitie: "SplitGroups", orderBy: "nameGroup") {
             persons.removeAll()
             
             var newPersons:String?
@@ -978,13 +978,13 @@ class splitAddNewTVC: UITableViewController {
                 let groupDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: groupDate)!
                 
                 let query = NSPredicate(format: "nameGroup == %@ AND createDate < %@ AND createDate > %@", (groupName as NSString), (groupDatePlus as NSDate), (groupDateMinus as NSDate))
-                saveSingleDataString(entity: "SplitGroups", attibute: "persons", newValue: (newPersons ?? ""), query: query)
+                dataHandler.saveSingleDataString(entity: "SplitGroups", attibute: "persons", newValue: (newPersons ?? ""), query: query)
             }
         }
         
         // Remove Person from SplitPersons
         let queryDeletePerson = NSPredicate(format: "namePerson == %@ AND createDate < %@ AND createDate > %@", ((updateGroupOrPersonName ?? "") as NSString), (createPersonPlus as NSDate), (createPersonMinus as NSDate))
-        deleteData(entity: "SplitPersons", query: queryDeletePerson)
+        dataHandler.deleteData(entity: "SplitPersons", query: queryDeletePerson)
         
         // Dismiss View & Update others
         let nc = NotificationCenter.default
@@ -1005,10 +1005,10 @@ class splitAddNewTVC: UITableViewController {
         if !repeatedTransaction {
             let queryTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
             
-            let amount = loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
-            let exchangeRate = loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let amount = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
             
-            var isSplit = loadQueriedAttribute(entitie: "Transactions", attibute: "isSplit", query: queryTransaction) as? Int16 ?? 0
+            var isSplit = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "isSplit", query: queryTransaction) as? Int16 ?? 0
             if removedSplit {
                 isSplit = 0
             }
@@ -1021,7 +1021,7 @@ class splitAddNewTVC: UITableViewController {
                 var nameUser:String?
                 var createDateUser:Date?
                 
-                for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+                for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                     nameUser = data.value(forKey: "namePerson") as? String ?? ""
                     createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
                 }
@@ -1037,7 +1037,7 @@ class splitAddNewTVC: UITableViewController {
                 var paidByUser:Bool?
                 var settledUser:Double?
                 
-                for dataUser in loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
+                for dataUser in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: query, sort: [nameSort]) {
                     settledUser = (dataUser.value(forKey: "settled") as? Double ?? 0.00)
                     paidByUser = (dataUser.value(forKey: "paidByUser") as? Bool ?? true)
                 }
@@ -1047,8 +1047,8 @@ class splitAddNewTVC: UITableViewController {
                     
                     let queryOthers = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ ", (dateMinus as NSDate), (datePlus as NSDate))
                     
-                    for dataOthers in loadBulkQueriedSorted(entitie: "Splits", query: queryOthers, sort: [nameSort]) {
-                        if !isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
+                    for dataOthers in dataHandler.loadBulkQueriedSorted(entitie: "Splits", query: queryOthers, sort: [nameSort]) {
+                        if !dataHandler.isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
                             let settledOther = (dataOthers.value(forKey: "settled") as? Double ?? 0.00)
                             settledByOthers = settledByOthers + settledOther
                         }
@@ -1060,13 +1060,13 @@ class splitAddNewTVC: UITableViewController {
             } else {
                 realAmount = amount/exchangeRate
             }
-            saveQueriedAttribute(entity: "Transactions", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
+            _ = dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
         } else {
             let queryTransaction = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
             
-            let amount = loadQueriedAttribute(entitie: "RegularPayments", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
-            let exchangeRate = loadQueriedAttribute(entitie: "RegularPayments", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
-            let isSplit = loadQueriedAttribute(entitie: "RegularPayments", attibute: "isSplit", query: queryTransaction) as? Int16 ?? 0
+            let amount = dataHandler.loadQueriedAttribute(entitie: "RegularPayments", attibute: "amount", query: queryTransaction) as? Double ?? 0.00
+            let exchangeRate = dataHandler.loadQueriedAttribute(entitie: "RegularPayments", attibute: "exchangeRate", query: queryTransaction) as? Double ?? 1.00
+            let isSplit = dataHandler.loadQueriedAttribute(entitie: "RegularPayments", attibute: "isSplit", query: queryTransaction) as? Int16 ?? 0
             
             if isSplit > 0 {
                 
@@ -1076,7 +1076,7 @@ class splitAddNewTVC: UITableViewController {
                 var nameUser:String?
                 var createDateUser:Date?
                 
-                for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+                for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                     nameUser = data.value(forKey: "namePerson") as? String ?? ""
                     createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
                 }
@@ -1092,7 +1092,7 @@ class splitAddNewTVC: UITableViewController {
                 var paidByUser:Bool?
                 var settledUser:Double?
                 
-                for dataUser in loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: query, sort: [nameSort]) {
+                for dataUser in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: query, sort: [nameSort]) {
                     settledUser = (dataUser.value(forKey: "settled") as? Double ?? 0.00)
                     paidByUser = (dataUser.value(forKey: "paidByUser") as? Bool ?? true)
                 }
@@ -1102,8 +1102,8 @@ class splitAddNewTVC: UITableViewController {
                     
                     let queryOthers = NSPredicate(format: "dateTimeTransaction > %@ AND dateTimeTransaction < %@ ", (dateMinus as NSDate), (datePlus as NSDate))
                     
-                    for dataOthers in loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: queryOthers, sort: [nameSort]) {
-                        if !isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
+                    for dataOthers in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: queryOthers, sort: [nameSort]) {
+                        if !dataHandler.isUser(createDate: (dataOthers.value(forKey: "createDatePerson") as? Date ?? Date()), namePerson: (dataOthers.value(forKey: "namePerson") as? String ?? "")) {
                             let settledOther = (dataOthers.value(forKey: "settled") as? Double ?? 0.00)
                             settledByOthers = settledByOthers + settledOther
                         }
@@ -1115,7 +1115,7 @@ class splitAddNewTVC: UITableViewController {
             } else {
                 realAmount = amount/exchangeRate
             }
-            saveQueriedAttribute(entity: "RegularPayments", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
+            _ = dataHandler.saveQueriedAttribute(entity: "RegularPayments", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
         }
     }
     
@@ -1129,7 +1129,7 @@ class splitAddNewTVC: UITableViewController {
         var nameUser:String?
         var createDateUser:Date?
         
-        for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+        for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
             nameUser = data.value(forKey: "namePerson") as? String ?? ""
             createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
         }
@@ -1144,12 +1144,12 @@ class splitAddNewTVC: UITableViewController {
             entity = "SplitsRegularPayments"
         }
         
-        return loadQueriedAttribute(entitie: entity, attibute: "ratio", query: querySplit) as? Double ?? 0.00
+        return dataHandler.loadQueriedAttribute(entitie: entity, attibute: "ratio", query: querySplit) as? Double ?? 0.00
     }
     
     func checkDoubleUser() {
         let query = NSPredicate(format: "isUser == %@", NSNumber(value: true))
-        let users = loadBulkQueried(entitie: "SplitPersons", query: query)
+        let users = dataHandler.loadBulkQueried(entitie: "SplitPersons", query: query)
 
         if users.count > 1 {
             // Splits
@@ -1157,13 +1157,13 @@ class splitAddNewTVC: UITableViewController {
             // SplitGroups
             var trueUserName:String?
             var trueUserDate:Date?
-            for user in loadBulkQueriedSorted(entitie: "SplitPersons", query: query, sort: [NSSortDescriptor(key: "createDate", ascending: true)]) {
+            for user in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: query, sort: [NSSortDescriptor(key: "createDate", ascending: true)]) {
                 trueUserName = user.value(forKey: "namePerson") as? String ?? ""
                 trueUserDate = user.value(forKey: "createDate") as? Date ?? Date()
                 break
             }
-            saveSettings(settingsChange: "userName", newValue: trueUserName ?? "User")
-            for user in loadBulkQueriedSorted(entitie: "SplitPersons", query: query, sort: [NSSortDescriptor(key: "createDate", ascending: false)]) {
+            dataHandler.saveSettings(settingsChange: "userName", newValue: trueUserName ?? "User")
+            for user in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: query, sort: [NSSortDescriptor(key: "createDate", ascending: false)]) {
                 // Splits
                 let userWrongPlus = Calendar.current.date(byAdding: .second, value: 1, to: user.value(forKey: "createDate") as? Date ?? Date())!
                 let userWrongMinus = Calendar.current.date(byAdding: .second, value: -1, to: user.value(forKey: "createDate") as? Date ?? Date())!
@@ -1176,20 +1176,20 @@ class splitAddNewTVC: UITableViewController {
                 if !(up && down && userWrongName == trueUserName) {
                     let querySplits = NSPredicate(format: "createDatePerson < %@ AND createDatePerson > %@ AND namePerson == %@", userWrongPlus as NSDate, userWrongMinus as NSDate, userWrongName as NSString)
                     
-                    if saveQueriedAttributeReturn(entity: "Splits", attribute: "namePerson", query: querySplits, value: trueUserName ?? "User") && saveQueriedAttributeReturn(entity: "Splits", attribute: "createDatePerson", query: querySplits, value: trueUserDate ?? Date()) {
+                    if dataHandler.saveQueriedAttributeReturn(entity: "Splits", attribute: "namePerson", query: querySplits, value: trueUserName ?? "User") && dataHandler.saveQueriedAttributeReturn(entity: "Splits", attribute: "createDatePerson", query: querySplits, value: trueUserDate ?? Date()) {
                         
                         let querySplitsPaid = NSPredicate(format: "createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", userWrongPlus as NSDate, userWrongMinus as NSDate, userWrongName as NSString)
                         
-                        _ = saveQueriedAttributeReturn(entity: "Splits", attribute: "namePersonWhoPaid", query: querySplitsPaid, value: trueUserName ?? "User")
-                        _ = saveQueriedAttributeReturn(entity: "Splits", attribute: "createDatePersonWhoPaid", query: querySplitsPaid, value: trueUserDate ?? Date())
+                        _ = dataHandler.saveQueriedAttributeReturn(entity: "Splits", attribute: "namePersonWhoPaid", query: querySplitsPaid, value: trueUserName ?? "User")
+                        _ = dataHandler.saveQueriedAttributeReturn(entity: "Splits", attribute: "createDatePersonWhoPaid", query: querySplitsPaid, value: trueUserDate ?? Date())
                     }
                     // SplitsRegularPayments
-                    if saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "namePerson", query: querySplits, value: trueUserName ?? "User") && saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "createDatePerson", query: querySplits, value: trueUserDate ?? Date()) {
+                    if dataHandler.saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "namePerson", query: querySplits, value: trueUserName ?? "User") && dataHandler.saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "createDatePerson", query: querySplits, value: trueUserDate ?? Date()) {
                         
                         let querySplitsPaid = NSPredicate(format: "createDatePersonWhoPaid < %@ AND createDatePersonWhoPaid > %@ AND namePersonWhoPaid == %@", userWrongPlus as NSDate, userWrongMinus as NSDate, userWrongName as NSString)
                         
-                        _ = saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "namePersonWhoPaid", query: querySplitsPaid, value: trueUserName ?? "User")
-                        _ = saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "createDatePersonWhoPaid", query: querySplitsPaid, value: trueUserDate ?? Date())
+                        _ = dataHandler.saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "namePersonWhoPaid", query: querySplitsPaid, value: trueUserName ?? "User")
+                        _ = dataHandler.saveQueriedAttributeReturn(entity: "SplitsRegularPayments", attribute: "createDatePersonWhoPaid", query: querySplitsPaid, value: trueUserDate ?? Date())
                     }
                     
                     // Groups
@@ -1198,7 +1198,7 @@ class splitAddNewTVC: UITableViewController {
                     let userWrongGroupSting = userWrongName + "*&*" + dateFormatter.string(from: user.value(forKey: "createDate") as? Date ?? Date())
                     let trueUserGroupSting = (trueUserName ?? "User") + "*&*" + dateFormatter.string(from: trueUserDate ?? Date())
                     
-                    for group in loadBulkSorted(entitie: "SplitGroups", sort: [NSSortDescriptor(key: "createDate", ascending: false)]) {
+                    for group in dataHandler.loadBulkSorted(entitie: "SplitGroups", sort: [NSSortDescriptor(key: "createDate", ascending: false)]) {
                         if (group.value(forKey: "persons") as? String ?? "").contains(userWrongGroupSting) {
                             var stringToReplace = (group.value(forKey: "persons") as? String ?? "")
                             stringToReplace = stringToReplace.replacingOccurrences(of: userWrongGroupSting, with: trueUserGroupSting)
@@ -1208,11 +1208,11 @@ class splitAddNewTVC: UITableViewController {
                             
                             let queryGroupSave = NSPredicate(format: "createDate < %@ AND createDate > %@ AND nameGroup == %@", groupWrongPlus as NSDate, groupWrongMinus as NSDate, (group.value(forKey: "nameGroup") as? String ?? "") as NSString)
                             
-                            _ = saveQueriedAttributeReturn(entity: "SplitGroups", attribute: "persons", query: queryGroupSave, value: stringToReplace)
+                            _ = dataHandler.saveQueriedAttributeReturn(entity: "SplitGroups", attribute: "persons", query: queryGroupSave, value: stringToReplace)
                         }
                     }
                     let queryWrongUser = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", userWrongPlus as NSDate, userWrongMinus as NSDate, userWrongName as NSString)
-                    deleteData(entity: "SplitPersons", query: queryWrongUser)
+                    dataHandler.deleteData(entity: "SplitPersons", query: queryWrongUser)
                 }
             }
             checkDoubleUser()
@@ -1243,89 +1243,8 @@ class splitAddNewTVC: UITableViewController {
 
 extension splitAddNewTVC {
     // MARK: -DATA
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkData(entitie:String, orderBy:String) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        let sortDescriptor = NSSortDescriptor(key: orderBy, ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                    return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
     func saveSplitPerson(namePerson: String, isUser: Bool = false, color: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let personSave = SplitPersons(context: managedContext)
@@ -1345,8 +1264,7 @@ extension splitAddNewTVC {
     }
     
     func saveSplitSplitGroup(nameGroup: String, persons: String = "", color: Int16) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let groupSave = SplitGroups(context: managedContext)
@@ -1365,257 +1283,13 @@ extension splitAddNewTVC {
         }
     }
     
-    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count > 1 || fetchedData.count <= 0 {
-                return
-            } else {
-                fetchedData[0].setValue(value, forKey: attribute)
-                try managedContext.save()
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func saveQueriedAttributeReturn(entity: String, attribute: String, query: NSPredicate ,value: Any) -> Bool {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if fetchedData.count > 1 || fetchedData.count <= 0 {
-                return false
-            } else {
-                fetchedData[0].setValue(value, forKey: attribute)
-                try managedContext.save()
-                return true
-            }
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func deleteData(entity: String, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.predicate = query
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
-    
-    func saveSingleDataString(entity:String, attibute: String, newValue: String, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    let managedObject = data
-                    managedObject.setValue(newValue, forKey: attibute)
-                    try managedContext.save()
-                }
-            }
-        } catch {
-            print("ERROR. \(error)")
-        }
-    }
-    
-    func saveSingleDataDouble(entity:String, attibute: String, newValue: Double, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    let managedObject = data
-                    managedObject.setValue(newValue, forKey: attibute)
-                    try managedContext.save()
-                }
-            }
-        } catch {
-            print("ERROR. \(error)")
-        }
-    }
-    
-    func saveSingleDataInt(entity:String, attibute: String, newValue: Int, query: NSPredicate) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    let managedObject = data
-                    managedObject.setValue(newValue, forKey: attibute)
-                    try managedContext.save()
-                }
-            }
-        } catch {
-            print("ERROR. \(error)")
-        }
-    }
-    
-    func saveSettings(settingsChange: String, newValue: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Settings")
-        fetchRequest.returnsObjectsAsFaults = false
-        
-        do {
-            let fetchedSettings = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            fetchedSettings[0].setValue(newValue, forKey: settingsChange)
-
-            try managedContext.save()
-        } catch {
-            fatalError("Failed to fetch recordings: \(error)")
-        }
-    }
-    
-    func loadQueriedAttributeSorted(entitie:String, attibute:String, query:NSPredicate, sort:[NSSortDescriptor]) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func isUser(createDate:Date, namePerson:String) -> Bool {
-        let plusCreateDate = Calendar.current.date(byAdding: .second, value: 1, to: createDate)!
-        let minusCreateDate = Calendar.current.date(byAdding: .second, value: -1, to: createDate)!
-        
-        let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (plusCreateDate as NSDate), (minusCreateDate as NSDate) , (namePerson as NSString))
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: "isUser") != nil {
-                    return data.value(forKey: "isUser") as? Bool ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        
-        return false
-    }
-    
     func updateSplitGroup(groupName: String, groupCreateDate: Date, personsNew:String, groupNameNew:String?) {
         let createDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: groupCreateDate)!
         let createDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: groupCreateDate)!
         
         let query = NSPredicate(format: "nameGroup == %@ AND createDate > %@ AND createDate < %@", (groupName as NSString), (createDateMinus as NSDate), (createDatePlus as NSDate))
         
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitGroups")
@@ -1639,12 +1313,6 @@ extension splitAddNewTVC {
         } catch {
             fatalError("Failed to fetch recordings: \(error)")
         }
-        
-//        if (groupName != groupNameNew) && !postedchangeHeaderTitleNotification {
-//            let nc = NotificationCenter.default
-//            nc.post(name: Notification.Name("changeHeaderTitle"), object: nil, userInfo: ["newHeaderTitle": groupNameNew ?? "","oldName": groupName])
-//            postedchangeHeaderTitleNotification = true
-//        }
     }
     
     func updateSplitPerson(personName: String, personCreateDate: Date, personNameNew:String ) {
@@ -1654,8 +1322,7 @@ extension splitAddNewTVC {
         let query = NSPredicate(format: "namePerson == %@ AND createDate > %@ AND createDate < %@", (personName as NSString), (createDateMinus as NSDate), (createDatePlus as NSDate))
         let dateSort = NSSortDescriptor(key: "createDate", ascending: true)
         
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
+        let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
@@ -1689,7 +1356,7 @@ extension splitAddNewTVC {
             }
         }
 
-        for data in loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
+        for data in dataHandler.loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
             
             let group = data.value(forKey: "nameGroup") as? String ?? ""
             let groupDate = data.value(forKey: "createDate") as? Date ?? Date()
@@ -1741,10 +1408,10 @@ extension splitAddNewTVC {
         let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: createDatePerson)!
         
         let query = NSPredicate(format: "namePerson == %@ AND createDatePerson < %@ AND createDatePerson > %@", (namePerson as NSString), (createDatePersonPlus as NSDate), (createDatePersonMinus as NSDate))
-        saveSingleDataString(entity: "Splits", attibute: "namePerson", newValue: newNamePerson, query: query)
+        dataHandler.saveSingleDataString(entity: "Splits", attibute: "namePerson", newValue: newNamePerson, query: query)
         
         let queryPaid = NSPredicate(format: "namePersonWhoPaid == %@ AND createDatePerson < %@ AND createDatePerson > %@", (namePerson as NSString), (createDatePersonPlus as NSDate), (createDatePersonMinus as NSDate))
-        saveSingleDataString(entity: "Splits", attibute: "namePersonWhoPaid", newValue: newNamePerson, query: queryPaid)
+        dataHandler.saveSingleDataString(entity: "Splits", attibute: "namePersonWhoPaid", newValue: newNamePerson, query: queryPaid)
     }
     
     func updateGroupSplits(nameGroup: String, createDateGroup: Date, newGroupName: String) {
@@ -1752,7 +1419,7 @@ extension splitAddNewTVC {
         let createDateGroupMinus = Calendar.current.date(byAdding: .second, value: -1, to: createDateGroup)!
         
         let query = NSPredicate(format: "nameGroup == %@ AND createDateGroup < %@ AND createDateGroup > %@", (nameGroup as NSString), (createDateGroupPlus as NSDate), (createDateGroupMinus as NSDate))
-        saveSingleDataString(entity: "Splits", attibute: "nameGroup", newValue: newGroupName, query: query)
+        dataHandler.saveSingleDataString(entity: "Splits", attibute: "nameGroup", newValue: newGroupName, query: query)
     }
     
 }
@@ -1788,7 +1455,7 @@ extension splitAddNewTVC: cellSplitAddNewAddDelegate {
                 updatePersonSplits(namePerson: updateGroupOrPersonName ?? "", createDatePerson: updateCreateDate ?? Date(), newNamePerson: inputText)
                 updateSplitPerson(personName: updateGroupOrPersonName ?? "", personCreateDate: updateCreateDate ?? Date(), personNameNew: inputText)
                 if editUser {
-                    saveSettings(settingsChange: "userName", newValue: (updateGroupOrPersonName ?? ""))
+                    dataHandler.saveSettings(settingsChange: "userName", newValue: (updateGroupOrPersonName ?? ""))
                 }
                 navTitle = NSLocalizedString("updateSuccessNavlabelPerson", comment: "Person Updated")
                 break

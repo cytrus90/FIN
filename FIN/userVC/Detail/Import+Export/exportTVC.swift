@@ -142,7 +142,7 @@ class exportTVC: UITableViewController {
         
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
         
-        for transaction in loadBulkSorted(entitie: "Transactions", sort: [dateSort]) {
+        for transaction in dataHandler.loadBulkSorted(entitie: "Transactions", sort: [dateSort]) {
             csvText.append(exportTotalFormater.string(from: (transaction.value(forKey: "dateTime") as? Date ?? Date())))
             csvText.append(delimiters[selectedDelimiter])
             csvText.append((numberFormatter.string(from: NSNumber(value: (transaction.value(forKey: "amount") as? Double ?? 0.00))) ?? "0.00").replacingOccurrences(of: delimiters[selectedDelimiter], with: ""))
@@ -150,7 +150,7 @@ class exportTVC: UITableViewController {
             csvText.append((transaction.value(forKey: "descriptionNote") as? String ?? "").replacingOccurrences(of: delimiters[selectedDelimiter], with: ""))
             csvText.append(delimiters[selectedDelimiter])
             let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
-            csvText.append((loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? (transaction.value(forKey: "descriptionNote") as? String ?? "")).replacingOccurrences(of: delimiters[selectedDelimiter], with: ""))
+            csvText.append((dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "name", query: queryCategory) as? String ?? (transaction.value(forKey: "descriptionNote") as? String ?? "")).replacingOccurrences(of: delimiters[selectedDelimiter], with: ""))
             csvText.append(delimiters[selectedDelimiter])
             csvText.append((transaction.value(forKey: "currencyCode") as? String ?? ""))
             csvText.append(delimiters[selectedDelimiter])
@@ -201,50 +201,6 @@ class exportTVC: UITableViewController {
     }
     */
 
-}
-
-// MARK: -DATA
-extension exportTVC {
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
 }
 
 extension exportTVC: cellImportStartButtonDelegate {

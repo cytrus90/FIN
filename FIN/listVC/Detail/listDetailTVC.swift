@@ -536,7 +536,7 @@ class listDetailTVC: UITableViewController {
             queryTransaction = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", createDatePlus as NSDate, createDateMinus as NSDate)
         }
         
-        for transaction in loadBulkQueried(entitie: entityTransaction, query: queryTransaction) {
+        for transaction in dataHandler.loadBulkQueried(entitie: entityTransaction, query: queryTransaction) {
             amount = transaction.value(forKey: "amount") as? Double ?? 0.00
             currencyCode = transaction.value(forKey: "currencyCode") as? String ?? "EUR"
             exchangeRate = transaction.value(forKey: "exchangeRate") as? Double ?? 1.00
@@ -552,7 +552,7 @@ class listDetailTVC: UITableViewController {
         // Get Data from Category
         let queryCategory = NSPredicate(format: "cID == %@", ((categoryID ?? 0) as Int16) as NSNumber)
         
-        for category in loadBulkQueried(entitie: "Categories", query: queryCategory) {
+        for category in dataHandler.loadBulkQueried(entitie: "Categories", query: queryCategory) {
             categoryName = category.value(forKey: "name") as? String ?? "-"
             categoryColor = category.value(forKey: "color") as? Int16 ?? 0
             isIncome = category.value(forKey: "isIncome") as? Bool ?? false
@@ -590,7 +590,7 @@ class listDetailTVC: UITableViewController {
             entitySplit = "SplitsRegularPayments"
         }
         var first = true
-        for split in loadBulkQueriedSorted(entitie: entitySplit, query: querySplits, sort: [dateSort]) {
+        for split in dataHandler.loadBulkQueriedSorted(entitie: entitySplit, query: querySplits, sort: [dateSort]) {
 //            transactionPartOfSplit = true
             // Get Group if any
             if first && !((split.value(forKey: "nameGroup") as? String ?? "").count <= 0) {
@@ -602,7 +602,7 @@ class listDetailTVC: UITableViewController {
                 let createDateGroupPlus = Calendar.current.date(byAdding: .second, value: 1, to: (split.value(forKey: "createDateGroup") as? Date ?? Date()))!
                 let createDateGroupMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDateGroup") as? Date ?? Date()))!
                 let queryGroup = NSPredicate(format: "createDate < %@ AND createDate > %@ AND nameGroup == %@", createDateGroupPlus as NSDate, createDateGroupMinus as NSDate, (split.value(forKey: "nameGroup") as? String ?? "") as NSString)
-                for group in loadBulkQueried(entitie: "SplitGroups", query: queryGroup) {
+                for group in dataHandler.loadBulkQueried(entitie: "SplitGroups", query: queryGroup) {
                     groupName = group.value(forKey: "nameGroup") as? String ?? ""
                     groupColor = group.value(forKey: "color") as? Int16 ?? 0
                     groupIcon = group.value(forKey: "icon") as? String ?? ""
@@ -642,7 +642,7 @@ class listDetailTVC: UITableViewController {
             let createDatePersonMinus = Calendar.current.date(byAdding: .second, value: -1, to: (split.value(forKey: "createDatePerson") as? Date ?? Date()))!
             let queryPerson = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", createDatePersonPlus as NSDate, createDatePersonMinus as NSDate, (split.value(forKey: "namePerson") as? String ?? "") as NSString)
             
-            for person in loadBulkQueried(entitie: "SplitPersons", query: queryPerson) {
+            for person in dataHandler.loadBulkQueried(entitie: "SplitPersons", query: queryPerson) {
                 personName = person.value(forKey: "namePerson") as? String ?? "Person"
                 personColor = person.value(forKey: "color") as? Int16 ?? 0
                 isUser = person.value(forKey: "isUser") as? Bool ?? false
@@ -703,7 +703,7 @@ class listDetailTVC: UITableViewController {
                 
                 let queryTag = NSPredicate(format: "tagName == %@", (tag as NSString))
                 
-                for tagData in loadBulkQueried(entitie: "Tags", query: queryTag) {
+                for tagData in dataHandler.loadBulkQueried(entitie: "Tags", query: queryTag) {
                     tagColor = Int(tagData.value(forKey: "tagColor") as? Int16 ?? 0)
                 }
                 
@@ -852,48 +852,6 @@ class listDetailTVC: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
-}
-
-// MARK: -DATA
-extension listDetailTVC {
-    func loadBulkQueried(entitie:String, query:NSPredicate) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
 }
 
 extension listDetailTVC: cellAmountDetailTVCDelegate {

@@ -252,7 +252,7 @@ class splitTransactionSelectTVC: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellSplitTransactionGeneral", for: indexPath) as! cellSplitTransactionGeneral
 
-        if isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[0] as? String ?? "")) {
+        if dataHandler.isUser(createDate: (rowData[indexPath.row]?[3] as? Date ?? Date()), namePerson: (rowData[indexPath.row]?[0] as? String ?? "")) {
             cell.mainLabel.text = (rowData[indexPath.row]?[0] as? String ?? "") + " [" + NSLocalizedString("youTheUser", comment: "I") + "]"
         } else {
             cell.mainLabel.text = rowData[indexPath.row]?[0] as? String ?? ""
@@ -388,7 +388,7 @@ class splitTransactionSelectTVC: UITableViewController {
         if selectedSplit == 0 { // Groups
             let dateSort = NSSortDescriptor(key: "createDate", ascending: false)
             var i = 0
-            for data in loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
+            for data in dataHandler.loadBulkSorted(entitie: "SplitGroups", sort: [dateSort]) {
                 let personsLoad = (data.value(forKey: "persons") as? String ?? "")
                 let numPersons:Int?
                 
@@ -413,7 +413,7 @@ class splitTransactionSelectTVC: UITableViewController {
             let userSort = NSSortDescriptor(key: "isUser", ascending: false)
             
             var i = 0
-            for data in loadBulkSorted(entitie: "SplitPersons", sort: [userSort,dateSort]) {
+            for data in dataHandler.loadBulkSorted(entitie: "SplitPersons", sort: [userSort,dateSort]) {
                 var namePerson:String?
                         
                 if (data.value(forKey: "isUser") as? Bool ?? false) {
@@ -660,96 +660,6 @@ class splitTransactionSelectTVC: UITableViewController {
         default:
             break
         }
-    }
-}
-
-// MARK: -DATA
-extension splitTransactionSelectTVC {
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
-    func loadData(entitie:String, attibute:String) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func isUser(createDate:Date, namePerson:String) -> Bool {
-        let plusCreateDate = Calendar.current.date(byAdding: .second, value: 1, to: createDate)!
-        let minusCreateDate = Calendar.current.date(byAdding: .second, value: -1, to: createDate)!
-        
-        let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (plusCreateDate as NSDate), (minusCreateDate as NSDate) , (namePerson as NSString))
-        
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SplitPersons")
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: "isUser") != nil {
-                    return data.value(forKey: "isUser") as? Bool ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        
-        return false
     }
 }
 

@@ -133,7 +133,7 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
         
         let query = NSPredicate(format: "createDate < %@ AND createDate > %@ AND namePerson == %@", (datePlusPerson as NSDate), (dateMinusPerson as NSDate), ((split[indexPath.row]?[0] as? String ?? "") as NSString))
         
-        let colorInt = Int(loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
+        let colorInt = Int(dataHandler.loadQueriedAttribute(entitie: "SplitPersons", attibute: "color", query: query) as? Int16 ?? 0)
         
         cell.circleView.backgroundColor = UIColor.randomColor(color: colorInt)
         cell.circleView.layer.borderColor = UIColor.randomColor(color: colorInt).cgColor
@@ -152,7 +152,7 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
             var createDateUser:Date?
             var paidByUser:Bool?
             
-            for data in loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
+            for data in dataHandler.loadBulkQueriedSorted(entitie: "SplitPersons", query: queryUser, sort: [nameSort]) {
                 nameUser = data.value(forKey: "namePerson") as? String ?? ""
                 createDateUser = data.value(forKey: "createDate") as? Date ?? Date()
             }
@@ -257,46 +257,3 @@ class splitTransactionSelectWhoPaidTVC: UITableViewController {
 
 }
 
-// MARK: -DATA
-extension splitTransactionSelectWhoPaidTVC {
-    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            for data in loadData {
-                if data.value(forKey: attibute) != nil {
-                    return data.value(forKey: attibute) ?? false
-                }
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return false
-    }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.predicate = query
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-}
