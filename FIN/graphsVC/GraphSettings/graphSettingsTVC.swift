@@ -178,7 +178,7 @@ class graphSettingsTVC: UITableViewController {
     func getSettingsCells(indexPath: IndexPath) -> cellGraphSettingsDetailsTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellGraphSettingsDetailsTVC", for: indexPath) as! cellGraphSettingsDetailsTVC
         
-        if rowData[activeGraphID]?[4] as? Bool ?? false {
+        if (rowData[activeGraphID]?[4] as? Bool ?? false) && !UIDevice().model.contains("iPhone") {
             cell.segmentControl3.isHidden = false
         } else {
             cell.segmentControl3.isHidden = true

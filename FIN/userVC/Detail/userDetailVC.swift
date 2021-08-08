@@ -800,8 +800,10 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         cell.descriptionLabel.text = ((userDetailCells[indexPath.row] as? [Int:Any])?[2] as? String ?? "")
         
-        cell.descriptionSubtitleLabel.text = NSLocalizedString("nextText", comment: "Next") + (mediumDate.string(from: ((userDetailCells[indexPath.row] as? [Int:Any])?[4] as? Date ?? Date())))
+        cell.descriptionSubtitleLabel.text = (getDayForDate(dayDate: ((userDetailCells[indexPath.row] as? [Int:Any])?[4] as? Date ?? Date())))
 
+        // NSLocalizedString("nextText", comment: "Next") + 
+        
         if ((userDetailCells[indexPath.row] as? [Int:Any])?[8] as? Bool ?? false) { // isSave
             cell.icon.isHidden = false
             cell.icon.image = UIImage(named: "safe")?.withRenderingMode(.alwaysTemplate)
@@ -1175,17 +1177,15 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func sendEmail() {
-      //if MFMailComposeViewController.canSendMail() {
-      //  let mail = MFMailComposeViewController()
-      //  mail.mailComposeDelegate = self
-      //  mail.setToRecipients(["support@alpako.info"])
-      //  mail.setSubject("Feedback - FIN")
-//        mail.setMessageBody("Thank you for your Feedback.", isHTML: true)
+      if MFMailComposeViewController.canSendMail() {
+        let mail = MFMailComposeViewController()
+        mail.mailComposeDelegate = self
+        mail.setToRecipients(["support@alpako.info"])
+        mail.setSubject("Feedback - FIN")
+        mail.setMessageBody("Thank you for your Feedback.", isHTML: true)
 
-       // present(mail, animated: true)
-      //} else {
-        // show failure alert
-      //}
+        present(mail, animated: true)
+      }
     }
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
@@ -1564,6 +1564,33 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             return newlocale.displayName(forKey: .currencySymbol, value: code)
         }
         return locale.displayName(forKey: .currencySymbol, value: code)
+    }
+    
+    func getDayForDate(dayDate: Date) -> String {
+        let calendar = Calendar.current
+        
+        let dayDateDateOnly = calendar.dateComponents([Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: dayDate)
+        let nowDateOnly = calendar.dateComponents([Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: Date())
+        
+        let differenceInDays = Calendar.current.dateComponents([.day], from: dayDateDateOnly, to: nowDateOnly).day!
+        
+        if differenceInDays == 0 {
+            return NSLocalizedString("today", comment: "Today")
+        } else if differenceInDays == 1 {
+            return NSLocalizedString("yesterday", comment: "Yesterday")
+        } else if differenceInDays < 7 && differenceInDays > 0 {
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEEE"
+            return dayFormatter.string(from: dayDate)
+        } else if differenceInDays == -1 {
+            return NSLocalizedString("tomorrowText", comment: "Tomorrow")
+        } else if differenceInDays == -2 {
+            return NSLocalizedString("dayAfterTomorrowText", comment: "Day after Tomorrow")
+        } else {
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEEE"
+            return dayFormatter.string(from: dayDate).capitalized.prefix(3) + ", " + mediumDate.string(from: dayDate)
+        }
     }
     
     func find(value searchValue: Int, in array: [Int]) -> Int? {

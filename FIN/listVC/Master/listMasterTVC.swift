@@ -1004,18 +1004,14 @@ class listMasterTVC: UITableViewController {
                 if today.year == stringFromDateComponents.year {
                     if stringFromDateComponents.month == stringToDateComponents.month {
                         return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
-//                        return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: false, day: true, hour: false, minute: false, second: false, locale: .current) + "." + NSLocalizedString("to", comment: "To Connector Word") + stringToDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
                     } else {
                         return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
-//                        return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current) + NSLocalizedString("to", comment: "To Connector Word") + stringToDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
                     }
                 } else {
                     if stringFromDateComponents.month == stringToDateComponents.month {
                         return stringFromDate.formattedFromComponents(styleAttitude: .long, year: true, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
-//                        return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: false, day: true, hour: false, minute: false, second: false, locale: .current) + "." + NSLocalizedString("to", comment: "To Connector Word") + stringToDate.formattedFromComponents(styleAttitude: .long, year: true, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
                     } else {
                         return stringFromDate.formattedFromComponents(styleAttitude: .long, year: true, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
-//                        return stringFromDate.formattedFromComponents(styleAttitude: .long, year: false, month: true, day: true, hour: false, minute: false, second: false, locale: .current) + NSLocalizedString("to", comment: "To Connector Word") + stringToDate.formattedFromComponents(styleAttitude: .long, year: true, month: true, day: true, hour: false, minute: false, second: false, locale: .current)
                     }
                 }
             }
@@ -1053,7 +1049,7 @@ class listMasterTVC: UITableViewController {
             return NSLocalizedString("today", comment: "Today")
         } else if differenceInDays == 1 {
             return NSLocalizedString("yesterday", comment: "Yesterday")
-        } else if differenceInDays <= 7 && differenceInDays > 0 {
+        } else if differenceInDays < 7 && differenceInDays > 0 {
             let dayFormatter = DateFormatter()
             dayFormatter.dateFormat = "EEEE"
             return dayFormatter.string(from: dayDate)
@@ -1062,7 +1058,9 @@ class listMasterTVC: UITableViewController {
         } else if differenceInDays == -2 {
             return NSLocalizedString("dayAfterTomorrowText", comment: "Day after Tomorrow")
         } else {
-            return mediumDate.string(from: dayDate)
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEEE"
+            return dayFormatter.string(from: dayDate).capitalized.prefix(3) + ", " + mediumDate.string(from: dayDate)
         }
     }
     
@@ -1113,12 +1111,19 @@ class listMasterTVC: UITableViewController {
 //        12: isSplit?
 //        13: isAdd?,
 //        14:icon,
-//        15:iconLight
+//        15:iconLight,
+//        16:uuid
 
         for data in result {
             if ((data.value(forKey: "isSplit") as? Int16) == 0) || userPartOfSplit(dateTime: data.value(forKey: "dateTime") as? Date ?? Date())  {
                 let categoryID = data.value(forKey: "categoryID") as? Int16 ?? 0
                 if categorySelectedForFilter(categoryID: categoryID) && tagIsSelectedInFilter(tag: (data.value(forKey: "tags") as? String ?? "-1y")) {
+                    
+                    var uuid:UUID?
+                    if ((data.value(forKey: "uuid") as? UUID) != nil) {
+                        uuid = (data.value(forKey: "uuid") as? UUID)
+                    }
+                    
                     let categoryQuery = NSPredicate(format: "cID == \(categoryID)")
                     ramDictionary[i] = [
                         0:data.value(forKey: "realAmount") as? Double ?? 0.00,  // AMOUNT
@@ -1137,7 +1142,8 @@ class listMasterTVC: UITableViewController {
                         12:Int((data.value(forKey: "isSplit") as? Int16 ?? 0)),
                         13:false,
                         14:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: categoryQuery) as? String ?? "",
-                        15:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: categoryQuery) as? Bool ?? true
+                        15:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: categoryQuery) as? Bool ?? true,
+                        16:uuid as Any
                     ]
                     i = i + 1
                 }
@@ -1263,7 +1269,12 @@ extension listMasterTVC: UIContextMenuInteractionDelegate {
             let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: transactionDate)!
             let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: transactionDate)!
 
-            let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            var queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+            
+            if (transferData[(row)]?[11] as? UUID) != nil {
+                queryDelete = NSPredicate(format: "uuid == %@", (transferData[(row)]?[11] as? UUID)?.uuidString ?? "")
+            }
+            
             dataHandler.deleteData(entity: "Transactions", query: queryDelete)
 
             let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)

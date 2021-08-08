@@ -1107,7 +1107,7 @@ class dataClass {
         }
     }
     
-    func saveInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16) {
+    func saveInitialTransaction(amount: Double, isSave: Bool, categoryID: Int16, uuid:UUID = UUID()) {
         let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
@@ -1124,6 +1124,7 @@ class dataClass {
         transactionSave.isSave = isSave
         transactionSave.isSplit = 0
         transactionSave.isLiquid = !isSave
+        transactionSave.uuid = uuid
                 
         do {
             try managedContext.save()
@@ -1133,7 +1134,7 @@ class dataClass {
         }
     }
     
-    func saveInitialTransaction(amount: Double, descriptionNote: String?,isSave: Bool = false, isLiquid:Bool = true) -> Bool {
+    func saveInitialTransaction(amount: Double, descriptionNote: String?,isSave: Bool = false, isLiquid:Bool = true, uuid:UUID = UUID()) -> Bool {
         let currencyCodeSave = Locale.current.currencyCode ?? "EUR"
         let isSplit:Int16 = 0
 
@@ -1153,6 +1154,7 @@ class dataClass {
         transactionSave.isSave = isSave
         transactionSave.isSplit = isSplit
         transactionSave.isLiquid = isLiquid
+        transactionSave.uuid = uuid
                 
         do {
             try managedContext.save()
@@ -1163,7 +1165,7 @@ class dataClass {
         return true
     }
     
-    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String, dateTime: Date, descriptionNote: String, exchangeRate: Double, tags: String, isSave: Bool = false, isLiquid:Bool, isSplit:Int16) -> Bool {
+    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String, dateTime: Date, descriptionNote: String, exchangeRate: Double, tags: String, isSave: Bool = false, isLiquid:Bool, isSplit:Int16, uuid:UUID = UUID()) -> Bool {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
@@ -1180,7 +1182,8 @@ class dataClass {
         transactionSave.isSave = isSave
         transactionSave.isSplit = isSplit
         transactionSave.isLiquid = isLiquid
-                
+        transactionSave.uuid = uuid
+        
         do {
             try managedContext.save()
         } catch let error as NSError {
@@ -1190,7 +1193,7 @@ class dataClass {
         return true
     }
     
-    func saveSplit(createDateGroup: Date, createDatePerson: Date, createDatePersonWhoPaid:Date, dateTimeTransaction: Date, nameGroup: String, namePerson: String, namePersonWhoPaid:String, paidByUser:Bool, ratio:Double, settled:Double) {
+    func saveSplit(createDateGroup: Date, createDatePerson: Date, createDatePersonWhoPaid:Date, dateTimeTransaction: Date, nameGroup: String, namePerson: String, namePersonWhoPaid:String, paidByUser:Bool, ratio:Double, settled:Double, uuid:UUID = UUID()) {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
@@ -1207,6 +1210,7 @@ class dataClass {
         splitSave.paidByUser = paidByUser
         splitSave.ratio = ratio
         splitSave.settled = settled
+        splitSave.uuid = uuid
         
         do {
             try managedContext.save()
@@ -1336,6 +1340,7 @@ class dataClass {
             userSplitPersonSave.createDate = Date()
             userSplitPersonSave.color = Int16(21)
             userSplitPersonSave.namePerson = loadSettings(entitie: "Settings", attibute: "userName") as? String ?? "User"
+            userSplitPersonSave.uuid = UUID()
             
             do {
                 try managedContext.save()
@@ -1478,7 +1483,7 @@ class dataClass {
     
     // MARK: -ADDVC
     // MARK: SAVE
-    func saveTransaction(amount: Double, category: Int16, currencyCode: String?, dateTime: Date?, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool) -> (Bool,Date?) {
+    func saveTransaction(amount: Double, category: Int16, currencyCode: String?, dateTime: Date?, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, uuid:UUID = UUID()) -> (Bool,Date?) {
         let currencyCodeSave: String?
         if currencyCode == nil {
             currencyCodeSave = Locale.current.currencyCode ?? "EUR"
@@ -1505,6 +1510,7 @@ class dataClass {
         transactionSave.isSave = isSave
         transactionSave.isSplit = isSplit
         transactionSave.isLiquid = isLiquid
+        transactionSave.uuid = uuid
         
         let transactionDateTime = transactionSave.dateTime
         
@@ -1540,7 +1546,7 @@ class dataClass {
             let paidByUser = value.value[6] ?? false
             let ratio = value.value[7] ?? 0.00
             let settled = value.value[8] ?? 0.00
-
+            
             if ((nameGroup as? String)?.count ?? 0) > 0 {
                 groupSplit = true
             }
@@ -1575,7 +1581,7 @@ class dataClass {
         }
     }
     
-    func saveRepeatTransaction(amount: Double, category: Int16, currencyCode: String?, dateTimeNext: Date, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, repeatFrequency: Int) {
+    func saveRepeatTransaction(amount: Double, category: Int16, currencyCode: String?, dateTimeNext: Date, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, repeatFrequency: Int, skipWeekends: Bool, dateTimeNextOriginal: Date) {
         let currencyCodeSave: String?
         if currencyCode == nil {
             currencyCodeSave = Locale.current.currencyCode ?? "EUR"
@@ -1596,6 +1602,7 @@ class dataClass {
         transactionRepeatSave.categoryID = category
         transactionRepeatSave.currencyCode = currencyCodeSave ?? ""
         transactionRepeatSave.dateTimeNext = dateTimeNext
+        transactionRepeatSave.dateTimeNextOriginal = dateTimeNextOriginal
         transactionRepeatSave.descriptionNote = descriptionNote ?? ""
         transactionRepeatSave.exchangeRate = exchangeRate
         transactionRepeatSave.tags = tags ?? ""
@@ -1603,9 +1610,8 @@ class dataClass {
         transactionRepeatSave.isSplit = isSplit
         transactionRepeatSave.isLiquid = isLiquid
         transactionRepeatSave.frequency = Int16(repeatFrequency)
-        
-//        transactionDateTime = transactionSave.dateTimeNext
-        
+        transactionRepeatSave.skipWeekends = skipWeekends
+                
         do {
             try managedContext.save()
         } catch let error as NSError {

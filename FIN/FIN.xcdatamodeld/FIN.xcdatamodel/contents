@@ -42,6 +42,7 @@
         <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="isSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="realAmount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="RegularPayments" representedClassName="RegularPayments" syncable="YES" codeGenerationType="class">
         <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -49,6 +50,7 @@
         <attribute name="categoryID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="currencyCode" optional="YES" attributeType="String"/>
         <attribute name="dateTimeNext" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateTimeNextOriginal" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descriptionNote" optional="YES" attributeType="String"/>
         <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="frequency" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -56,6 +58,7 @@
         <attribute name="isSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isSplit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="realAmount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="skipWeekends" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="tags" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
@@ -107,6 +110,7 @@
         <attribute name="ratio" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="settled" optional="YES" attributeType="Double" minValueString="0" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="uuidTransaction" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="SplitsRegularPayments" representedClassName="SplitsRegularPayments" syncable="YES" codeGenerationType="class">
         <attribute name="createDateGroup" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -148,12 +152,12 @@
         <element name="Categories" positionX="112.56640625" positionY="45.76171875" width="128" height="209"/>
         <element name="Currency" positionX="144" positionY="-18" width="128" height="134"/>
         <element name="GraphSettings" positionX="144" positionY="-9" width="128" height="134"/>
-        <element name="ImportRAM" positionX="144" positionY="-9" width="128" height="164"/>
-        <element name="RegularPayments" positionX="90.2578125" positionY="145.76953125" width="128" height="239"/>
+        <element name="ImportRAM" positionX="144" positionY="-9" width="128" height="179"/>
+        <element name="RegularPayments" positionX="90.2578125" positionY="145.76953125" width="128" height="269"/>
         <element name="Settings" positionX="-43.3125" positionY="-131.890625" width="128" height="14"/>
         <element name="SplitGroups" positionX="335.60546875" positionY="-15.921875" width="128" height="149"/>
         <element name="SplitPersons" positionX="306.44921875" positionY="111.0078125" width="128" height="134"/>
-        <element name="Splits" positionX="265.578125" positionY="-168.0625" width="128" height="194"/>
+        <element name="Splits" positionX="265.578125" positionY="-168.0625" width="128" height="209"/>
         <element name="SplitsRegularPayments" positionX="144" positionY="-9" width="128" height="194"/>
         <element name="Tags" positionX="144" positionY="-18" width="128" height="119"/>
         <element name="Transactions" positionX="-49.8671875" positionY="116.1484375" width="128" height="224"/>

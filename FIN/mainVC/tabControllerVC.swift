@@ -128,10 +128,83 @@ class tabController: UITabBarController {
         let update150 = 0//UserDefaults.standard.integer(forKey: "update150")
         
         if update150 == 0 {
-            
+            // Transactions
             for data in dataHandler.loadDataBulk(entity: "Transactions") {
                 if (data.value(forKey: "uuid") as? UUID) == nil {
-                    print(UUID().uuidString)
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "dateTime") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "dateTime") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "dateTime < %@ AND dateTime > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "Transactions", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // Tags
+            for data in dataHandler.loadDataBulk(entity: "Tags") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let query = NSPredicate(format: "tagName == %@", (data.value(forKey: "tagName") as? String ?? "") as NSString)
+                    _ = dataHandler.saveQueriedAttribute(entity: "Tags", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // SplitRegularPayments
+            for data in dataHandler.loadDataBulk(entity: "SplitsRegularPayments") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "SplitsRegularPayments", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // Splits
+            for data in dataHandler.loadDataBulk(entity: "Splits") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "dateTimeTransaction") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "Splits", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // SplitPersons
+            for data in dataHandler.loadDataBulk(entity: "SplitPersons") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "createDate") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "createDate") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "createDate < %@ AND createDate > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "SplitPersons", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // SplitGroups
+            for data in dataHandler.loadDataBulk(entity: "SplitGroups") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "createDate") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "createDate") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "createDate < %@ AND createDate > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "SplitGroups", attribute: "uuid", query: query, value: UUID())
+                }
+            }
+            
+            // RegularPayments
+            for data in dataHandler.loadDataBulk(entity: "RegularPayments") {
+                if (data.value(forKey: "uuid") as? UUID) == nil {
+                    let createTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: (data.value(forKey: "dateTimeNext") as? Date ?? Date()))!
+                    let createTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: (data.value(forKey: "dateTimeNext") as? Date ?? Date()))!
+                    
+                    let query = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", (createTransactionPlus as NSDate), (createTransactionMinus as NSDate))
+                    
+                    _ = dataHandler.saveQueriedAttribute(entity: "RegularPayments", attribute: "uuid", query: query, value: UUID())
                 }
             }
             

@@ -27,6 +27,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     @IBOutlet var addTable: UITableView!
     
     var updateCreateDate:Date?
+    var updateUUID:UUID?
     var oldCategoryID:Int16?
     
     var transactionDateTime:Date?
@@ -85,6 +86,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     
     var repeatTransaction:Bool = false
     var repeatFrequency:Int = 1 // 0: Weekly, 1: Monthly, 2: Yearly
+    var skipWeekends:Bool = true
     
     var oldTags:String = ""
     
@@ -371,8 +373,12 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         if repeatTransaction {
             cell.segmentControl.isHidden = false
             cell.segmentControl.selectedSegmentIndex = repeatFrequency
+            
+            cell.weekendsStackView.isHidden = false
+            cell.weekendsSwitch.isOn = skipWeekends
         } else {
             cell.segmentControl.isHidden = true
+            cell.weekendsStackView.isHidden = true
         }
         
         cell.delegate = self
@@ -502,6 +508,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             var isSave:Bool?
             var isWithdraw:Bool?
             var isLiquid:Bool?
+            var uuid:UUID?
             
             let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: updateCreateDate ?? Date())!
             let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: updateCreateDate ?? Date())!
@@ -528,6 +535,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 tagString = transaction.value(forKey: "tags") as? String ?? ""
                 isSave = transaction.value(forKey: "isSave") as? Bool ?? false
                 isLiquid = transaction.value(forKey: "isLiquid") as? Bool ?? false
+                uuid = transaction.value(forKey: "uuid") as? UUID ?? UUID()
             }
             
             selectedCategory = Int(categoryID ?? 1)
@@ -544,6 +552,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             transactionData[7] = isSave ?? false // isSave
             transactionData[8] = isWithdraw ?? false // Withdraw from Savings
             transactionData[9] = isLiquid ?? true // Only relevant for Savings, if FALSE: it is NOT included in the calculation of liquidity
+            transactionData[10] = uuid ?? nil // UUID of to be updated Transaction
             
             oldTags = tagString ?? ""
             createSplits(dateTimePlus: dateTimePlus, dateTimeMinus: dateTimeMinus)
@@ -601,6 +610,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             let paidByUser = splits.value(forKey: "paidByUser") as? Bool ?? false
             let ratio = splits.value(forKey: "ratio") as? Double ?? 0.00
             let settled = splits.value(forKey: "settled") as? Double ?? 0.00
+            let uuid = splits.value(forKey: "uuid") as? UUID ?? UUID()
             
             if first {
                 if nameGroup.count > 0 {
@@ -620,7 +630,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 5:createDatePersonWhoPaid,
                 6:paidByUser,
                 7:ratio,
-                8:settled
+                8:settled,
+                9:uuid
             ]
         }
         if split.count > 0 {
@@ -1382,7 +1393,12 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: self.updateCreateDate ?? Date())!
             
             if !self.superRegularPayment {
-                let deleteTransactionQuery = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+                var deleteTransactionQuery = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+                if ((self.transactionData[10] as? UUID) != nil) {
+                    let uuid = (self.transactionData[10] as? UUID ?? UUID()).uuidString
+                    deleteTransactionQuery = NSPredicate(format: "uuid == %@", uuid)
+                }
+                
                 if dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "isSplit", query: deleteTransactionQuery) as? Int16 ?? 0 != 0 {
                     reloadSplitView = true
                 }
@@ -1512,11 +1528,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         if repeatTransaction && (transactionData[5] as? Date ?? Date()) > Date() {
             afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: true, amount: saveAmount)
         } else {
-            let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true)
-            if saveTransactionReturn.0 {
-                transactionDateTime = saveTransactionReturn.1
-                afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount)
-            }
+            beforeTransactionSave(saveAmount: saveAmount, isSave: isSave, seconds: seconds)
+        }
+    }
+    
+    func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double) {
+        let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true)
+        if saveTransactionReturn.0 {
+            transactionDateTime = saveTransactionReturn.1
+            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount)
         }
     }
     
@@ -1544,6 +1564,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 nextDateTime = (transactionData[5] as? Date ?? Date())
             }
             
+            let nextDateTimeOriginal = nextDateTime
+            if skipWeekends {
+                if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? Date()).weekday == 1 {
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? Date())!
+                } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? Date()).weekday == 7 {
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? Date())!
+                }
+            }
+            
             var doubleTransaction = true
             
             repeat {
@@ -1560,7 +1589,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 }
             } while doubleTransaction
             
-            saveRepeatedTransaction(dateTimeNext: nextDateTime ?? (transactionData[5] as? Date ?? Date()), isSave: isSave, amount: amount, repeatFrequency: repeatFrequency)
+            saveRepeatedTransaction(dateTimeNext: nextDateTime ?? (transactionData[5] as? Date ?? Date()), isSave: isSave, amount: amount, repeatFrequency: repeatFrequency, dateTimeNextOriginal: nextDateTimeOriginal ?? Date())
             if futureRepeatTransaction {
                 transactionDateTime = nextDateTime ?? (transactionData[5] as? Date ?? Date())
             }
@@ -1645,8 +1674,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         }
     }
     
-    func saveRepeatedTransaction(dateTimeNext: Date, isSave: Bool, amount: Double, repeatFrequency: Int) {
-        dataHandler.saveRepeatTransaction(amount: amount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTimeNext: dateTimeNext, descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, repeatFrequency: repeatFrequency)
+    func saveRepeatedTransaction(dateTimeNext: Date, isSave: Bool, amount: Double, repeatFrequency: Int, dateTimeNextOriginal: Date) {
+        dataHandler.saveRepeatTransaction(amount: amount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTimeNext: dateTimeNext, descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, repeatFrequency: repeatFrequency, skipWeekends: skipWeekends, dateTimeNextOriginal: dateTimeNextOriginal)
     }
     
     func initCategories() {
@@ -1826,6 +1855,10 @@ extension addTVC: cellDateNewDelegate {
     
     func repeatSegmentChanged(selected: Int) {
         repeatFrequency = selected
+    }
+    
+    func skipWeekendChanges(switchOn: Bool) {
+        skipWeekends = switchOn
     }
 }
 

@@ -110,90 +110,112 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let dummyDate = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: 1900, month: 1, day: 1, hour: 1, minute: 1, second: 1)) ?? Date()
         
-        for regularPayment in dataHandler.loadBulkQueriedSorted(entitie: "RegularPayments", query: query, sort: [NSSortDescriptor(key: "dateTimeNext", ascending: true)]) {
-            let amount = regularPayment.value(forKey: "amount") as? Double ?? 0.00
-            let categoryID = regularPayment.value(forKey: "categoryID") as? Int16 ?? 0
-            let currencyCode = regularPayment.value(forKey: "currencyCode") as? String ?? "EUR"
-            let dateTime = regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()
-            let descriptionNote = regularPayment.value(forKey: "descriptionNote") as? String ?? ""
-            let exchangeRate = regularPayment.value(forKey: "exchangeRate") as? Double ?? 1.00
-            let isLiquid = regularPayment.value(forKey: "isLiquid") as? Bool ?? true
-            let isSave = regularPayment.value(forKey: "isSave") as? Bool ?? false
-            let isSplit = regularPayment.value(forKey: "isSplit") as? Int16 ?? 0
-            let realAmount = regularPayment.value(forKey: "realAmount") as? Double ?? 0.00
-            let tags = regularPayment.value(forKey: "tags") as? String ?? ""
-            
-            if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit) {
-                let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
-                let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
+        let regularPaymentsData = dataHandler.loadBulkQueriedSorted(entitie: "RegularPayments", query: query, sort: [NSSortDescriptor(key: "dateTimeNext", ascending: true)])
+        
+        if regularPaymentsData.count > 0 {
+            for regularPayment in regularPaymentsData {
+                let amount = regularPayment.value(forKey: "amount") as? Double ?? 0.00
+                let categoryID = regularPayment.value(forKey: "categoryID") as? Int16 ?? 0
+                let currencyCode = regularPayment.value(forKey: "currencyCode") as? String ?? "EUR"
+                let dateTime = regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()
+                let dateTimeOriginal = regularPayment.value(forKey: "dateTimeNextOriginal") as? Date ?? Date()
+                let descriptionNote = regularPayment.value(forKey: "descriptionNote") as? String ?? ""
+                let exchangeRate = regularPayment.value(forKey: "exchangeRate") as? Double ?? 1.00
+                let isLiquid = regularPayment.value(forKey: "isLiquid") as? Bool ?? true
+                let isSave = regularPayment.value(forKey: "isSave") as? Bool ?? false
+                let isSplit = regularPayment.value(forKey: "isSplit") as? Int16 ?? 0
+                let realAmount = regularPayment.value(forKey: "realAmount") as? Double ?? 0.00
+                let tags = regularPayment.value(forKey: "tags") as? String ?? ""
+                let uuid = regularPayment.value(forKey: "uuid") as? UUID ?? UUID()
                 
-                let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
-                
-                for split in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: querySplit, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
-                    let createDateGroup = split.value(forKey: "createDateGroup") as? Date ?? dummyDate
-                    let createDatePerson = split.value(forKey: "createDatePerson") as? Date ?? dummyDate
-                    let createDatePersonWhoPaid = split.value(forKey: "createDatePersonWhoPaid") as? Date ?? dummyDate
-                    let dateTimeTransaction = split.value(forKey: "dateTimeTransaction") as? Date ?? dummyDate
-                    let nameGroup = split.value(forKey: "nameGroup") as? String ?? ""
-                    let namePerson = split.value(forKey: "namePerson") as? String ?? ""
-                    let namePersonWhoPaid = split.value(forKey: "namePersonWhoPaid") as? String ?? ""
-                    let paidByUser = split.value(forKey: "paidByUser") as? Bool ?? true
-                    let ratio = split.value(forKey: "ratio") as? Double ?? 0.00
-                    let settled = split.value(forKey: "settled") as? Double ?? 0.00
-                    
-                    dataHandler.saveSplit(createDateGroup: createDateGroup, createDatePerson: createDatePerson, createDatePersonWhoPaid: createDatePersonWhoPaid, dateTimeTransaction: dateTimeTransaction, nameGroup: nameGroup, namePerson: namePerson, namePersonWhoPaid: namePersonWhoPaid, paidByUser: paidByUser, ratio: ratio, settled: settled)
-                }
-                
-                var nextDateTime:Date?
-                switch (regularPayment.value(forKey: "frequency") as? Int16 ?? 0) {
-                case 0: // Weekly
-                    nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTime)!
-                    break
-                case 1: // Monthly
-                    nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTime)!
-                    break
-                case 2: // Yearly
-                    nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTime)!
-                    break
-                default: // Daily
-                    nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTime)!
-                    break
-                }
-                
-                nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: 6, minute: 0, second: 0))
-                
-                var doubleTransaction = true
-                
-                repeat {
-                    let dateTimeTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: nextDateTime ?? dummyDate)!
-                    let dateTimeTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: nextDateTime ?? dummyDate)!
-                    
-                    let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
-                    
-                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
-                        doubleTransaction = true
-                        nextDateTime = dateTimeTransactionPlus
-                    } else {
-                        doubleTransaction = false
-                    }
-                } while doubleTransaction
-                
-                let querySaveRegularPayment = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
-                
-                dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
-                dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
-                
-                let manager = LocalNotificationManager()
-                
-                let longDate = DateFormatter()
-                longDate.dateFormat = "ddMMyyyyHHmmss"
+                let queryTransInDB = NSPredicate(format: "uuid == %@", uuid as CVarArg)
+                if dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransInDB).count <= 0 {
+                    if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit, uuid: uuid) {
+                        let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
+                        let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
+                        
+                        let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
+                        
+                        for split in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: querySplit, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
+                            let createDateGroup = split.value(forKey: "createDateGroup") as? Date ?? dummyDate
+                            let createDatePerson = split.value(forKey: "createDatePerson") as? Date ?? dummyDate
+                            let createDatePersonWhoPaid = split.value(forKey: "createDatePersonWhoPaid") as? Date ?? dummyDate
+                            let dateTimeTransaction = split.value(forKey: "dateTimeTransaction") as? Date ?? dummyDate
+                            let nameGroup = split.value(forKey: "nameGroup") as? String ?? ""
+                            let namePerson = split.value(forKey: "namePerson") as? String ?? ""
+                            let namePersonWhoPaid = split.value(forKey: "namePersonWhoPaid") as? String ?? ""
+                            let paidByUser = split.value(forKey: "paidByUser") as? Bool ?? true
+                            let ratio = split.value(forKey: "ratio") as? Double ?? 0.00
+                            let settled = split.value(forKey: "settled") as? Double ?? 0.00
+                            
+                            dataHandler.saveSplit(createDateGroup: createDateGroup, createDatePerson: createDatePerson, createDatePersonWhoPaid: createDatePersonWhoPaid, dateTimeTransaction: dateTimeTransaction, nameGroup: nameGroup, namePerson: namePerson, namePersonWhoPaid: namePersonWhoPaid, paidByUser: paidByUser, ratio: ratio, settled: settled)
+                        }
+                        
+                        var nextDateTime:Date?
+                        switch (regularPayment.value(forKey: "frequency") as? Int16 ?? 0) {
+                        case 0: // Weekly
+                            nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTimeOriginal)!
+                            break
+                        case 1: // Monthly
+                            nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTimeOriginal)!
+                            break
+                        case 2: // Yearly
+                            nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTimeOriginal)!
+                            break
+                        default: // Daily
+                            nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTimeOriginal)!
+                            break
+                        }
+                        
+                        nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: nextDateTime?.get(.hour), minute: nextDateTime?.get(.minute), second: nextDateTime?.get(.second)))
+                        
+                        let nextDateTimeOriginal = nextDateTime
+                        
+                        if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
+                            nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
+                        } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
+                            nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
+                        }
+                        
+                        var doubleTransaction = true
+                        
+                        repeat {
+                            let dateTimeTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: nextDateTime ?? dummyDate)!
+                            let dateTimeTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: nextDateTime ?? dummyDate)!
+                            
+                            let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
+                            
+                            if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
+                                doubleTransaction = true
+                                nextDateTime = dateTimeTransactionPlus
+                            } else {
+                                doubleTransaction = false
+                            }
+                        } while doubleTransaction
+                        
+                        let querySaveRegularPayment = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
+                        
+                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNextOriginal", query: querySaveRegularPayment, value: nextDateTimeOriginal ?? dummyDate)
+                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
+                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "uuid", query: querySaveRegularPayment, value: UUID())
+                        dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
+                        
+                        let manager = LocalNotificationManager()
+                        
+                        let longDate = DateFormatter()
+                        longDate.dateFormat = "ddMMyyyyHHmmss"
 
-                let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
-                let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
-                
-                manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
-                manager.schedule()
+                        let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
+                        let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+                        
+                        manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
+                        manager.schedule()
+                        
+                        break
+                    }
+                }
             }
+            regularPayments()
         }
     }
 }

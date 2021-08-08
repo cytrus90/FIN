@@ -821,7 +821,7 @@ class listDetailTVC: UITableViewController {
             return NSLocalizedString("today", comment: "Today")
         } else if differenceInDays == 1 {
             return NSLocalizedString("yesterday", comment: "Yesterday")
-        } else if differenceInDays <= 7 && differenceInDays > 0 {
+        } else if differenceInDays < 7 && differenceInDays > 0 {
             let dayFormatter = DateFormatter()
             dayFormatter.dateFormat = "EEEE"
             return dayFormatter.string(from: dayDate)
@@ -830,7 +830,9 @@ class listDetailTVC: UITableViewController {
         } else if differenceInDays == -2 {
             return NSLocalizedString("dayAfterTomorrowText", comment: "Day after Tomorrow")
         } else {
-            return mediumDate.string(from: dayDate)
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEEE"
+            return dayFormatter.string(from: dayDate).capitalized.prefix(3) + ", " + mediumDate.string(from: dayDate)
         }
     }
     

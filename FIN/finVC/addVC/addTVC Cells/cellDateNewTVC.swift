@@ -26,6 +26,9 @@ class cellDateNewTVC: UITableViewCell {
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
+    @IBOutlet weak var weekendsStackView: UIStackView!
+    @IBOutlet weak var weekendsLabel: UILabel!
+    @IBOutlet weak var weekendsSwitch: UISwitch!
     
     let buttonBackgroundColor:UIColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.2)
     let buttonBorderColor:CGColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1).cgColor
@@ -79,6 +82,8 @@ class cellDateNewTVC: UITableViewCell {
         segmentControl.setTitle(NSLocalizedString("bottomSegmentRepeatWeekly", comment: "Segment Repeat Weekly Text"), forSegmentAt: 0)
         segmentControl.setTitle(NSLocalizedString("bottomSegmentRepeatMonthly", comment: "Segment Repeat Monthly Text"), forSegmentAt: 1)
         segmentControl.setTitle(NSLocalizedString("bottomSegmentRepeatYearly", comment: "Segment Repeat Yearly Text"), forSegmentAt: 2)
+        
+        weekendsLabel.text = NSLocalizedString("skipWeekwends", comment: "Skip Weekends")
     }
 
     @IBAction func minusButtonPressed(_ sender: Any) {
@@ -103,9 +108,14 @@ class cellDateNewTVC: UITableViewCell {
     @IBAction func segmentControlChanged(_ sender: Any) {
         self.delegate?.repeatSegmentChanged(selected: segmentControl.selectedSegmentIndex)
     }
+    
+    @IBAction func skipWeekendsSwitchChanged(_ sender: Any) {
+        self.delegate?.skipWeekendChanges(switchOn: weekendsSwitch.isOn)
+    }
 }
 
 protocol cellDateNewDelegate: AnyObject {
     func dateChanged(dateSelected: Date)
     func repeatSegmentChanged(selected: Int)
+    func skipWeekendChanges(switchOn: Bool)
 }

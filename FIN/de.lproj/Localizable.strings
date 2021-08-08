@@ -172,6 +172,8 @@
 "addTagButton" = "Hinzufügen";
 "transactionAddedNotificationTitle" = "Hinzugefügt";
 
+"skipWeekwends" = "Wochenenden überspringen";
+
 // Currency
 "Set" = "Übernehmen";
 
