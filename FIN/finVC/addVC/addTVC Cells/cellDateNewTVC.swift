@@ -63,6 +63,9 @@ class cellDateNewTVC: UITableViewCell {
             cellDateOutlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
         
+        datePicker.semanticContentAttribute = .forceRightToLeft
+        datePicker.subviews.first?.semanticContentAttribute = .forceRightToLeft
+        
         cellDateOutlineView.layer.borderWidth = 1
         cellDateOutlineView.layer.cornerRadius = 10
                 

@@ -117,7 +117,9 @@ class listMasterTVC: UITableViewController {
         }
         initTagFilter()
         setInitialToFromMaxDates()
-        setCollectionCellData(completion: {(success) -> Void in })
+        setCollectionCellData(completion: {(success) -> Void in
+            self.nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": self.carouselScrollingId])
+        })
         initView()
         setData(timeInterval: timeInterval ?? 2, fDateShown: collectionCellData[carouselScrollingTodayId]?[4] as? Date ?? Date())
     }
@@ -248,6 +250,7 @@ class listMasterTVC: UITableViewController {
                 self.setData(timeInterval: self.timeInterval ?? 2, fDateShown: self.collectionCellData[self.carouselScrollingId]?[4] as? Date ?? Date())
                 self.collectionView.carousel.reloadData()
                 self.listTable.reloadData()
+                self.nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": self.carouselScrollingId])
                 self.activityIndicator.stopAnimating()
     //            activityIndicator.isHidden = true
             })
@@ -265,7 +268,9 @@ class listMasterTVC: UITableViewController {
         if carouselScrollingId != -1 {
             scrollToIdFUNC = carouselScrollingId
         }
-        setCollectionCellData(scrollToId: scrollToIdFUNC, completion: {(success) -> Void in })
+        setCollectionCellData(scrollToId: scrollToIdFUNC, completion: {(success) -> Void in
+            self.nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": self.carouselScrollingId])
+        })
         collectionView.carousel.reloadData()
         carouselScrollingId = scrollToIdFUNC
         setData(timeInterval: self.timeInterval ?? 2, fDateShown: self.collectionCellData[self.carouselScrollingId]?[4] as? Date ?? Date())
@@ -279,7 +284,9 @@ class listMasterTVC: UITableViewController {
         if let userInfo = notification.userInfo, let _ = userInfo["transactionCreateDate"] as? Date {
             if (userInfo["oldCreateDate"] as? Date) != nil {
 //                if oldCreateDate != transactionCreateDate {
-                    setCollectionCellData(scrollToId: carouselScrollingId, completion: {(success) -> Void in })
+                    setCollectionCellData(scrollToId: carouselScrollingId, completion: {(success) -> Void in
+                        self.nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": self.carouselScrollingId])
+                    })
                     collectionView.carousel.reloadData()
                     setData(timeInterval: self.timeInterval ?? 2, fDateShown: self.collectionCellData[self.carouselScrollingId]?[4] as? Date ?? Date())
                     selectedRowIndex = nil
@@ -757,7 +764,12 @@ class listMasterTVC: UITableViewController {
         default: // All
             numberTimeIntervalls = 1
             fromDateShown = fromDateMax
-            toDateShown = toDateMax
+            if (fromDateMax == toDateMax) {
+                toDateShown = Calendar.current.date(byAdding: .day, value: 1, to: toDateShown ?? Date())
+            } else {
+                toDateShown = toDateMax
+            }
+            
             _ = setCollectionData(collectionCellDataIndex: 0, totalIndex: 0)
             carouselScrollingTodayId = 0
             break
@@ -777,10 +789,8 @@ class listMasterTVC: UITableViewController {
             } else {
                 scrollToIdRAM = scrollToId
             }
-            nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": scrollToIdRAM ?? 0])
             carouselScrollingId = scrollToIdRAM ?? 0
         } else {
-            nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": carouselScrollingTodayId])
             carouselScrollingId = carouselScrollingTodayId
         }
         completion(true)
@@ -1587,12 +1597,14 @@ extension listMasterTVC: listBottomBarDelegate {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.setCollectionCellData(completion: {(success) -> Void in
+                self.setData(timeInterval: self.timeInterval ?? 2, fDateShown: self.collectionCellData[self.carouselScrollingId]?[4] as? Date ?? Date())
+                
+                self.listTable.reloadData()
+                self.collectionView.carousel.reloadData()
+                self.nc.post(name: Notification.Name("collectionViewScrollTo"), object: nil, userInfo: ["toIndex": self.carouselScrollingId])
                 self.activityIndicator.stopAnimating()
             })
-            self.setData(timeInterval: self.timeInterval ?? 2, fDateShown: self.collectionCellData[self.carouselScrollingId]?[4] as? Date ?? Date())
             
-            self.listTable.reloadData()
-            self.collectionView.carousel.reloadData()
         }
     }
 }

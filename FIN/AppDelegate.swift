@@ -39,17 +39,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let notificationCenter = UNUserNotificationCenter.current()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
         // Navbar customization
-        let navigationBarAppearace = UINavigationBar.appearance()
-        navigationBarAppearace.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
-        navigationBarAppearace.barTintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
-        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
+        
+//        navigationBarAppearace.isTranslucent = false
+//        navigationBarAppearace.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
+//        navigationBarAppearace.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+//        navigationBarAppearace.barTintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
+//        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
 //        navigationBarAppearace.backgroundColor = UIColor(red: 240/255, green: 243/255, blue: 255/255, alpha: 1.0)
 //        navigationBarAppearace.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
 //        navigationBarAppearace.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+
+        // Since iOS 15:
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
         
-        // Load Login Settings
-        UNUserNotificationCenter.current().delegate = self
+        let navigationBarAppearace = UINavigationBar.appearance()
+        navigationBarAppearace.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+        navigationBarAppearace.standardAppearance = appearance
+        navigationBarAppearace.scrollEdgeAppearance = appearance
         
         dataHandler.saveNewSettings()
                     

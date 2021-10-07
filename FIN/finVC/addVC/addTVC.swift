@@ -82,6 +82,9 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     var tabOutside: UIGestureRecognizer?
     let longDate = DateFormatter()
     
+    var dayComponent = DateComponents()
+    let calendar = Calendar.current
+    
     let manager = LocalNotificationManager()
     
     var repeatTransaction:Bool = false
@@ -157,6 +160,12 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             )
         })
         showSplitButton()
+        
+        if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
+            dayComponent.day = 0
+            let ramDate = calendar.date(byAdding: dayComponent, to: transactionData[5] as? Date ?? (updateCreateDate ?? Date())) ?? Date()
+            cell.datePicker.setDate(ramDate, animated: false)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -368,8 +377,6 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     func getDateCell(indexPath: IndexPath) -> cellDateNewTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "dateCellNew", for: indexPath) as! cellDateNewTVC
         
-        cell.datePicker.date = transactionData[5] as? Date ?? (updateCreateDate ?? Date())
-        
         if repeatTransaction {
             cell.segmentControl.isHidden = false
             cell.segmentControl.selectedSegmentIndex = repeatFrequency
@@ -536,6 +543,11 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                 isSave = transaction.value(forKey: "isSave") as? Bool ?? false
                 isLiquid = transaction.value(forKey: "isLiquid") as? Bool ?? false
                 uuid = transaction.value(forKey: "uuid") as? UUID ?? UUID()
+                
+                if superRegularPayment {
+                    skipWeekends = transaction.value(forKey: "skipWeekends") as? Bool ?? true
+                    repeatFrequency = Int(transaction.value(forKey: "frequency") as? Int16 ?? 1)
+                }
             }
             
             selectedCategory = Int(categoryID ?? 1)

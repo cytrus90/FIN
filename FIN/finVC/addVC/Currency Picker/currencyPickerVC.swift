@@ -272,8 +272,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
     func initCurrency() {
         let currentInputCurrency = Locale.current.currencyCode ?? "EUR"
 //        let currentInputCurrency = "EUR"
-        
-        let urlRAM = "https://api.exchangeratesapi.io/latest?base=" + currentInputCurrency
+        let urlRAM = "https://api.exchangeratesapi.io/latest?base=" + currentInputCurrency // Not working anymore.... move to server (use: https://currencylayer.com)
 
         if let url = URL(string: urlRAM) {
             URLSession.shared.dataTask(with: url) { [self] data, response, error in
@@ -330,7 +329,6 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         var data = readDataFromCSV(fileName: "currency_table", fileType: "csv")
         data = cleanRows(file: data ?? "")
         let csvRows = csv(data: data ?? "", sep: ";")
-        
         var j:Int16 = 0
         for currency in csvRows {
             switch currency[0] {

@@ -34,6 +34,8 @@ class introVC: UIViewController {
     @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
     @IBOutlet var tabGesture: UITapGestureRecognizer!
     
+    @IBOutlet weak var skipButton: UIButton!
+    
     var welcomeLabelConstraint:NSLayoutConstraint?
     
     var welcomeImageYConstraint:NSLayoutConstraint?
@@ -67,6 +69,8 @@ class introVC: UIViewController {
 
         welcomeLabel.text = NSLocalizedString("welcomeLabel", comment: "Welcome")
         subLabel.text = NSLocalizedString("welcomeSubLabel", comment: "FIN - track your finances")
+        
+        skipButton.titleLabel?.text = NSLocalizedString("skipButtonLabel", comment: "Skip")
         
         descriptionLabel.isHidden = true
         descriptionLabel.alpha = 0.0
@@ -765,5 +769,9 @@ class introVC: UIViewController {
                 self.dismiss(animated: true, completion: nil)
               })
             })
+    }
+    
+    @IBAction func skipButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
 }

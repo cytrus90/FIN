@@ -453,7 +453,8 @@ class splitAddNewTVC: UITableViewController {
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
                         3:isSelected,
                         4:(data.value(forKey: "icon") as? String ?? ""),
-                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true),
+                        6:(data.value(forKey: "uuid")) as? UUID ?? UUID()
                     ]
                     i = i + 1
                 }
@@ -490,7 +491,8 @@ class splitAddNewTVC: UITableViewController {
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
                         3:isSelected,
                         4:(data.value(forKey: "icon") as? String ?? ""),
-                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true),
+                        6:(data.value(forKey: "uuid")) as? UUID ?? UUID()
                     ]
                     i = i + 1
                 }
@@ -509,7 +511,8 @@ class splitAddNewTVC: UITableViewController {
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
                         3:user,
                         4:(data.value(forKey: "icon") as? String ?? ""),
-                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true),
+                        6:(data.value(forKey: "uuid")) as? UUID ?? UUID()
                     ]
                     i = i + 1
                 }
@@ -521,7 +524,8 @@ class splitAddNewTVC: UITableViewController {
                         2:(data.value(forKey: "color") as? Int16 ?? 0),
                         3:false,
                         4:(data.value(forKey: "icon") as? String ?? ""),
-                        5:(data.value(forKey: "iconLight") as? Bool ?? true)
+                        5:(data.value(forKey: "iconLight") as? Bool ?? true),
+                        6:(data.value(forKey: "uuid")) as? UUID ?? UUID()
                     ]
                     i = i + 1
                 }

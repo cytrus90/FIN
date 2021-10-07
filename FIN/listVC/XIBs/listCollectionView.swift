@@ -109,7 +109,11 @@ class listCollectionView: UIView, UICollectionViewDelegate {
     
     @objc func collectionViewScrollTo(notification: Notification) {
         if let userInfo = notification.userInfo, let scrollToIndex = userInfo["toIndex"] as? Int {
-            carousel.scrollToItem(at: IndexPath(row: scrollToIndex, section: 0), at: .centeredHorizontally, animated: false)
+            if ((carousel.cellForItem(at: IndexPath(row: scrollToIndex, section: 0)) as? listCollectionViewCell) != nil) {
+                carousel.scrollToItem(at: IndexPath(row: scrollToIndex, section: 0), at: .centeredHorizontally, animated: false)
+            } else if carousel.numberOfItems(inSection: 0) > 0 {
+                carousel.scrollToItem(at: IndexPath(row: (carousel.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: false)
+            }
         }
     }
 }

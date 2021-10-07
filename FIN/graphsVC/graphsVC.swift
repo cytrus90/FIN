@@ -1850,16 +1850,33 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             } else {
                 scrollToIdRAM = scrollToId
             }
-            carouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+            if (carouselView.cellForItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0)) as? graphCarouselCell) != nil {
+                carouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+            } else if carouselView.numberOfItems(inSection: 0) > 0 {
+                carouselView.scrollToItem(at: IndexPath(row: (carouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
+            }
+            
             if secondGraph {
-                secondCarouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+                if (secondCarouselView.cellForItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0)) as? graphCarouselCell) != nil {
+                    secondCarouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
+                } else if secondCarouselView.numberOfItems(inSection: 0) > 0 {
+                    secondCarouselView.scrollToItem(at: IndexPath(row: (secondCarouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
+                }
             }
             carouselScrollingId = scrollToIdRAM ?? 0
             secondCarouselScrollingId = scrollToIdRAM ?? 0
         } else {
-            carouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+            if (carouselView.cellForItem(at: IndexPath(row: carouselScrollingTodayId, section: 0)) as? graphCarouselCell) != nil {
+                carouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+            } else if carouselView.numberOfItems(inSection: 0) > 0 {
+                carouselView.scrollToItem(at: IndexPath(row: (carouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
+            }
             if secondGraph {
-                secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+                if (secondCarouselView.cellForItem(at: IndexPath(row: carouselScrollingTodayId, section: 0)) as? graphCarouselCell) != nil {
+                    secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
+                } else if secondCarouselView.numberOfItems(inSection: 0) > 0 {
+                    secondCarouselView.scrollToItem(at: IndexPath(row: (secondCarouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
+                }
             }
             carouselScrollingId = carouselScrollingTodayId
             secondCarouselScrollingId = carouselScrollingTodayId

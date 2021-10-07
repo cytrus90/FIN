@@ -9,6 +9,8 @@
 "addNewTransactionTitle" = "Transaktion";
 
 // #### Intro ####
+"skipButtonLabel" = "Überspringen";
+
 // First
 "welcomeLabel" = "Willkommen";
 "welcomeSubLabel" = "FIN - Tracke deine Finanzen";

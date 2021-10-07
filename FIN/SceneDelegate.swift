@@ -119,6 +119,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let currencyCode = regularPayment.value(forKey: "currencyCode") as? String ?? "EUR"
                 let dateTime = regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()
                 let dateTimeOriginal = regularPayment.value(forKey: "dateTimeNextOriginal") as? Date ?? Date()
+                let skipWeekends = regularPayment.value(forKey: "skipWeekends") as? Bool ?? true
                 let descriptionNote = regularPayment.value(forKey: "descriptionNote") as? String ?? ""
                 let exchangeRate = regularPayment.value(forKey: "exchangeRate") as? Double ?? 1.00
                 let isLiquid = regularPayment.value(forKey: "isLiquid") as? Bool ?? true
@@ -171,10 +172,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         
                         let nextDateTimeOriginal = nextDateTime
                         
-                        if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
-                            nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
-                        } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
-                            nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
+                        if skipWeekends {
+                            if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
+                                nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
+                            } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
+                                nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
+                            }
                         }
                         
                         var doubleTransaction = true

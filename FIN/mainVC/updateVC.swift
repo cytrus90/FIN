@@ -30,6 +30,8 @@ class updateVC: UIViewController {
     @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
     @IBOutlet var tabGesture: UITapGestureRecognizer!
     
+    @IBOutlet weak var skipButton: UIButton!
+    
     var welcomeLabelConstraint:NSLayoutConstraint?
     
     var welcomeImageYConstraint:NSLayoutConstraint?
@@ -68,6 +70,8 @@ class updateVC: UIViewController {
         
         welcomeLabel.text = NSLocalizedString("updateLabel", comment: "Update")
         subLabel.text = NSLocalizedString("welcomeSubLabel", comment: "FIN - track your finances")
+        
+        skipButton.titleLabel?.text = NSLocalizedString("skipButtonLabel", comment: "Skip")
         
         swipeLabel.text = NSLocalizedString("updateSwipeText", comment: "Swipe")
         
@@ -407,5 +411,10 @@ class updateVC: UIViewController {
                 self.dismiss(animated: true, completion: nil)
               })
             })
+    }
+    
+    
+    @IBAction func skipButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
 }

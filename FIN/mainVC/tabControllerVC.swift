@@ -13,13 +13,23 @@ import StoreKit
 class tabController: UITabBarController {
     
     var previousIndex:Int?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .white
+            tabBar.standardAppearance = appearance
+            tabBar.scrollEdgeAppearance = tabBar.standardAppearance
+        }
         
         showAdds = (dataHandler.loadSettings(entitie: "Settings", attibute: "showAdds") as? Bool ?? true)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appear), name: UIApplication.didBecomeActiveNotification, object: nil)
+        
+        self.tabBar.tintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
         
         let addStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
         let addViewController = addStoryBoard.instantiateViewController(withIdentifier: "finNC") as! UINavigationController
@@ -125,7 +135,7 @@ class tabController: UITabBarController {
             UserDefaults.standard.setValue((11), forKey: "numbersOpened")
         }
         
-        let update150 = 0//UserDefaults.standard.integer(forKey: "update150")
+        let update150 = UserDefaults.standard.integer(forKey: "update150")
         
         if update150 == 0 {
             // Transactions

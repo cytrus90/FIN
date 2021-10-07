@@ -44,6 +44,8 @@ class cellSubtitleStack: UITableViewCell {
     }
     
     func initCells() {
+        stackView.distribution = .fillEqually
+        
         let leftSwipe = UISwipeGestureRecognizer()
         leftSwipe.direction = .left
         leftSwipe.addTarget(self, action: #selector(handleLeftSwipe))
