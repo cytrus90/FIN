@@ -15,7 +15,14 @@ class alpakoPHPRequest {
     func sendMail(parameters: [String: String], url: String) {
         let request = networkModel.request(parameters: parameters, url: url)
         networkModel.response(request: request) { (data) in
-            print("Remote Requested")
+            print("Remote requested")
+        }
+    }
+    
+    func getExchangeRates(parameters: [String: String], url: String) {
+        let request = networkModel.request(parameters: parameters, url: url)
+        networkModel.responseExchangeRates(request: request) { (data) in
+            print("Exchane rates requested")
         }
     }
 }

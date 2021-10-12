@@ -20,7 +20,13 @@ class tabController: UITabBarController {
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = .white
+                
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .light {
+                appearance.backgroundColor = .white
+            } else {
+                appearance.backgroundColor = .black
+            }
             tabBar.standardAppearance = appearance
             tabBar.scrollEdgeAppearance = tabBar.standardAppearance
         }
@@ -219,6 +225,24 @@ class tabController: UITabBarController {
             }
             
             UserDefaults.standard.setValue(1, forKey: "update150")
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .light {
+                appearance.backgroundColor = .white
+            } else {
+                appearance.backgroundColor = .black
+            }
+            tabBar.standardAppearance = appearance
+            tabBar.scrollEdgeAppearance = tabBar.standardAppearance
         }
     }
     
