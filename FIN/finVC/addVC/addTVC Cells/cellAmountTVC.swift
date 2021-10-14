@@ -165,7 +165,7 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
         splitBillButton.tintColor = buttonBorderColor
         splitBillButton.setTitle(NSLocalizedString("splitButtonText", comment: "Split"), for: .normal)
     }
-    
+    // Test
     func initTags() {
         tagListView.delegate = self
         tagAddListView.delegate = self
