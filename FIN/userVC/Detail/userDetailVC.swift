@@ -1051,6 +1051,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     func getAboutTitleCell(indexPath: IndexPath) -> cellAboutLogo {
+        self.title = "v" + (Bundle.main.releaseVersionNumber ?? "1.0.0")
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellAboutLogo", for: indexPath) as! cellAboutLogo
         return cell
     }
@@ -2097,5 +2099,17 @@ extension userDetailVC: cellCutOffDateDelegate {
 extension userDetailVC: cellAboutTextDelegate {
     func sendFeedbackPressed() {
         sendEmail()
+    }
+}
+
+extension Bundle {
+    var releaseVersionNumber: String? {
+        return infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    var buildVersionNumber: String? {
+        return infoDictionary?["CFBundleVersion"] as? String
+    }
+    var releaseVersionNumberPretty: String {
+        return "v\(releaseVersionNumber ?? "1.0.0")"
     }
 }

@@ -116,14 +116,12 @@ class Network{
                             calculatedRates["USD"] = r.rate / baseRate
                         }
                     } else if r.pair == ("USD" + currencyCodeSet) {
-                        print("2")
-                        print(r.pair)
                         calculatedRates[currencyCodeSet] = 1.0
                     }
                 }
                 if self.writeExchangeRates(rates: calculatedRates) {
-                    let nc = NotificationCenter.default
-                    nc.post(name: Notification.Name("savedUpdatedExchangeRates"), object: nil)
+                    //let nc = NotificationCenter.default
+                    //nc.post(name: Notification.Name("savedUpdatedExchangeRates"), object: nil)
                 }
             } catch {
                 print("JSON error: \(error.localizedDescription)")
@@ -139,7 +137,8 @@ class Network{
         var j:Int16 = 0
         for currency in csvRows {
             if rates[currency[0]] != nil {
-                dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: rates[currency[0]], automated: true, id: j)
+                let query = NSPredicate(format: "currencyCode == %@", currency[0] as NSString)
+                dataHandler.saveQueriedAttributeMultiple(entity: "Currency", attribute: "exchangeRate", query: query, value: rates[currency[0]] ?? 1.01)
                 j += j
             } else {
                 print(currency[0])

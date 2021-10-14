@@ -144,6 +144,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(currencyChanged), name: Notification.Name("currencyChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(splitChanged), name: Notification.Name("splitChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(collectionViedDidScroll), name: Notification.Name("collectionViedDidScroll"), object: nil)
         
 //        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(transactionCancelled))
         addNavButtons()
@@ -943,6 +944,10 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "realAmount", query: queryTransaction, value: realAmount ?? 0.00)
             return true
         }
+    }
+    
+    @objc func collectionViedDidScroll() {
+        self.view.endEditing(true)
     }
     
     // MARK: - Balance View

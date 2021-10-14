@@ -31,7 +31,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     override func loadView() {
         super.loadView()
-        NotificationCenter.default.addObserver(self, selector: #selector(getCurrencyData), name: Notification.Name("savedUpdatedExchangeRates"), object: nil)
+        // NotificationCenter.default.addObserver(self, selector: #selector(getCurrencyData), name: Notification.Name("savedUpdatedExchangeRates"), object: nil)
     }
     
     override func viewDidLoad() {
@@ -40,8 +40,6 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         activityIndicator.isHidden = true
         
         currencyFormatter.locale = .current
-        
-        performBackgroundOperation()
         
         currencyTable.dataSource = self
         currencyTable.delegate = self
@@ -131,29 +129,16 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         formatter.minimumFractionDigits = 3
         formatter.maximumFractionDigits = 3
         
-        var networkConnected = false
-        let monitor = NWPathMonitor()
-        monitor.pathUpdateHandler = { path in
-           if path.status == .satisfied {
-               networkConnected = true
-           }
-        }
-        
         let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
         if currencyDB.count > 0 {
             for data in currencyDB {
-                if (data.value(forKey: "saved") as? Date ?? Date() < Calendar.current.date(byAdding: .hour, value: -12, to: Date()) ?? Date()) && networkConnected {
-                    getExchangeRates()
-                    break
-                } else {
-                    currencyData[data.value(forKey: "id") as? Int ?? 0] = [
-                        "currencyName": NSLocalizedString((data.value(forKey: "currencyCode") as? String ?? ""), comment: "Country"),
-                        "currencySymbol":getSymbol(forCurrencyCode: (data.value(forKey: "currencyCode") as? String ?? "")) ?? "€",
-                        "exchangeRate":formatter.string(for: data.value(forKey: "exchangeRate") as? Double ?? 1.00) ?? "1.00",
-                        "automated":data.value(forKey: "automated") as? Bool ?? false,
-                        "currencyCode":data.value(forKey: "currencyCode") as? String ?? ""
-                    ]
-                }
+                currencyData[data.value(forKey: "id") as? Int ?? 0] = [
+                    "currencyName": NSLocalizedString((data.value(forKey: "currencyCode") as? String ?? ""), comment: "Country"),
+                    "currencySymbol":getSymbol(forCurrencyCode: (data.value(forKey: "currencyCode") as? String ?? "")) ?? "€",
+                    "exchangeRate":formatter.string(for: data.value(forKey: "exchangeRate") as? Double ?? 1.00) ?? "1.00",
+                    "automated":data.value(forKey: "automated") as? Bool ?? false,
+                    "currencyCode":data.value(forKey: "currencyCode") as? String ?? ""
+                ]
             }
         }
     }
@@ -188,39 +173,6 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
             currencyExchangeRate = abs(exchrate)
         }
         textField.resignFirstResponder()
-    }
-    
-    // MARK: -UPDATE CURRENCY
-    func getExchangeRates() {
-        let parameters = ["requestType":"0"]
-        remote.getExchangeRates(parameters: parameters, url: "https://fin.alpako.info/getExchangeRates.php")
-    }
-    
-    private func performBackgroundOperation() {
-        // Add async operation
-        OperationQueue().addOperation {
-            OperationQueue.main.addOperation {
-                self.willLoadData() // on main thread
-            }
-            self.loadDataAsync() // async
-            OperationQueue.main.addOperation {
-                self.didLoadData() // on main thread
-            }
-        }
-    }
-
-    func loadDataAsync() {
-        // do something on the main thread before loading
-    }
-
-    func willLoadData() {
-//        updateExchangeRates()
-    }
-
-    func didLoadData() {
-        //activityIndicator.isHidden = false
-        //getExchangeRates()
-        // do something on the main thread after loading
     }
     
     /*

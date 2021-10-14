@@ -14,6 +14,8 @@ class finTVC: UITableViewController {
 
     @IBOutlet var finTableView: UITableView!
     
+    let remote = alpakoPHPRequest()
+    
     var numberRows = 5
     
     var topOverviewCellData = [Int:Any]()
@@ -51,6 +53,8 @@ class finTVC: UITableViewController {
         
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
+        
+        performBackgroundOperation()
         
         initView()
         initData()
@@ -1093,61 +1097,54 @@ extension finTVC {
     // MARK: -INIT DATA
     func initSettingsAndData() {
         dataHandler.saveNewSettings()
-        
-        let numberCurrencies = dataHandler.loadDataBulk(entity: "Currency").count
-        if numberCurrencies != 33 {
-            dataHandler.deleteDataBulk(entity: "Currency")
-            saveExchangeRates()
-        }
 
         if dataHandler.loadDataBulk(entity: "GraphSettings").count <= 0 {
             dataHandler.saveNewGraphs()
         }
     }
     
-    func saveExchangeRates() {
-        var data = readDataFromCSV(fileName: "currency_table", fileType: "csv")
-        data = cleanRows(file: data ?? "")
-        let csvRows = csv(data: data ?? "", sep: ";")
-        
-        var j:Int16 = 0
-        for currency in csvRows {
-            dataHandler.saveCurrency(currencyCode: currency[0], exchangeRate: 1.0, automated: false, id: j)
-            j = j+1
+    // MARK: -Load Exchange Rates
+    func getCurrencyData() {
+        let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
+        if currencyDB.count > 0 {
+            for data in currencyDB {
+                if (data.value(forKey: "saved") as? Date ?? Date() < Calendar.current.date(byAdding: .hour, value: -12, to: Date()) ?? Date()) {
+                    let parameters = ["requestType":"0"]
+                    remote.getExchangeRates(parameters: parameters, url: "https://fin.alpako.info/getExchangeRates.php")
+                    break
+                }
+            }
         }
     }
     
-    func csv(data: String, sep: String) -> [[String]] {
-        var result: [[String]] = []
-        let rows = data.components(separatedBy: "\n")
-        for row in rows {
-            let columns = row.components(separatedBy: sep)
-            result.append(columns)
+    private func performBackgroundOperation() {
+        // Add async operation
+        OperationQueue().addOperation {
+            OperationQueue.main.addOperation {
+                self.willLoadData() // on main thread
+            }
+            self.loadDataAsync() // async
+            OperationQueue.main.addOperation {
+                self.didLoadData() // on main thread
+            }
         }
-        return result
     }
-        
-    func readDataFromCSV(fileName:String, fileType: String)-> String!{
-        guard let filepath = Bundle.main.path(forResource: fileName, ofType: fileType)
-            else {
-                return nil
-        }
-        do {
-            var contents = try String(contentsOfFile: filepath, encoding: .utf8)
-            contents = cleanRows(file: contents)
-            return contents
-        } catch {
-            print("File Read Error for file \(filepath)")
-            return nil
-        }
+
+    func loadDataAsync() {
+        // do something on the main thread before loading
+    }
+
+    func willLoadData() {
+//        updateExchangeRates()
+    }
+
+    func didLoadData() {
+        //activityIndicator.isHidden = false
+        //getExchangeRates()
+        // do something on the main thread after loading
+        getCurrencyData()
     }
     
-    func cleanRows(file:String)->String{
-        var cleanFile = file
-        cleanFile = cleanFile.replacingOccurrences(of: "\r", with: "\n")
-        cleanFile = cleanFile.replacingOccurrences(of: "\n\n", with: "\n")
-        return cleanFile
-    }
 }
 
 extension UIView {

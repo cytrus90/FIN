@@ -172,6 +172,11 @@ class cellCategoryNewTVC: UITableViewCell, UICollectionViewDataSource, UICollect
         }
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let nc = NotificationCenter.default
+        nc.post(name: Notification.Name("collectionViedDidScroll"), object: nil)
+    }
+    
     func setCellSelected(indexPath: IndexPath) {
         if let cell = categoryCollectionView.cellForItem(at: indexPath) as? addCategoryCarouselCell {
             cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
