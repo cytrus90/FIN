@@ -54,7 +54,9 @@ class finTVC: UITableViewController {
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
         
-        performBackgroundOperation()
+        Task {
+            await getCurrencyData()
+        }
         
         initView()
         initData()
@@ -1104,7 +1106,7 @@ extension finTVC {
     }
     
     // MARK: -Load Exchange Rates
-    func getCurrencyData() {
+    func getCurrencyData() async {
         let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
         if currencyDB.count > 0 {
             for data in currencyDB {
@@ -1116,35 +1118,6 @@ extension finTVC {
             }
         }
     }
-    
-    private func performBackgroundOperation() {
-        // Add async operation
-        OperationQueue().addOperation {
-            OperationQueue.main.addOperation {
-                self.willLoadData() // on main thread
-            }
-            self.loadDataAsync() // async
-            OperationQueue.main.addOperation {
-                self.didLoadData() // on main thread
-            }
-        }
-    }
-
-    func loadDataAsync() {
-        // do something on the main thread before loading
-    }
-
-    func willLoadData() {
-//        updateExchangeRates()
-    }
-
-    func didLoadData() {
-        //activityIndicator.isHidden = false
-        //getExchangeRates()
-        // do something on the main thread after loading
-        getCurrencyData()
-    }
-    
 }
 
 extension UIView {
