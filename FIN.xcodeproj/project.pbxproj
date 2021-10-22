@@ -34,6 +34,8 @@
 		1731FCC42521A9EA00E4C9FE /* cellSplitAddSelectPersonsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1731FCC32521A9EA00E4C9FE /* cellSplitAddSelectPersonsGroup.swift */; };
 		1731FCC82521AA1600E4C9FE /* splitAddNewSelectTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1731FCC72521AA1600E4C9FE /* splitAddNewSelectTVC.swift */; };
 		1731FCCC252B70A400E4C9FE /* splitDetailTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1731FCCB252B70A400E4C9FE /* splitDetailTVC.swift */; };
+		1732420C272158A6004E2149 /* dataLocalClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1732420B272158A6004E2149 /* dataLocalClass.swift */; };
+		1732420F27230340004E2149 /* FIN_local.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1732420D27230340004E2149 /* FIN_local.xcdatamodeld */; };
 		1732CD4824CEF8D900098E0A /* SWXMLHash in Frameworks */ = {isa = PBXBuildFile; productRef = 1732CD4724CEF8D900098E0A /* SWXMLHash */; };
 		1732CD4A24CEF95900098E0A /* visAuthClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1732CD4924CEF95900098E0A /* visAuthClass.swift */; };
 		173779D424B717FA00BED279 /* headerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173779D324B717FA00BED279 /* headerView.swift */; };
@@ -189,6 +191,8 @@
 		1731FCC32521A9EA00E4C9FE /* cellSplitAddSelectPersonsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellSplitAddSelectPersonsGroup.swift; sourceTree = "<group>"; };
 		1731FCC72521AA1600E4C9FE /* splitAddNewSelectTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = splitAddNewSelectTVC.swift; sourceTree = "<group>"; };
 		1731FCCB252B70A400E4C9FE /* splitDetailTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = splitDetailTVC.swift; sourceTree = "<group>"; };
+		1732420B272158A6004E2149 /* dataLocalClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dataLocalClass.swift; sourceTree = "<group>"; };
+		1732420E27230340004E2149 /* FIN_local.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FIN_local.xcdatamodel; sourceTree = "<group>"; };
 		1732CD4924CEF95900098E0A /* visAuthClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = visAuthClass.swift; sourceTree = "<group>"; };
 		173779D324B717FA00BED279 /* headerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = headerView.swift; sourceTree = "<group>"; };
 		173779D524B71C9C00BED279 /* headerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = headerView.xib; sourceTree = "<group>"; };
@@ -508,12 +512,14 @@
 				1786C4BC24A103B100FE36E5 /* LaunchScreen.storyboard */,
 				1786C4BF24A103B100FE36E5 /* Info.plist */,
 				1786C4B724A103B000FE36E5 /* FIN.xcdatamodeld */,
+				1732420D27230340004E2149 /* FIN_local.xcdatamodeld */,
 				171ADE162593BA6200382710 /* timer.swift */,
 				17625E2925A1CAE8002CAF2F /* localNotificationManager.swift */,
 				17ACD20725B0936E0018BC38 /* PKIAHandler.swift */,
 				174C6AE9269D9C7F0037D086 /* Network.swift */,
 				174C6AEB269D9CDF0037D086 /* remoteRequests.swift */,
 				1716926B269DEBD5007E11BB /* dataClass.swift */,
+				1732420B272158A6004E2149 /* dataLocalClass.swift */,
 			);
 			path = FIN;
 			sourceTree = "<group>";
@@ -988,6 +994,7 @@
 				17F6BD5F2597B692006A4B38 /* cellGraphSettingsDetailsTVC.swift in Sources */,
 				17CA4519259082C6007525DC /* importPreviewTVC.swift in Sources */,
 				173B2F3A25AC60CE00CADA71 /* cellAboutText.swift in Sources */,
+				1732420F27230340004E2149 /* FIN_local.xcdatamodeld in Sources */,
 				171ADE1E2594A83D00382710 /* cellExportTextTVC.swift in Sources */,
 				1786C4B924A103B000FE36E5 /* FIN.xcdatamodeld in Sources */,
 				1731FCCC252B70A400E4C9FE /* splitDetailTVC.swift in Sources */,
@@ -1020,6 +1027,7 @@
 				172EA57C24DC66850028027E /* cellSaveDeposit.swift in Sources */,
 				17CB2BDC25A5DA860015A85F /* cellSavingsOverview.swift in Sources */,
 				17CB681F24E3D7930012B239 /* listCollectionView.swift in Sources */,
+				1732420C272158A6004E2149 /* dataLocalClass.swift in Sources */,
 				17CB2BD825A5AA010015A85F /* categoryOverviewView.swift in Sources */,
 				17A4B3FD25209AAD00EBEBDB /* cellSplitOverview.swift in Sources */,
 				17FD186624CF505300E727D0 /* cellCurrencyPicker.swift in Sources */,
@@ -1320,6 +1328,16 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
+		1732420D27230340004E2149 /* FIN_local.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				1732420E27230340004E2149 /* FIN_local.xcdatamodel */,
+			);
+			currentVersion = 1732420E27230340004E2149 /* FIN_local.xcdatamodel */;
+			path = FIN_local.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		1786C4B724A103B000FE36E5 /* FIN.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (

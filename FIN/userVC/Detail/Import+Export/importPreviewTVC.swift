@@ -47,7 +47,7 @@ class importPreviewTVC: UITableViewController {
     
     override func loadView() {
         super.loadView()
-        deleteLocalData(entity: "ImportRAM")
+        localDataHandler.deleteLocalData(entity: "ImportRAM")
     }
     
     override func viewDidLoad() {
@@ -236,7 +236,7 @@ class importPreviewTVC: UITableViewController {
         
         var i = 0
         
-        for importRAM in loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
+        for importRAM in localDataHandler.loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
             let tags = ""
             let isSave = importRAM.value(forKey: "isSave") as? Bool ?? false
             let exchangeRate = importRAM.value(forKey: "exchangeRate") as? Double ?? 1.00
@@ -291,7 +291,7 @@ class importPreviewTVC: UITableViewController {
         let nc = NotificationCenter.default
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
             nc.post(name: Notification.Name("dataImported"), object: nil)
-            self.deleteLocalData(entity: "ImportRAM")
+            localDataHandler.deleteLocalData(entity: "ImportRAM")
         })
         return true
     }
@@ -312,7 +312,7 @@ class importPreviewTVC: UITableViewController {
         var i = 0
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
         
-        for importRAM in loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
+        for importRAM in localDataHandler.loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
             if i >= 10 {
                 break
             }
@@ -413,7 +413,7 @@ class importPreviewTVC: UITableViewController {
                         currencyCode = importedRecords[i][indexCurrencyCode ?? 0]
                     }
                     
-                    saveRAMTransaction(amount: saveAmount, realAmount: (saveAmount/saveExchangeRate), category: importedRecords[i][indexCategory ?? 0], currencyCode: currencyCode, dateTime: date ?? Date(), descriptionNote: saveDescription, exchangeRate: saveExchangeRate, cID: categoryID, isSave: isSave)
+                    localDataHandler.saveRAMTransaction(amount: saveAmount, realAmount: (saveAmount/saveExchangeRate), category: importedRecords[i][indexCategory ?? 0], currencyCode: currencyCode, dateTime: date ?? Date(), descriptionNote: saveDescription, exchangeRate: saveExchangeRate, cID: categoryID, isSave: isSave)
                 } else {
                     let errorText = NSLocalizedString("errorFirstText", comment: "Error Text") + String(i) + ": " + NSLocalizedString("errorAmountText", comment: "Error Date") + importedRecords[i][indexAmount ?? 0]
                     let errorText2 = NSLocalizedString("errorAmountText2", comment: "Error Text")
@@ -447,7 +447,7 @@ class importPreviewTVC: UITableViewController {
         var timeDiff:Int = 1
         
         var preDate = Date()
-        for importRAM in loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
+        for importRAM in localDataHandler.loadBulkLocalSorted(entitie: "ImportRAM", sort: [dateSort]) {
             
             let createDatePlus = Calendar.current.date(byAdding: .second, value: 1, to: (importRAM.value(forKey: "dateTime") as? Date ?? Date()))!
             let createDateMinus = Calendar.current.date(byAdding: .second, value: -1, to: (importRAM.value(forKey: "dateTime") as? Date ?? Date()))!
@@ -564,7 +564,7 @@ class importPreviewTVC: UITableViewController {
     }
     
     @objc func cancel() {
-        deleteLocalData(entity: "ImportRAM")
+        localDataHandler.deleteLocalData(entity: "ImportRAM")
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
         }
@@ -647,7 +647,7 @@ class importPreviewTVC: UITableViewController {
         var income = [CategoryEntry]()
         var savings = [CategoryEntry]()
         
-        for category in loadBulkLocalSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
+        for category in localDataHandler.loadBulkLocalSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
             if (category.value(forKey: "isSave") as? Bool ?? false) { // isSave
                 savings.append(CategoryEntry(
                                 cID: category.value(forKey: "cID") as? Int16 ?? -1,
@@ -722,37 +722,6 @@ class importPreviewTVC: UITableViewController {
 extension importPreviewTVC {
     // MARK: - DATA
     // MARK: SAVE
-    func saveRAMTransaction(amount: Double, realAmount:Double, category: String, currencyCode: String?, dateTime: Date, descriptionNote: String?, exchangeRate: Double = 1.0, cID: Int16, isSave: Bool) {
-        let currencyCodeSave: String?
-        if currencyCode == nil {
-            currencyCodeSave = Locale.current.currencyCode ?? "EUR"
-        } else {
-            currencyCodeSave = currencyCode
-        }
-
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentLocalContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let importSave = ImportRAM(context: managedContext)
-        
-        importSave.amount = amount
-        importSave.category = category
-        importSave.currencyCode = currencyCodeSave ?? ""
-        importSave.dateTime = dateTime
-        importSave.descriptionNote = descriptionNote ?? ""
-        importSave.exchangeRate = exchangeRate
-        importSave.categoryID = cID
-        importSave.realAmount = realAmount
-        importSave.isSave = isSave
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
     func saveNewCategory(categoryName:String, color: Int16) -> Int16 {
         let managedContext = dataHandler.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -796,48 +765,6 @@ extension importPreviewTVC {
         }
         return newCID
     }
-    
-    // MARK: DELETE
-    func deleteLocalData(entity: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentLocalContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        do {
-            let delete = try managedContext.fetch(fetchRequest)
-            for data in delete {
-                managedContext.delete(data as! NSManagedObject)
-            }
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        } catch {
-            print(error)
-        }
-    }
-
-    func loadBulkLocalSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let managedContext = appDelegate!.persistentLocalContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-        fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.sortDescriptors = sort
-        do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-            if loadData.count > 0 {
-                return loadData
-            }
-        } catch {
-            print("Could not fetch. \(error)")
-        }
-        return [NSManagedObject]()
-    }
-    
 }
 
 extension importPreviewTVC: UIDocumentPickerDelegate, UINavigationControllerDelegate {
@@ -861,3 +788,78 @@ extension importPreviewTVC: UIDocumentPickerDelegate, UINavigationControllerDele
         cancel()
     }
 }
+
+//extension importPreviewTVC {
+//    // MARK: -DATA
+//
+//    // MARK: SAVE
+//    func saveRAMTransaction(amount: Double, realAmount:Double, category: String, currencyCode: String?, dateTime: Date, descriptionNote: String?, exchangeRate: Double = 1.0, cID: Int16, isSave: Bool) {
+//        let currencyCodeSave: String?
+//        if currencyCode == nil {
+//            currencyCodeSave = Locale.current.currencyCode ?? "EUR"
+//        } else {
+//            currencyCodeSave = currencyCode
+//        }
+//
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let importSave = ImportRAM(context: managedContext)
+//
+//        importSave.amount = amount
+//        importSave.category = category
+//        importSave.currencyCode = currencyCodeSave ?? ""
+//        importSave.dateTime = dateTime
+//        importSave.descriptionNote = descriptionNote ?? ""
+//        importSave.exchangeRate = exchangeRate
+//        importSave.categoryID = cID
+//        importSave.realAmount = realAmount
+//        importSave.isSave = isSave
+//
+//        do {
+//            try managedContext.save()
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
+//
+//    // MARK: LOAD
+//    func loadBulkLocalSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+//        fetchRequest.returnsObjectsAsFaults = false
+//        fetchRequest.sortDescriptors = sort
+//        do {
+//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            if loadData.count > 0 {
+//                return loadData
+//            }
+//        } catch {
+//            print("Could not fetch. \(error)")
+//        }
+//        return [NSManagedObject]()
+//    }
+//
+//    // MARK: DELETE
+//    func deleteLocalData(entity: String) {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        do {
+//            let delete = try managedContext.fetch(fetchRequest)
+//            for data in delete {
+//                managedContext.delete(data as! NSManagedObject)
+//            }
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        } catch {
+//            print(error)
+//        }
+//    }
+//}

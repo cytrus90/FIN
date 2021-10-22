@@ -35,6 +35,11 @@ class dataClass {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        guard let containerStoreDescription = container.persistentStoreDescriptions.first else {
+            fatalError("\(#function): Failed to retrieve a persistent store description.")
+        }
+        containerStoreDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         return container
     }()
     
@@ -773,36 +778,6 @@ class dataClass {
             fatalError("Failed to fetch recordings: \(error)")
         }
     }
-    
-    // MARK: SAVE GRAPHS
-    func saveNewGraphs() {
-        deleteData(entity: "GraphSettings")
-        for i in 0...1 {
-            let managedContext = persistentContainer.viewContext
-            managedContext.automaticallyMergesChangesFromParent = true
-            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-            let graphSave = GraphSettings(context: managedContext)
-            
-            graphSave.graphID = Int16(i)
-            if i == 0 {
-                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
-                graphSave.graphActive = false
-            } else if i == 1 {
-                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
-                graphSave.graphActive = true
-            }
-            graphSave.graphOption1 = Int16(0)
-            graphSave.graphOption2 = Int16(0)
-            
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not save. \(error), \(error.userInfo)")
-            }
-        }
-    }
-    
-    
     
     // MARK: SAVE CURRENCY
     func saveCurrency(currencyCode: String, exchangeRate: Double?, automated: Bool, id: Int16) {

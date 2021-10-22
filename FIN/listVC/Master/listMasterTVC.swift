@@ -1311,16 +1311,15 @@ extension listMasterTVC {
         if filteredTagsArray.count > 0 {
             for i in 0...(filteredTagsArray.count-1) {
                 if i == 0 {
-                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
-                } else if i != (filteredTagsArray.count-1) {
-                    tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    tagFilterPredicateString = " AND ("
+                } else {
+                    tagFilterPredicateString = tagFilterPredicateString + " OR "
                 }
+                
+                tagFilterPredicateString = tagFilterPredicateString + "tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                
                 if i == (filteredTagsArray.count-1) {
-                    if i != 0 {
-                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
-                    } else {
-                        tagFilterPredicateString = tagFilterPredicateString + ")"
-                    }
+                    tagFilterPredicateString = tagFilterPredicateString + ")"
                 }
             }
         }
@@ -1329,7 +1328,7 @@ extension listMasterTVC {
         var sumIncomes = 0.00
         
         if incomesCategories.count > 0 {
-            let incomePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil" + tagFilterPredicateString), incomesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
+            let incomePredicate = NSPredicate(format: ("(categoryID IN %@ AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil)" + tagFilterPredicateString), incomesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
             let dataIncome = dataHandler.loadDataSUM(entitie: "Transactions", query: incomePredicate)  as? [[String:Any]]
             if (dataIncome?.count ?? 0) > 0 {
                 for i in 0...((dataIncome?.count ?? 1)-1) {
@@ -1363,16 +1362,15 @@ extension listMasterTVC {
         if filteredTagsArray.count > 0 {
             for i in 0...(filteredTagsArray.count-1) {
                 if i == 0 {
-                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
-                } else if i != (filteredTagsArray.count-1) {
-                    tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    tagFilterPredicateString = " AND ("
+                } else {
+                    tagFilterPredicateString = tagFilterPredicateString + " OR "
                 }
+                
+                tagFilterPredicateString = tagFilterPredicateString + "tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                
                 if i == (filteredTagsArray.count-1) {
-                    if i != 0 {
-                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
-                    } else {
-                        tagFilterPredicateString = tagFilterPredicateString + ")"
-                    }
+                    tagFilterPredicateString = tagFilterPredicateString + ")"
                 }
             }
         }
@@ -1380,7 +1378,7 @@ extension listMasterTVC {
         var sumExpenses = 0.00
         
         if expensesCategories.count > 0 {
-            let expensePredicate = NSPredicate(format: ("categoryID IN %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil" + tagFilterPredicateString), expensesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
+            let expensePredicate = NSPredicate(format: ("(categoryID IN %@ AND dateTime >= %@ AND dateTime <= %@ AND dateTime != nil)" + tagFilterPredicateString), expensesCategories, fromDateShown! as NSDate, toDateShown! as NSDate)
             let dataExpenses = dataHandler.loadDataSUM(entitie: "Transactions", query: expensePredicate)  as? [[String:Any]]
             if (dataExpenses?.count ?? 0) > 0 {
                 for i in 0...((dataExpenses?.count ?? 1)-1) {
@@ -1404,16 +1402,15 @@ extension listMasterTVC {
         if filteredTagsArray.count > 0 {
             for i in 0...(filteredTagsArray.count-1) {
                 if i == 0 {
-                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
-                } else if i != (filteredTagsArray.count-1) {
-                    tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                    tagFilterPredicateString = " AND ("
+                } else {
+                    tagFilterPredicateString = tagFilterPredicateString + " OR "
                 }
+                
+                tagFilterPredicateString = tagFilterPredicateString + "tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                
                 if i == (filteredTagsArray.count-1) {
-                    if i != 0 {
-                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
-                    } else {
-                        tagFilterPredicateString = tagFilterPredicateString + ")"
-                    }
+                    tagFilterPredicateString = tagFilterPredicateString + ")"
                 }
             }
         }
@@ -1422,7 +1419,7 @@ extension listMasterTVC {
         var sumSavings = 0.00
         if savingsCategories.count > 0 {
             for data in savingsCategories {
-                let savePredicate = NSPredicate(format: ("categoryID == \(data) AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil" + tagFilterPredicateString), fromDateShown! as NSDate, toDateShown! as NSDate)
+                let savePredicate = NSPredicate(format: ("(categoryID == \(data) AND dateTime >= %@ AND dateTime < %@ AND dateTime != nil)" + tagFilterPredicateString), fromDateShown! as NSDate, toDateShown! as NSDate)
                 for savings in dataHandler.loadBulkQueried(entitie: "Transactions", query: savePredicate) {
 //                    if tagIsSelectedInFilter(tag: (savings.value(forKey: "tags") as? String ?? "-1y")) {
                         if (savings.value(forKey: "isSave") as? Bool ?? false) {

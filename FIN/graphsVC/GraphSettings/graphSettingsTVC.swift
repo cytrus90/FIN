@@ -29,7 +29,7 @@ class graphSettingsTVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.title = ""
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(applyFilter))
@@ -247,11 +247,11 @@ class graphSettingsTVC: UITableViewController {
         
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
         // DataCheck
-        if dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count <= 0 || dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count > 2 {
-            dataHandler.saveNewGraphs()
+        if localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]).count <= 0 || localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]).count > 2 {
+            localDataHandler.saveNewGraphs()
         }
         
-        for graph in dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]) {
+        for graph in localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]) {
             let graphActive = (graph.value(forKey: "graphActive") as? Bool ?? false)
             let graphName = (graph.value(forKey: "graphName") as? Int16 ?? 0)
             let graphOption1 = (graph.value(forKey: "graphOption1") as? Int16 ?? 0)
@@ -298,12 +298,12 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
         var someGraphIsActive = false
         
-        for graph in dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]) {
+        for graph in localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]) {
             
             let query = NSPredicate(format: "graphID == %i", graph.value(forKey: "graphID") as? Int16 ?? 0)
             
             if selected == Int(graph.value(forKey: "graphID") as? Int16 ?? 0) {
-                _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: true)
+                localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: true)
                 someGraphIsActive = true
                 rowData[Int(graph.value(forKey: "graphID") as? Int16 ?? 0)] = [
                     0:true
@@ -350,7 +350,7 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
                     cell.segmentControl3.selectedSegmentIndex = Int(graph.value(forKey: "graphOption3") as? Int16 ?? 0)
                 }
             } else {
-                _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: false)
+                localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: false)
                 rowData[Int(graph.value(forKey: "graphID") as? Int16 ?? 0)] = [
                     0:false
                 ]
@@ -358,7 +358,7 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
         }
         if !someGraphIsActive {
             let query = NSPredicate(format: "graphID == %i", Int16(selected))
-            _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: true)
+            localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: true)
         }
     }
 }
@@ -366,17 +366,17 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
 extension graphSettingsTVC: cellGraphSettingsDetailsTVCDelegate {
     func graphOption1Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption1", query: query, value: Int16(selected))
+        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption1", query: query, value: Int16(selected))
     }
     
     func graphOption2Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption2", query: query, value: Int16(selected))
+        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption2", query: query, value: Int16(selected))
     }
     
     func graphOption3Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption3", query: query, value: Int16(selected))
+        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption3", query: query, value: Int16(selected))
     }
 }
 
@@ -384,7 +384,7 @@ extension graphSettingsTVC: cellGraphSettingsSecondTVCDelegate {
     func secondSwitchChanged(newState:Bool) {
         if UIDevice().model.contains("iPad") {
             let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-            _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "showSecondGraph", query: query, value: newState)
+            localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "showSecondGraph", query: query, value: newState)
             
             rowData[activeGraphID]?[4] = newState
             
@@ -392,3 +392,97 @@ extension graphSettingsTVC: cellGraphSettingsSecondTVCDelegate {
         }
     }
 }
+
+//extension graphSettingsTVC {
+//    // MARK: -DATA
+//
+//    // MARK: LOAD
+//    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+//        fetchRequest.returnsObjectsAsFaults = false
+//        fetchRequest.sortDescriptors = sort
+//        do {
+//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            if loadData.count > 0 {
+//                return loadData
+//            }
+//        } catch {
+//            print("Could not fetch. \(error)")
+//        }
+//        return [NSManagedObject]()
+//    }
+//
+//    // MARK: SAVE
+//    func saveNewGraphs() {
+//        deleteDataBulk(entity: "GraphSettingsLocal")
+//        for i in 0...1 {
+//            let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//
+//            managedContext.automaticallyMergesChangesFromParent = true
+//            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//            let graphSave = GraphSettingsLocal(context: managedContext)
+//
+//            graphSave.graphID = Int16(i)
+//            if i == 0 {
+//                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
+//                graphSave.graphActive = false
+//            } else if i == 1 {
+//                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
+//                graphSave.graphActive = true
+//            }
+//            graphSave.graphOption1 = Int16(0)
+//            graphSave.graphOption2 = Int16(0)
+//
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        }
+//    }
+//
+//    func saveQueriedAttribute(entity: String, attribute: String, query: NSPredicate ,value: Any) {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        fetchRequest.returnsObjectsAsFaults = false
+//        fetchRequest.predicate = query
+//        do {
+//            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            if fetchedData.count > 1 || fetchedData.count <= 0 {
+//                return
+//            } else {
+//                fetchedData[0].setValue(value, forKey: attribute)
+//                try managedContext.save()
+//                return
+//            }
+//        } catch {
+//            fatalError("Failed to fetch recordings: \(error)")
+//        }
+//    }
+//
+//    // MARK: DELETE
+//    func deleteDataBulk(entity: String) {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        do {
+//            let delete = try managedContext.fetch(fetchRequest)
+//            for data in delete {
+//                managedContext.delete(data as! NSManagedObject)
+//            }
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        } catch {
+//            print(error)
+//        }
+//    }
+//}

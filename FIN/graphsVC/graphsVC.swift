@@ -941,20 +941,20 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     func initChartSettings() {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
-        if dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count <= 0 {
-            dataHandler.saveNewGraphs()
+        if localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]).count <= 0 {
+            localDataHandler.saveNewGraphs()
         }
         
         let queryGraphActive = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
         
-        graphName = dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphName", query: queryGraphActive) as? String ?? "Line"
-        graphIDActive = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphID", query: queryGraphActive) as? Int16 ?? 0)
-        graphOption1 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
-        graphOption2 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
+        graphName = localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "graphName", query: queryGraphActive) as? String ?? "Line"
+        graphIDActive = Int(localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "graphID", query: queryGraphActive) as? Int16 ?? 0)
+        graphOption1 = Int(localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "graphOption1", query: queryGraphActive) as? Int16 ?? 0)
+        graphOption2 = Int(localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "graphOption2", query: queryGraphActive) as? Int16 ?? 0)
         
         if !UIDevice().model.contains("iPhone") {
-            secondGraph = (dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
-            graphOption3 = Int(dataHandler.loadQueriedAttribute(entitie: "GraphSettings", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
+            secondGraph = (localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "showSecondGraph", query: queryGraphActive) as? Bool ?? true)
+            graphOption3 = Int(localDataHandler.loadQueriedAttribute(entitie: "GraphSettingsLocal", attibute: "graphOption3", query: queryGraphActive) as? Int16 ?? 0)
         } else {
             secondGraph = false
             graphOption3 = nil
@@ -2321,3 +2321,96 @@ extension graphsVC: ChartViewDelegate {
         }
     }
 }
+
+//extension graphsVC {
+//    // MARK: -DATA
+//
+//    // MARK: SAVE GRAPHS
+//    func saveNewGraphs() {
+//        deleteDataBulk(entity: "GraphSettingsLocal")
+//        for i in 0...1 {
+//            let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//
+//            managedContext.automaticallyMergesChangesFromParent = true
+//            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//            let graphSave = GraphSettingsLocal(context: managedContext)
+//
+//            graphSave.graphID = Int16(i)
+//            if i == 0 {
+//                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
+//                graphSave.graphActive = false
+//            } else if i == 1 {
+//                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
+//                graphSave.graphActive = true
+//            }
+//            graphSave.graphOption1 = Int16(0)
+//            graphSave.graphOption2 = Int16(0)
+//
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        }
+//    }
+//
+//    // MARK: -LOAD
+//    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+//        fetchRequest.returnsObjectsAsFaults = false
+//        fetchRequest.sortDescriptors = sort
+//        do {
+//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            if loadData.count > 0 {
+//                return loadData
+//            }
+//        } catch {
+//            print("Could not fetch. \(error)")
+//        }
+//        return [NSManagedObject]()
+//    }
+//
+//    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+//        fetchRequest.returnsObjectsAsFaults = false
+//        fetchRequest.predicate = query
+//        do {
+//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            for data in loadData {
+//                if data.value(forKey: attibute) != nil {
+//                    return data.value(forKey: attibute) ?? false
+//                }
+//            }
+//        } catch {
+//            print("Could not fetch. \(error)")
+//        }
+//        return false
+//    }
+//
+//    // MARK: DELETE
+//    func deleteDataBulk(entity: String) {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        do {
+//            let delete = try managedContext.fetch(fetchRequest)
+//            for data in delete {
+//                managedContext.delete(data as! NSManagedObject)
+//            }
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        } catch {
+//            print(error)
+//        }
+//    }
+//}

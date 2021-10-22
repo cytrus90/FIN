@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19206" systemVersion="20G165" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="GraphSettingsLocal" representedClassName="GraphSettingsLocal" syncable="YES" codeGenerationType="class">
+        <attribute name="graphActive" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="graphID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphName" optional="YES" attributeType="String"/>
+        <attribute name="graphOption1" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphOption2" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="graphOption3" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="showSecondGraph" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <elements>
+        <element name="GraphSettingsLocal" positionX="-54" positionY="-9" width="128" height="134"/>
+    </elements>
+</model>

@@ -1100,10 +1100,78 @@ extension finTVC {
     func initSettingsAndData() {
         dataHandler.saveNewSettings()
 
-        if dataHandler.loadDataBulk(entity: "GraphSettings").count <= 0 {
-            dataHandler.saveNewGraphs()
+        if localDataHandler.loadDataBulk(entity: "GraphSettingsLocal").count <= 0 {
+            localDataHandler.saveNewGraphs()
         }
     }
+    
+    // MARK: -LOCAL DATA
+    // MARK: LOAD
+//    func loadDataBulk(entity:String) -> [NSManagedObject] {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        fetchRequest.returnsObjectsAsFaults = false
+//
+//        do {
+//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+//            return loadData
+//        } catch {
+//            print("Could not fetch. \(error)")
+//        }
+//        return [NSManagedObject]()
+//    }
+//
+//    // MARK: SAVE GRAPHS
+//    func saveNewGraphs() {
+//        deleteDataBulk(entity: "GraphSettingsLocal")
+//        for i in 0...1 {
+//            let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//
+//            managedContext.automaticallyMergesChangesFromParent = true
+//            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//            let graphSave = GraphSettingsLocal(context: managedContext)
+//
+//            graphSave.graphID = Int16(i)
+//            if i == 0 {
+//                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
+//                graphSave.graphActive = false
+//            } else if i == 1 {
+//                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
+//                graphSave.graphActive = true
+//            }
+//            graphSave.graphOption1 = Int16(0)
+//            graphSave.graphOption2 = Int16(0)
+//
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        }
+//    }
+//
+//    // MARK: DELETE
+//    func deleteDataBulk(entity: String) {
+//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+//        do {
+//            let delete = try managedContext.fetch(fetchRequest)
+//            for data in delete {
+//                managedContext.delete(data as! NSManagedObject)
+//            }
+//            do {
+//                try managedContext.save()
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        } catch {
+//            print(error)
+//        }
+//    }
     
     // MARK: -Load Exchange Rates
     func getCurrencyData() async {
