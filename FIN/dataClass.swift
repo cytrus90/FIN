@@ -1325,6 +1325,26 @@ class dataClass {
         }
     }
     
+    func saveBulk(entity: String, attribute: String, value: Any) {
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if fetchedData.count > 1 || fetchedData.count <= 0 {
+                return
+            } else {
+                for data in fetchedData {
+                    data.setValue(value, forKey: attribute)
+                }
+                try managedContext.save()
+            }
+        } catch {
+            fatalError("Failed to fetch recordings: \(error)")
+        }
+    }
     
     
     // MARK: -DELETE
