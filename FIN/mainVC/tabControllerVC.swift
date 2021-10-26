@@ -96,7 +96,7 @@ class tabController: UITabBarController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
-        loginEnabled = dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? true
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -142,15 +142,18 @@ class tabController: UITabBarController {
         }
         
         let update150 = UserDefaults.standard.integer(forKey: "update150")
-        
         if update150 == 0 {
             doUpdate150()
         }
         
         let update160 = UserDefaults.standard.integer(forKey: "update160")
-        
         if update160 == 0 {
             doUpdate160()
+        }
+        
+        let update161 = UserDefaults.standard.integer(forKey: "update161")
+        if update161 == 0 {
+            doUpdate161()
         }
     }
     
@@ -191,7 +194,7 @@ class tabController: UITabBarController {
     }
     
     @objc func appear() {
-        loginEnabled = dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? true
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -224,6 +227,23 @@ class tabController: UITabBarController {
 }
 
 extension tabController {
+    func doUpdate161() { // Copy settings to local core data
+        localDataHandler.checkDoubleLocalSettings()
+        
+        let firstLaunchRAM = dataHandler.loadData(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
+        if !firstLaunchRAM {
+            localDataHandler.saveLocalSettings(settingsChange: "firstLaunch", newValue: firstLaunchRAM)
+            localDataHandler.saveLocalSettings(settingsChange: "filteredCategoriesZero", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false))
+            localDataHandler.saveLocalSettings(settingsChange: "filteredTagsZero", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false))
+            localDataHandler.saveLocalSettings(settingsChange: "firstLaunchDate", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "firstLaunchDate") as? Bool ?? false))
+            localDataHandler.saveLocalSettings(settingsChange: "lastCurrencyCode", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "lastCurrencyCode") as? Bool ?? false))
+            localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false))
+            localDataHandler.saveLocalSettings(settingsChange: "userCode", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? Bool ?? false))
+        }
+        
+        UserDefaults.standard.setValue(1, forKey: "update161")
+    }
+    
     func doUpdate160() { // Initiate Cloud Sync
         
         // Categories

@@ -106,7 +106,7 @@ class loginVC: UIViewController {
         confirm.addAction(UIAlertAction(title: NSLocalizedString("forgotCodeConfirmAction", comment: "Reset Code Confim"), style: .default, handler: { action in
             
             let RAM = Int.random(in: 0..<9999)
-            dataHandler.saveSettings(settingsChange: "userCode", newValue: String(RAM).sha1())
+            localDataHandler.saveLocalSettings(settingsChange: "userCode", newValue: String(RAM).sha1())
             
             var newCode = "0"
             if RAM < 10 {
@@ -222,7 +222,7 @@ class loginVC: UIViewController {
     func checkCode() {
         let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
         
-        if dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String == userInputCode {
+        if localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String == userInputCode {
             loginSuccessfull = true
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)

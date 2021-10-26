@@ -9,7 +9,17 @@
         <attribute name="graphOption3" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="showSecondGraph" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
+    <entity name="SettingsLocal" representedClassName="SettingsLocal" syncable="YES" codeGenerationType="class">
+        <attribute name="filteredCategoriesZero" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="filteredTagsZero" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="firstLaunch" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="firstLaunchDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastCurrencyCode" optional="YES" attributeType="String"/>
+        <attribute name="loginEnabled" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="userCode" optional="YES" attributeType="String"/>
+    </entity>
     <elements>
         <element name="GraphSettingsLocal" positionX="-54" positionY="-9" width="128" height="134"/>
+        <element name="SettingsLocal" positionX="-36" positionY="63" width="128" height="134"/>
     </elements>
 </model>

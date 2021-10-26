@@ -234,34 +234,6 @@ class cellCategoryTVC: UITableViewCell, SmoothPickerViewDelegate, SmoothPickerVi
             return false
         }
     }
-    
-//    // MARK: PUT IN FIRST VIEW
-//    func initCategoriesINITIAL() {
-//            if (loadBulkData(entitie: "Categories", orderBy: "cID")).count == 0 {
-//    //            if loadData(entitie: "Settings", attibute: "firstLaunch") {
-//    //
-//    //            }
-//                for i in 0...4 {
-//                    switch i {
-//                    case 1:
-//                        saveCategory(name: "Sport", color: 10, isIncome: false, isSave: false)
-//                        break
-//                    case 2:
-//                        saveCategory(name: "Other", color: 2, isIncome: false, isSave: false)
-//                        break
-//                    case 3:
-//                        saveCategory(name: "Savings", color: 1, isIncome: false, isSave: true)
-//                        break
-//                    case 4:
-//                        saveCategory(name: "Salary", color: 4, isIncome: true, isSave: false)
-//                        break
-//                    default:
-//                        saveCategory(name: "Household", color: 8, isIncome: false, isSave: false)
-//                        break
-//                    }
-//                }
-//            }
-//        }
 }
 
 protocol cellCategoryTVCDelecate: AnyObject {

@@ -649,11 +649,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             userDetailCells.removeAll()
             // Get Data
             checkSettingsDuplicates()
+            localDataHandler.checkDoubleLocalSettings()
             
             let userName = dataHandler.loadData(entitie: "Settings", attibute: "userName") as? String ?? NSLocalizedString("userTitle", comment: "User VC Title")
             let recoveryMail = dataHandler.loadData(entitie: "Settings", attibute: "recoveryMail") as? String ?? ""
-            let loginEnabled = dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false
-            if (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String ?? "").count <= 0 || (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String ?? "").count <= 0 {
+            let loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? false
+            if (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 || (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 {
                 codeIsSet = false
             } else {
                 codeIsSet = true
@@ -1950,7 +1951,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 cell.cellLoginSwitch.isOn = false
             }
         } else {
-            if (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String ?? "").count <= 0 || (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? String ?? "").count <= 0 {
+            if (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 || (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 {
                 codeIsSet = false
             } else {
                 codeIsSet = true
@@ -1964,7 +1965,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 loginEnabled = false
             }
             
-            dataHandler.saveSettings(settingsChange: "loginEnabled", newValue: loginEnabled)
+            localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: loginEnabled)
             
             var dict = userDetailCells[0] as? [Int:Any]
             userDetailCells.removeAll()
@@ -2033,7 +2034,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 dataHandler.saveSettings(settingsChange: "recoveryMail", newValue: newText)
                 if newText.count <= 0 {
                     loginEnabled = false
-                    dataHandler.saveSettings(settingsChange: "loginEnabled", newValue: false)
+                    localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: false)
                     if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
                         cell.cellLoginSwitch.isOn = false
                         loginToggle(newState: false)

@@ -141,8 +141,7 @@ class Network{
                 dataHandler.saveQueriedAttributeMultiple(entity: "Currency", attribute: "exchangeRate", query: query, value: rates[currency[0]] ?? 1.01)
                 j += j
             } else {
-                print(currency[0])
-                print("Error: Currency not found")
+                print("Error: Currency: " + String(currency[0]) + " not found")
             }
         }
         return true

@@ -328,6 +328,9 @@
 "deleteTitleGroupSplit" = "Remove group?";
 "deleteTextGroupSplit" = "This can't be undone! All open bills will be settled.";
 
+"addPersonPlaceholder" = "Person name";
+"addGroupPlaceholder" = "Group name";
+
 // Select
 "splitSelectTitleUser" = "Select persons";
 "splitSelectTitleGroup" = "Select groups";

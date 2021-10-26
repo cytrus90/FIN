@@ -329,6 +329,9 @@
 "deleteTitleGroupSplit" = "Gruppe entfernen?";
 "deleteTextGroupSplit" = "Dies kann nicht rückgängig gemacht werden! Alle offenen Rechnungen werden beglichen.";
 
+"addPersonPlaceholder" = "Name";
+"addGroupPlaceholder" = "Gruppenname";
+
 // Select
 "splitSelectTitleUser" = "Personen auswählen";
 "splitSelectTitleGroup" = "Gruppen auswählen";

@@ -45,7 +45,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
         currencyTable.delegate = self
         
         if (lastCurrencyCode?.count ?? 0) <= 0 {
-            lastCurrencyCode = dataHandler.loadSettings(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? "EUR"
+            lastCurrencyCode = localDataHandler.loadLocalSettings(entitie: "SettingsLocal", attibute: "lastCurrencyCode") as? String ?? "EUR"
         }
         
         initView()
@@ -151,7 +151,7 @@ class currencyPickerVC: UIViewController, UITableViewDataSource, UITableViewDele
             } else {
                 currencyExchangeRate = 1.00
             }
-            dataHandler.saveSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
+            localDataHandler.saveLocalSettings(settingsChange: "lastCurrencyCode", newValue: currencyCodeSet)
             let nc = NotificationCenter.default
             nc.post(name: Notification.Name("currencyChanged"), object: nil)
             self.dismiss(animated: true, completion: nil)
