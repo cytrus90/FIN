@@ -154,7 +154,7 @@ class tabController: UITabBarController {
         let update161 = UserDefaults.standard.integer(forKey: "update161")
         if update161 == 0 {
             doUpdate161()
-        }
+        }        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -227,7 +227,7 @@ class tabController: UITabBarController {
 }
 
 extension tabController {
-    func doUpdate161() { // Copy settings to local core data
+    func doUpdate161() { // Copy settings to local core data & init new graph
         localDataHandler.checkDoubleLocalSettings()
         
         let firstLaunchRAM = dataHandler.loadData(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
@@ -240,6 +240,8 @@ extension tabController {
             localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false))
             localDataHandler.saveLocalSettings(settingsChange: "userCode", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? Bool ?? false))
         }
+        
+        localDataHandler.saveNewGraphs()
         
         UserDefaults.standard.setValue(1, forKey: "update161")
     }

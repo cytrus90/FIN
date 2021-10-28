@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -137,7 +137,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="cellGraphSettingsTVC" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cellGraphSettingsTVC" id="CH1-cK-zTF" customClass="cellGraphSettingsTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="24.5" width="414" height="96"/>
+                                <rect key="frame" x="0.0" y="44.5" width="414" height="96"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CH1-cK-zTF" id="WgW-pl-csY">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="96"/>
@@ -159,6 +159,7 @@
                                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                                             <segments>
                                                                 <segment title="Line"/>
+                                                                <segment title="Pie"/>
                                                                 <segment title="Bar"/>
                                                             </segments>
                                                             <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -201,17 +202,17 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cellGraphSettingsDetailsTVC" id="LSM-PV-saT" customClass="cellGraphSettingsDetailsTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="120.5" width="414" height="233"/>
+                                <rect key="frame" x="0.0" y="140.5" width="414" height="192"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="LSM-PV-saT" id="zqo-ER-V1L">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="233"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="192"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bFr-0x-zHz">
-                                            <rect key="frame" x="20" y="11" width="374" height="211"/>
+                                            <rect key="frame" x="20" y="11" width="374" height="170"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="bvY-EB-KQ5">
-                                                    <rect key="frame" x="8" y="8" width="358" height="195"/>
+                                                    <rect key="frame" x="8" y="8" width="358" height="154"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Linechart Options" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="h4j-mG-mEO">
                                                             <rect key="frame" x="0.0" y="0.0" width="358" height="31"/>
@@ -245,13 +246,13 @@
                                                                 <action selector="segment3Changed:" destination="LSM-PV-saT" eventType="valueChanged" id="B6v-ig-stZ"/>
                                                             </connections>
                                                         </segmentedControl>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resolution" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1Lg-EG-6ft">
-                                                            <rect key="frame" x="0.0" y="123" width="358" height="31"/>
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resolution" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1Lg-EG-6ft">
+                                                            <rect key="frame" x="0.0" y="118" width="358" height="0.0"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <segmentedControl opaque="NO" alpha="0.97000002861022949" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="gnI-8Y-e00">
-                                                            <rect key="frame" x="0.0" y="164" width="358" height="32"/>
+                                                            <rect key="frame" x="0.0" y="123" width="358" height="32"/>
                                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                                             <segments>
                                                                 <segment title="Monthly"/>
@@ -299,7 +300,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="cellGraphSettingsSecondTVC" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cellGraphSettingsSecondTVC" id="qcK-zI-5wV" customClass="cellGraphSettingsSecondTVC" customModule="FIN" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="353.5" width="414" height="69"/>
+                                <rect key="frame" x="0.0" y="332.5" width="414" height="69"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qcK-zI-5wV" id="gyU-Sc-fE4">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="69"/>

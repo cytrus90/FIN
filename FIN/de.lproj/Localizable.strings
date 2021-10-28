@@ -260,7 +260,8 @@
 
 "graphSettingsCellTitle" = "Typ:";
 "lineChartTitle" = "Liniendiagramm";
-"barChartTitle" = "Tortendiagramm";
+"pieChartTitle" = "Tortendiagramm";
+"barChartTitle" = "Balkendiagramm";
 
 "option1LineChartTitle" = "Liniendiagramm Optionen:";
 "lineChartOption1_0" = "Saldo";
@@ -268,16 +269,22 @@
 "lineChartOption1_1_w" = "Einnahmen vs. Ausgaben";
 "lineChartOption1_2" = "Erspartes";
 
-"option1BarChartTitle" = "Tortendiagramm Optionen:";
-"barChartOption1_0" = "Ausgaben";
-"barChartOption1_1" = "Einnahmen";
-"barChartOption1_2" = "Erspartes";
+"option1PieChartTitle" = "Tortendiagramm Optionen:";
+"pieChartOption1_0" = "Ausgaben";
+"pieChartOption1_1" = "Einnahmen";
+"pieChartOption1_2" = "Erspartes";
+
+"option1BarChartTitle" = "Balkendiagramm Optionen:";
+"barChartOption1_0" = "Saldo";
+"barChartOption1_1" = "Erspartes";
 
 "option2ChartTitle" = "Zeitliche Gliederung:";
 
 "changeLabel" = "Entwicklung: ";
 
 "showSecondGraphLabel" = "Zweites Diagramm:";
+
+"noTransactionsScrollViewText" = "Keine Transaktionen";
 
 // #### Split VC ####
 "bottomSegmentGroups" = "Gruppen";

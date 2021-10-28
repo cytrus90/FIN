@@ -21,6 +21,13 @@ class dataLocalClass {
         return container
     }()
     
+    lazy var managedObjectContext: NSManagedObjectContext = {
+        let coordinator = persistentLocalContainer.persistentStoreCoordinator
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        managedObjectContext.persistentStoreCoordinator = coordinator
+        return managedObjectContext
+    }()
+    
     func saveContext () {
         let context = persistentLocalContainer.viewContext
         if context.hasChanges {
@@ -40,7 +47,7 @@ class dataLocalClass {
     // MARK: SAVE GRAPHS
     func saveNewGraphs() {
         deleteDataBulk(entity: "GraphSettingsLocal")
-        for i in 0...1 {
+        for i in 0...2 {
             let managedContext = persistentLocalContainer.viewContext
             
             managedContext.automaticallyMergesChangesFromParent = true
@@ -52,7 +59,10 @@ class dataLocalClass {
                 graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
                 graphSave.graphActive = false
             } else if i == 1 {
-                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
+                graphSave.graphName = NSLocalizedString("pieChartTitle", comment: "Pie Chart")
+                graphSave.graphActive = false
+            } else if i == 2 {
+                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Chart")
                 graphSave.graphActive = true
             }
             graphSave.graphOption1 = Int16(0)

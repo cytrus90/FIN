@@ -259,7 +259,8 @@
 
 "graphSettingsCellTitle" = "Type:";
 "lineChartTitle" = "Line chart";
-"barChartTitle" = "Pie chart";
+"pieChartTitle" = "Pie chart";
+"barChartTitle" = "Bar chart";
 
 "option1LineChartTitle" = "Line chart options:";
 "lineChartOption1_0" = "Balance";
@@ -267,16 +268,22 @@
 "lineChartOption1_1_w" = "Expenses vs. Earnings";
 "lineChartOption1_2" = "Savings";
 
-"option1BarChartTitle" = "Pie chart options:";
-"barChartOption1_0" = "Expenses";
-"barChartOption1_1" = "Income";
-"barChartOption1_2" = "Savings";
+"option1PieChartTitle" = "Pie chart options:";
+"pieChartOption1_0" = "Expenses";
+"pieChartOption1_1" = "Income";
+"pieChartOption1_2" = "Savings";
+
+"option1BarChartTitle" = "Bar chart options:";
+"barChartOption1_0" = "Balance";
+"barChartOption1_1" = "Savings";
 
 "option2ChartTitle" = "Timely structure:";
 
 "changeLabel" = "Change: ";
 
 "showSecondGraphLabel" = "Show second graph:";
+
+"noTransactionsScrollViewText" = "No transactions";
 
 // #### Split VC ####
 "bottomSegmentGroups" = "Groups";
