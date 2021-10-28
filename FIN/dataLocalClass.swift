@@ -23,7 +23,7 @@ class dataLocalClass {
     
     lazy var managedObjectContext: NSManagedObjectContext = {
         let coordinator = persistentLocalContainer.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         return managedObjectContext
     }()

@@ -58,8 +58,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     
     weak var axisFormatDelegate: IAxisValueFormatter?
     
-    var barChartEntriesCount = 0
-    
     var numberFormatter = NumberFormatter()
     var lineNumberFormatter = NumberFormatter()
     var numberFormatterPercent = NumberFormatter()
@@ -125,6 +123,11 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     let barChart = BarChartView()
     let secondBarChart = BarChartView()
     
+    var barChartDifference = 0.00
+    var secondBarChartDifference = 0.00
+    
+    var barChartEntriesCount = 0
+    
     var initialLoad:Bool = true
     
     override func loadView() {
@@ -178,7 +181,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         mediumDate.dateStyle = .medium
         shortDate.dateStyle = .short
         
-        monthNameFormat.dateFormat = "MMMMM"
+        monthNameFormat.dateFormat = "MMMM"
         yearNameFormat.dateFormat = "YY"
         
         initView()
@@ -390,7 +393,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     if centerCarousel > lowerBound && centerCarousel < upperBound {
                         self.carouselScrollingId = currentCenterIndex
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            print("EJEJEJEEJ")
                             if self.graphIDActive == 0 { // Line
                                 self.viewLineChart()
                             } else if self.graphIDActive == 1 { // Pie
@@ -401,7 +403,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                                 } else {
                                     self.labelLeft.text = NSLocalizedString("pieChartOption1_2", comment: "Savings")
                                 }
-                                        
                                 if self.view.frame.height > self.view.frame.width {
                                     self.viewPieChart()
                                 } else {
@@ -430,7 +431,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                     if centerCarousel > lowerBound && centerCarousel < upperBound {
                         self.secondCarouselScrollingId = currentCenterIndex
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            print("EJEJEJEEJ2")
                             if self.graphIDActive == 0 { // Line
                                 self.viewSecondLineChart()
                             } else if self.graphIDActive == 1 { // Pie
@@ -441,15 +441,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                                 } else {
                                     self.secondLeftLabel.text = NSLocalizedString("pieChartOption1_2", comment: "Savings")
                                 }
-                                    
                                 if self.view.frame.height > self.view.frame.width {
                                     self.viewSecondPieChart()
                                 } else {
                                     self.viewSecondPieChart()
                                 }
                             } else if self.graphIDActive == 2 { // Bar
-                                
-                                self.viewBarChart()
+                                self.viewSecondBarChart()
                             }
                         }
                         self.scrollViewScrolling = false
@@ -946,8 +944,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             chartStackView.addArrangedSubview(barChart)
             chartStackView.layoutSubviews()
             
-            chartStackView.isUserInteractionEnabled = false
+            chartStackView.isUserInteractionEnabled = true
         }
+        
+        barChart.clear()
+        barChart.data?.dataSets.removeAll()
+        
+        barChart.doubleTapToZoomEnabled = false
         
         let barData = getBarChartData()
         barChartEntriesCount = barData.2.count
@@ -965,14 +968,33 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         barChart.rightAxis.enabled = false
         barChart.leftAxis.enabled = false
         
+        barChart.drawValueAboveBarEnabled = false
+        
         barChart.xAxis.labelFont = .preferredFont(forTextStyle: .footnote)
         barChart.xAxis.wordWrapEnabled = true
         barChart.xAxis.axisLineWidth = 0.00
         barChart.xAxis.gridLineWidth = 0.00
 //        barChart.xAxis.valueFormatter = IndexAxisValueFormatter(values: barData.2)
         
-        barChart.xAxis.labelPosition = .bottom
+        barChart.xAxis.labelPosition = .bottomInside
         barChart.xAxis.labelCount = barData.2.count
+        if barData.2.count < 2 {
+            barChart.xAxis.drawLabelsEnabled = false
+            let dateFormatterRAM = DateFormatter()
+            dateFormatterRAM.dateFormat = "dd/MM/yy"
+            let valueString = "02/" + barData.2[0] + "/2021"
+            let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMM"
+            labelLeft.text = dateFormatter.string(from: dateRAM)
+            barChart.animate(yAxisDuration: 1.0, easingOption: .easeInOutQuart)
+        } else {
+            barChart.xAxis.drawLabelsEnabled = true
+            labelLeft.text = NSLocalizedString("changeLabel", comment: "Change")
+            barChart.animate(yAxisDuration: 2.0, easingOption: .easeInOutQuart)
+        }
+        label.text = numberFormatter.string(from: NSNumber(value: barChartDifference))
 //        barChart.xAxis.drawLabelsEnabled = false
 //        barChart.xAxis.granularityEnabled = false
 //        barChart.xAxis.granularity = 2
@@ -981,17 +1003,22 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         
         barChart.barData?.setValueFont(.preferredFont(forTextStyle: .footnote))
         
-        barChart.animate(yAxisDuration: 2.0, easingOption: .easeInOutQuart)
+        barChart.barData?.setDrawValues(false)
+        
+        barChart.setSmoothSelected(true)
+        
+        barChart.delegate = self
+        barChart.tag = 0
         
         barChart.notifyDataSetChanged()
         
-        if graphOption1 == 0 {
-            labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Balance")
-        } else {
-            labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Savings")
-        }
-        
-        label.text = ""
+//        if graphOption1 == 0 {
+//            labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Balance")
+//        } else {
+//            labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Savings")
+//        }
+//
+//        label.text = ""
     }
     
     func viewSecondBarChart(createNew:Bool = false) {
@@ -999,10 +1026,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             secondChartStackView.subviews.forEach({ $0.removeFromSuperview() })
             secondChartStackView.addArrangedSubview(secondBarChart)
             
-            secondChartStackView.isUserInteractionEnabled = false
+            secondChartStackView.isUserInteractionEnabled = true
         }
         
-        let barData = getBarChartData()
+        secondBarChart.clear()
+        secondBarChart.data?.dataSets.removeAll()
+        
+        secondBarChart.doubleTapToZoomEnabled = false
+        
+        let barData = getSecondBarChartData()
         barChartEntriesCount = barData.2.count
         let dataSet = BarChartDataSet(entries: barData.0, label: "")
         dataSet.colors.removeAll()
@@ -1011,40 +1043,64 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         
         let data = BarChartData(dataSets: [dataSet])
 
-        barChart.data = data
-        barChart.legend.enabled = false
-        barChart.drawGridBackgroundEnabled = false
+        secondBarChart.data = data
+        secondBarChart.legend.enabled = false
+        secondBarChart.drawGridBackgroundEnabled = false
         
-        barChart.rightAxis.enabled = false
-        barChart.leftAxis.enabled = false
+        secondBarChart.rightAxis.enabled = false
+        secondBarChart.leftAxis.enabled = false
         
-        barChart.xAxis.labelFont = .preferredFont(forTextStyle: .footnote)
-        barChart.xAxis.wordWrapEnabled = true
-        barChart.xAxis.axisLineWidth = 0.00
-        barChart.xAxis.gridLineWidth = 0.00
-//        barChart.xAxis.valueFormatter = IndexAxisValueFormatter(values: barData.2)
+        secondBarChart.xAxis.labelFont = .preferredFont(forTextStyle: .footnote)
+        secondBarChart.xAxis.wordWrapEnabled = true
+        secondBarChart.xAxis.axisLineWidth = 0.00
+        secondBarChart.xAxis.gridLineWidth = 0.00
+//        secondBarChart.xAxis.valueFormatter = IndexAxisValueFormatter(values: barData.2)
         
-        barChart.xAxis.labelPosition = .bottom
-        barChart.xAxis.labelCount = barData.2.count
-//        barChart.xAxis.drawLabelsEnabled = false
-//        barChart.xAxis.granularityEnabled = false
-//        barChart.xAxis.granularity = 2
-        
-        barChart.xAxis.valueFormatter = axisFormatDelegate
-        
-        barChart.barData?.setValueFont(.preferredFont(forTextStyle: .footnote))
-        
-        barChart.animate(yAxisDuration: 2.0, easingOption: .easeInOutQuart)
-        
-        barChart.notifyDataSetChanged()
-        
-        if graphOption1 == 0 {
-            labelLeft.text = NSLocalizedString("barChartOption1_0", comment: "Balance")
+        secondBarChart.xAxis.labelPosition = .bottom
+        secondBarChart.xAxis.labelCount = barData.2.count
+        if barData.2.count < 2 {
+            secondBarChart.xAxis.drawLabelsEnabled = false
+            let dateFormatterRAM = DateFormatter()
+            dateFormatterRAM.dateFormat = "dd/MM/yy"
+            let valueString = "02/" + barData.2[0] + "/2021"
+            let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMM"
+            secondLeftLabel.text = dateFormatter.string(from: dateRAM)
+            secondBarChart.animate(yAxisDuration: 1.0, easingOption: .easeInOutQuart)
         } else {
-            labelLeft.text = NSLocalizedString("barChartOption1_1", comment: "Savings")
+            secondBarChart.xAxis.drawLabelsEnabled = true
+            secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Change")
+            secondBarChart.animate(yAxisDuration: 2.0, easingOption: .easeInOutQuart)
         }
+        secondLabel.text = numberFormatter.string(from: NSNumber(value: secondBarChartDifference))
+//        secondBarChart.xAxis.drawLabelsEnabled = false
+//        secondBarChart.xAxis.granularityEnabled = false
+//        secondBarChart.xAxis.granularity = 2
         
-        label.text = ""
+        secondBarChart.xAxis.valueFormatter = axisFormatDelegate
+        
+        secondBarChart.barData?.setValueFont(.preferredFont(forTextStyle: .footnote))
+        
+        secondBarChart.barData?.setDrawValues(false)
+        
+        secondBarChart.animate(yAxisDuration: 2.0, easingOption: .easeInOutQuart)
+        
+        secondBarChart.setSmoothSelected(true)
+        
+        secondBarChart.delegate = self
+        secondBarChart.tag = 1
+        
+        secondBarChart.notifyDataSetChanged()
+        
+//        if graphOption3 == 0 {
+//            secondLeftLabel.text = NSLocalizedString("barChartOption1_0", comment: "Balance")
+//        } else {
+//            secondLeftLabel.text = NSLocalizedString("barChartOption1_1", comment: "Savings")
+//        }
+//
+//        secondLabel.text = ""
     }
     
     func initChartSettings() {
@@ -1864,8 +1920,29 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         var colors = [UIColor]()
         var labels = [String]()
         
+        barChartDifference = 0.00
+        
         // let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
         let toDate = collectionCellData[carouselScrollingId]?[2] as? Date ?? Date()
+        
+        var tagFilterPredicateString = ""
+        
+        if filteredTagsArray.count > 0 {
+            for i in 0...(filteredTagsArray.count-1) {
+                if i == 0 {
+                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                } else if i != (filteredTagsArray.count-1) {
+                    tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                }
+                if i == (filteredTagsArray.count-1) {
+                    if i != 0 {
+                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
+                    } else {
+                        tagFilterPredicateString = tagFilterPredicateString + ")"
+                    }
+                }
+            }
+        }
         
         switch graphOption2 {
         case 1: // Monthly
@@ -1878,7 +1955,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 
                 var balanceLOOP = 0.00
                 
-                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@", fromDateLOOP as NSDate, toDateLOOP as NSDate)
+                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@" + tagFilterPredicateString, fromDateLOOP as NSDate, toDateLOOP as NSDate)
                 let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
                 
                 if (data?.count ?? 0) > 0 {
@@ -1901,19 +1978,21 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                         }
                     }
                     
-                    entries.append((BarChartDataEntry(x: Double(j), y: (round(100.00 * balanceLOOP) / 100.00))))
+                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.month, from: fromDateLOOP)), y: (round(100.00 * balanceLOOP) / 100.00))))
                     if balanceLOOP < 0.00 {
                         colors.append(UIColor.red)
                     } else {
                         colors.append(UIColor.green)
                     }
                     labels.append(monthNameFormat.string(from: fromDateLOOP))
-                } else {
-                    
-                    entries.append((BarChartDataEntry(x: Double(j), y: 0.00)))
-                    colors.append(UIColor.green)
-                    labels.append(monthNameFormat.string(from: fromDateLOOP))
+//                } else {
+//                    entries.append((BarChartDataEntry(x: Double(j), y: 0.00)))
+//                    colors.append(UIColor.green)
+//                    labels.append(monthNameFormat.string(from: fromDateLOOP))
                 }
+                
+                barChartDifference = barChartDifference + balanceLOOP
+                
                 fromDateLOOP = (Calendar.current.date(byAdding: .month, value: 1, to: fromDateLOOP) ?? Date()).startOfMonth
                 toDateLOOP = (Calendar.current.date(byAdding: .month, value: 1, to: toDateLOOP) ?? Date()).endOfMonth
             } while(fromDateLOOP < toDate)
@@ -1928,7 +2007,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 
                 var balanceLOOP = 0.00
                 
-                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@", fromDateLOOP as NSDate, toDateLOOP as NSDate)
+                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@" + tagFilterPredicateString, fromDateLOOP as NSDate, toDateLOOP as NSDate)
                 let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
                 
                 if (data?.count ?? 0) > 0 {
@@ -1957,12 +2036,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                         colors.append(UIColor.green)
                     }
                     labels.append(yearNameFormat.string(from: fromDateLOOP))
-                } else {
-                    
-                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.year, from: fromDateLOOP)), y: 0.00)))
-                    colors.append(UIColor.green)
-                    labels.append(yearNameFormat.string(from: fromDateLOOP))
+//                } else {
+//
+//                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.year, from: fromDateLOOP)), y: 0.00)))
+//                    colors.append(UIColor.green)
+//                    labels.append(yearNameFormat.string(from: fromDateLOOP))
                 }
+                
+                barChartDifference = barChartDifference + balanceLOOP
+                
                 fromDateLOOP = (Calendar.current.date(byAdding: .year, value: 1, to: fromDateLOOP) ?? Date())
                 toDateLOOP = (Calendar.current.date(byAdding: .year, value: 1, to: toDateLOOP) ?? Date())
             } while(fromDateLOOP <= toDate)
@@ -1979,8 +2061,29 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         var colors = [UIColor]()
         var labels = [String]()
         
+        secondBarChartDifference = 0.00
+        
         // let fromDate = collectionCellData[carouselScrollingId]?[1] as? Date ?? Date()
         let toDate = collectionCellData[secondCarouselScrollingId]?[2] as? Date ?? Date()
+        
+        var tagFilterPredicateString = ""
+        
+        if filteredTagsArray.count > 0 {
+            for i in 0...(filteredTagsArray.count-1) {
+                if i == 0 {
+                    tagFilterPredicateString = " AND (tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                } else if i != (filteredTagsArray.count-1) {
+                    tagFilterPredicateString = " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "'"
+                }
+                if i == (filteredTagsArray.count-1) {
+                    if i != 0 {
+                        tagFilterPredicateString = tagFilterPredicateString + " OR tags CONTAINS[c] '" + filteredTagsArray[i] + "')"
+                    } else {
+                        tagFilterPredicateString = tagFilterPredicateString + ")"
+                    }
+                }
+            }
+        }
         
         switch graphOption2 {
         case 1: // Monthly
@@ -1993,42 +2096,45 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 
                 var balanceLOOP = 0.00
                 
-                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@", fromDateLOOP as NSDate, toDateLOOP as NSDate)
+                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@" + tagFilterPredicateString, fromDateLOOP as NSDate, toDateLOOP as NSDate)
                 let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
                 
                 if (data?.count ?? 0) > 0 {
                     for i in 0...((data?.count ?? 1)-1) {
                         var querySave = false
-                        if (graphOption1 == 1) {
+                        if (graphOption3 == 1) {
                             querySave = true
                         }
                         let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: querySave))
                         if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                            if (graphOption1 == 0) { // Balance
+                            if (graphOption3 == 0) { // Balance
                                 if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false)  { // Income
                                     balanceLOOP = balanceLOOP + (data?[i]["sum"] as? Double ?? 0.00)
                                 } else if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) { // Expense
                                     balanceLOOP = balanceLOOP - (data?[i]["sum"] as? Double ?? 0.00)
                                 }
-                            } else if (graphOption1 == 1) { // Savings
+                            } else if (graphOption3 == 1) { // Savings
                                 balanceLOOP = balanceLOOP + (data?[i]["sum"] as? Double ?? 0.00)
                             }
                         }
                     }
                     
-                    entries.append((BarChartDataEntry(x: Double(j), y: (round(100.00 * balanceLOOP) / 100.00))))
+                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.month, from: fromDateLOOP)), y: (round(100.00 * balanceLOOP) / 100.00))))
                     if balanceLOOP < 0.00 {
                         colors.append(UIColor.red)
                     } else {
                         colors.append(UIColor.green)
                     }
                     labels.append(monthNameFormat.string(from: fromDateLOOP))
-                } else {
-                    
-                    entries.append((BarChartDataEntry(x: Double(j), y: 0.00)))
-                    colors.append(UIColor.green)
-                    labels.append(monthNameFormat.string(from: fromDateLOOP))
+//                } else {
+//
+//                    entries.append((BarChartDataEntry(x: Double(j), y: 0.00)))
+//                    colors.append(UIColor.green)
+//                    labels.append(monthNameFormat.string(from: fromDateLOOP))
                 }
+                
+                secondBarChartDifference = secondBarChartDifference + balanceLOOP
+                
                 fromDateLOOP = (Calendar.current.date(byAdding: .month, value: 1, to: fromDateLOOP) ?? Date()).startOfMonth
                 toDateLOOP = (Calendar.current.date(byAdding: .month, value: 1, to: toDateLOOP) ?? Date()).endOfMonth
             } while(fromDateLOOP < toDate)
@@ -2043,18 +2149,18 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 
                 var balanceLOOP = 0.00
                 
-                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@", fromDateLOOP as NSDate, toDateLOOP as NSDate)
+                let queryBarChart = NSPredicate(format: "dateTime > %@ AND dateTime <= %@" + tagFilterPredicateString, fromDateLOOP as NSDate, toDateLOOP as NSDate)
                 let data = dataHandler.loadDataGroupedSUM(entitie: "Transactions", groupByColumn: "categoryID", query: queryBarChart)  as? [[String:Any]]
                 
                 if (data?.count ?? 0) > 0 {
                     for i in 0...((data?.count ?? 1)-1) {
                         var querySave = false
-                        if (graphOption1 == 1) {
+                        if (graphOption3 == 1) {
                             querySave = true
                         }
                         let queryCategory = NSPredicate(format: "cID == %i AND isSave == %@", (data?[i]["categoryID"] as? Int16 ?? 0), NSNumber(value: querySave))
                         if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "selectedForFilter", query: queryCategory) as? Bool ?? false) {
-                            if (graphOption1 == 0) { // Balance
+                            if (graphOption3 == 0) { // Balance
                                 if (dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false)  { // Income
                                     balanceLOOP = balanceLOOP + (data?[i]["sum"] as? Double ?? 0.00)
                                 } else if !(dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "isIncome", query: queryCategory) as? Bool ?? false) { // Expense
@@ -2072,12 +2178,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                         colors.append(UIColor.green)
                     }
                     labels.append(yearNameFormat.string(from: fromDateLOOP))
-                } else {
-                    
-                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.year, from: fromDateLOOP)), y: 0.00)))
-                    colors.append(UIColor.green)
-                    labels.append(yearNameFormat.string(from: fromDateLOOP))
+//                } else {
+//
+//                    entries.append((BarChartDataEntry(x: Double(Calendar.current.component(.year, from: fromDateLOOP)), y: 0.00)))
+//                    colors.append(UIColor.green)
+//                    labels.append(yearNameFormat.string(from: fromDateLOOP))
                 }
+                
+                secondBarChartDifference = secondBarChartDifference + balanceLOOP
+                
                 fromDateLOOP = (Calendar.current.date(byAdding: .year, value: 1, to: fromDateLOOP) ?? Date())
                 toDateLOOP = (Calendar.current.date(byAdding: .year, value: 1, to: toDateLOOP) ?? Date())
             } while(fromDateLOOP <= toDate)
@@ -2581,6 +2690,50 @@ extension graphsVC: ChartViewDelegate {
                 secondLeftLabel.text = mediumDate.string(from: secondLineChartDates[Int(entry.x)])
                 secondLabel.text = lineNumberFormatter.string(from: NSNumber(value: secondLineChartRealValues[Int(entry.x)]))
             }
+        } else if chartView.isMember(of: BarChartView.self) {
+            if chartView.tag == 0 {
+                if graphOption2 == 1 {
+                    let dateFormatterRAM = DateFormatter()
+                    dateFormatterRAM.dateFormat = "dd/MM/yy"
+                    let valueString = "02/" + String(Int(entry.x)) + "/2021"
+                    let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMMM"
+                    labelLeft.text = dateFormatter.string(from: dateRAM)
+                    label.text = numberFormatter.string(from: NSNumber(value: entry.y))
+                } else {
+                    let dateFormatterRAM = DateFormatter()
+                    dateFormatterRAM.dateFormat = "dd/MM/yy"
+                    let valueString = "02/10/" + String(Int(entry.x))
+                    let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy"
+                    labelLeft.text = dateFormatter.string(from: dateRAM)
+                    label.text = numberFormatter.string(from: NSNumber(value: entry.y))
+                }
+            } else if chartView.tag == 1 {
+                if graphOption2 == 1 {
+                    let dateFormatterRAM = DateFormatter()
+                    dateFormatterRAM.dateFormat = "dd/MM/yy"
+                    let valueString = "02/" + String(Int(entry.x)) + "/2021"
+                    let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMMM"
+                    secondLeftLabel.text = dateFormatter.string(from: dateRAM)
+                    secondLabel.text = numberFormatter.string(from: NSNumber(value: entry.y))
+                } else {
+                    let dateFormatterRAM = DateFormatter()
+                    dateFormatterRAM.dateFormat = "dd/MM/yy"
+                    let valueString = "02/10/" + String(Int(entry.x))
+                    let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy"
+                    secondLeftLabel.text = dateFormatter.string(from: dateRAM)
+                    secondLabel.text = numberFormatter.string(from: NSNumber(value: entry.y))
+                }
+            }
         }
     }
     
@@ -2639,7 +2792,14 @@ extension graphsVC: ChartViewDelegate {
                 secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Balance")
                 secondLabel.text = lineNumberFormatter.string(from: NSNumber(value: secondLineChartDifference))
             }
-            
+        } else if chartView.isMember(of: BarChartView.self) {
+            if chartView.tag == 0 {
+                labelLeft.text = NSLocalizedString("changeLabel", comment: "Change")
+                label.text = numberFormatter.string(from: NSNumber(value: barChartDifference))
+            } else {
+                secondLeftLabel.text = NSLocalizedString("changeLabel", comment: "Change")
+                secondLabel.text = numberFormatter.string(from: NSNumber(value: barChartDifference))
+            }
         }
     }
 }
@@ -2654,7 +2814,13 @@ extension graphsVC: IAxisValueFormatter {
             let dateRAM = dateFormatterRAM.date(from: valueString) ?? Date()
             
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMMMM"
+            if barChartEntriesCount <= 2 {
+                dateFormatter.dateFormat = "MMMM"
+            } else if barChartEntriesCount > 2 && barChartEntriesCount <= 4 {
+                dateFormatter.dateFormat = "MMM"
+            } else {
+                dateFormatter.dateFormat = "MMMMM"
+            }
             return dateFormatter.string(from: dateRAM)
         } else { // Yearly
             let dateFormatterRAM = DateFormatter()
