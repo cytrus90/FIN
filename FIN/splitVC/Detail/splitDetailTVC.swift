@@ -351,8 +351,10 @@ class splitDetailTVC: UITableViewController {
         }
         if !clearRows {
             if let cell = detailSplitViewTable.cellForRow(at: indexPathSelected) as? cellSplitGeneral {
-                cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
-                cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                if (UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false)) {
+                    cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                    cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                }
             }
         }
     }
@@ -362,7 +364,7 @@ class splitDetailTVC: UITableViewController {
 //            selectedRowIndex = 1
 //            initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0))
 //        } else
-        if selectedRowIndex != nil && UIDevice().model.contains("iPad") {
+        if selectedRowIndex != nil && UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false) {
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0), clearRows: false)
         } else {
             initRows(clearRows: true)

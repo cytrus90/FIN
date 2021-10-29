@@ -354,7 +354,7 @@
 "personsInGroup" = "Persons in ";
 "transactionsForPerson" = "Open transactions for ";
 
-"noDataText" = "No entries.";
+"noDataText" = "No entries";
 
 // Settle
 "settle" = "Settle";

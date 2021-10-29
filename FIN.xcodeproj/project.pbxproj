@@ -1221,7 +1221,7 @@
 				CODE_SIGN_ENTITLEMENTS = FIN/FIN.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = S92CTH75FZ;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1235,7 +1235,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.70;
+				MARKETING_VERSION = 1.71;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1254,7 +1254,7 @@
 				CODE_SIGN_ENTITLEMENTS = FIN/FIN.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = S92CTH75FZ;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1268,7 +1268,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.70;
+				MARKETING_VERSION = 1.71;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

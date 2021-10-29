@@ -153,7 +153,7 @@ class userMasterVC: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "userMainCell", for: indexPath) as! userTVCell
 
-        if indexPath == IndexPath(row: selectedRowIndex ?? 0, section: 0) && selectedRowIndex != nil {
+        if indexPath == IndexPath(row: selectedRowIndex ?? 0, section: 0) && selectedRowIndex != nil && ((super.splitViewController?.isCollapsed ?? false) == false) {
             cell.cellOutlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
             cell.cellOutlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
         }
@@ -298,14 +298,14 @@ class userMasterVC: UITableViewController {
     }
     
     func initFirstSelected() {
-        if selectedRowIndex == nil && UIDevice().model.contains("iPad") {
+        if selectedRowIndex == nil && UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false) {
             selectedRowIndex = 0
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0))
             selectedRow = cellTitle[0]
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "masterSelected", sender: nil)
             }
-        } else if selectedRowIndex != nil && UIDevice().model.contains("iPad") {
+        } else if selectedRowIndex != nil && UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false) {
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0), clearRows: false)
         } else {
             initRows(clearRows: true)

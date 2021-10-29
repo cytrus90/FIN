@@ -364,8 +364,19 @@ class listMasterTVC: UITableViewController {
                 cell.outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
             }
         } else {
-            cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
-            cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+            if !(UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false)) {
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
+                if userInterfaceStyle == .light {
+                    cell.outlineView.backgroundColor = .white
+                    cell.outlineView.layer.borderColor = CGColor(srgbRed: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+                } else {
+                    cell.outlineView.backgroundColor = .black
+                    cell.outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
+                }
+            } else {
+                cell.outlineView.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+                cell.outlineView.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 0.1)
+            }
         }
         
         let interaction = UIContextMenuInteraction(delegate: self)
@@ -485,14 +496,14 @@ class listMasterTVC: UITableViewController {
     }
     
     func initFirstSelected() {
-        if selectedRowIndex == nil && UIDevice().model.contains("iPad") {
+        if selectedRowIndex == nil && UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false) {
             selectedRowIndex = 0
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0))
             dateOfSelectedRow = transferData[(selectedRowIndex ?? 0)]?[11] as? Date ?? Date()
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "rowSelected", sender: nil)
             }
-        } else if selectedRowIndex != nil && UIDevice().model.contains("iPad") {
+        } else if selectedRowIndex != nil && UIDevice().model.contains("iPad") && ((super.splitViewController?.isCollapsed ?? false) == false) {
             initRows(indexPathSelected: IndexPath(row: selectedRowIndex ?? 0, section: 0), clearRows: false)
             dateOfSelectedRow = transferData[(selectedRowIndex ?? 0)]?[11] as? Date ?? Date()
             DispatchQueue.main.async {

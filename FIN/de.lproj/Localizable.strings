@@ -355,7 +355,7 @@
 "personsInGroup" = "Personen in ";
 "transactionsForPerson" = "Offene Rechnungen für ";
 
-"noDataText" = "Keine Einträge.";
+"noDataText" = "Keine Einträge";
 
 // Settle
 "settle" = "Begleichen";
