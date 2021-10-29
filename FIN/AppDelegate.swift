@@ -32,7 +32,6 @@ var graphShowCounter:Int = 0
 var openNewTransaction = false
 
 let dataHandler = dataClass()
-let localDataHandler = dataLocalClass()
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

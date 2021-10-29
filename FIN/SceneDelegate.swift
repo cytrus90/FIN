@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
         // Load Login Settings
-        if (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? nil != nil) && (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String != "") && (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? false) {
+        if (UserDefaults.standard.string(forKey: "userCode") != nil) && (UserDefaults.standard.string(forKey: "userCode") != "") && (UserDefaults.standard.bool(forKey: "loginEnabled")) {
             loginEnabled = true
             loginSuccessfull = false
             AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
@@ -81,8 +81,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             loginSuccessfull = true
             AppUtility.lockOrientation(.all)
         }
-        filteredTagsZero = localDataHandler.loadLocalSettings(entitie: "SettingsLocal", attibute: "filteredTagsZero") as? Bool ?? false
-        filteredCategoriesZero = localDataHandler.loadLocalSettings(entitie: "SettingsLocal", attibute: "filteredCategoriesZero") as? Bool ?? false
+        filteredTagsZero = UserDefaults.standard.bool(forKey: "filteredTagsZero")
+        filteredCategoriesZero = UserDefaults.standard.bool(forKey: "filteredCategoriesZero")
         
         regularPayments()
     }
@@ -93,8 +93,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
 
         // Save changes in the application's managed object context when the application transitions to the background.
-        dataHandler.saveContext()
-        localDataHandler.saveContext()
+//        dataHandler.saveContext()
+//        localDataHandler.saveContext()
     }
     
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {

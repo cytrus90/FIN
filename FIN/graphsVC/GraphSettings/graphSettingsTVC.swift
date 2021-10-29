@@ -287,17 +287,26 @@ class graphSettingsTVC: UITableViewController {
         
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
         // DataCheck
-        if localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]).count <= 0 || localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]).count > 3 {
-            localDataHandler.saveNewGraphs()
+        if dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count <= 0 || dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]).count > 3 {
+            dataHandler.saveNewGraphs()
         }
         
-        for graph in localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]) {
+        for graph in dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]) {
             let graphActive = (graph.value(forKey: "graphActive") as? Bool ?? false)
             let graphName = (graph.value(forKey: "graphName") as? Int16 ?? 0)
             let graphOption1 = (graph.value(forKey: "graphOption1") as? Int16 ?? 0)
             let graphOption2 = (graph.value(forKey: "graphOption2") as? Int16 ?? 0)
-            let showSecondGraph = (graph.value(forKey: "showSecondGraph") as? Bool ?? false)
+            var showSecondGraph = false
             let graphOption3 = (graph.value(forKey: "graphOption3") as? Int16 ?? 0)
+            
+            if !UIDevice().model.contains("iPhone") {
+                let showSecondGraphLocal = UserDefaults.standard.bool(forKey: "showSecondGraph")
+                if showSecondGraphLocal {
+                    showSecondGraph = true
+                } else {
+                    showSecondGraph = false
+                }
+            }
             
             rowData[Int(graph.value(forKey: "graphID") as? Int16 ?? 0)] = [
                 0:graphActive,
@@ -338,12 +347,12 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
         let graphSort = NSSortDescriptor(key: "graphID", ascending: true)
         var someGraphIsActive = false
         
-        for graph in localDataHandler.loadBulkSorted(entitie: "GraphSettingsLocal", sort: [graphSort]) {
+        for graph in dataHandler.loadBulkSorted(entitie: "GraphSettings", sort: [graphSort]) {
             
             let query = NSPredicate(format: "graphID == %i", graph.value(forKey: "graphID") as? Int16 ?? 0)
 
             if selected == Int(graph.value(forKey: "graphID") as? Int16 ?? 0) {
-                localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: true)
+                _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: true)
                 someGraphIsActive = true
                 rowData[Int(graph.value(forKey: "graphID") as? Int16 ?? 0)] = [
                     0:true
@@ -416,7 +425,7 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
                     cell.segmentControl3.selectedSegmentIndex = Int(graph.value(forKey: "graphOption3") as? Int16 ?? 0)
                 }
             } else {
-                localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: false)
+                _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: false)
                 rowData[Int(graph.value(forKey: "graphID") as? Int16 ?? 0)] = [
                     0:false
                 ]
@@ -424,7 +433,7 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
         }
         if !someGraphIsActive {
             let query = NSPredicate(format: "graphID == %i", Int16(selected))
-            localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphActive", query: query, value: true)
+            _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphActive", query: query, value: true)
         }
     }
 }
@@ -432,26 +441,29 @@ extension graphSettingsTVC: cellGraphSettingsTVSDelegate {
 extension graphSettingsTVC: cellGraphSettingsDetailsTVCDelegate {
     func graphOption1Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption1", query: query, value: Int16(selected))
+        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption1", query: query, value: Int16(selected))
     }
     
     func graphOption2Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption2", query: query, value: Int16(selected))
+        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption2", query: query, value: Int16(selected))
     }
     
     func graphOption3Changed(selected: Int) {
         let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-        localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "graphOption3", query: query, value: Int16(selected))
+        _ = dataHandler.saveQueriedAttribute(entity: "GraphSettings", attribute: "graphOption3", query: query, value: Int16(selected))
     }
 }
 
 extension graphSettingsTVC: cellGraphSettingsSecondTVCDelegate {
     func secondSwitchChanged(newState:Bool) {
-        if UIDevice().model.contains("iPad") {
-            let query = NSPredicate(format: "graphActive == %@", NSNumber(value: true))
-            localDataHandler.saveQueriedAttribute(entity: "GraphSettingsLocal", attribute: "showSecondGraph", query: query, value: newState)
-            
+        if UIDevice().model.contains("iPad") {           
+            if newState {
+                UserDefaults.standard.setValue(true, forKey: "showSecondGraph")
+            } else {
+                UserDefaults.standard.setValue(false, forKey: "showSecondGraph")
+            }
+
             rowData[activeGraphID]?[4] = newState
             
             graphSettingsTableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .automatic)

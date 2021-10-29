@@ -1100,8 +1100,8 @@ extension finTVC {
     func initSettingsAndData() {
         dataHandler.saveNewSettings()
 
-        if localDataHandler.loadDataBulk(entity: "GraphSettingsLocal").count <= 0 {
-            localDataHandler.saveNewGraphs()
+        if dataHandler.loadDataBulk(entity: "GraphSettings").count <= 0 {
+            dataHandler.saveNewGraphs()
         }
     }
     

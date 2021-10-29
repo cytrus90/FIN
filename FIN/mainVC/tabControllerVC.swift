@@ -96,7 +96,7 @@ class tabController: UITabBarController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
-        loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = UserDefaults.standard.bool(forKey: "loginEnabled")
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -151,10 +151,10 @@ class tabController: UITabBarController {
             doUpdate160()
         }
         
-        let update161 = UserDefaults.standard.integer(forKey: "update161")
-        if update161 == 0 {
-            doUpdate161()
-        }        
+        let update170 = UserDefaults.standard.bool(forKey: "update170")
+        if update170 {
+            doUpdate170()
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -194,7 +194,7 @@ class tabController: UITabBarController {
     }
     
     @objc func appear() {
-        loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? true
+        loginEnabled = UserDefaults.standard.bool(forKey: "loginEnabled")
         if !loginSuccessfull && loginEnabled {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
@@ -227,23 +227,23 @@ class tabController: UITabBarController {
 }
 
 extension tabController {
-    func doUpdate161() { // Copy settings to local core data & init new graph
-        localDataHandler.checkDoubleLocalSettings()
+    func doUpdate170() {
+        let userCode = dataHandler.loadSettings(entitie: "Settings", attibute: "userCode") as? String ?? ""
+        let loginEnabled = dataHandler.loadSettings(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false
         
-        let firstLaunchRAM = dataHandler.loadData(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
-        if !firstLaunchRAM {
-            localDataHandler.saveLocalSettings(settingsChange: "firstLaunch", newValue: firstLaunchRAM)
-            localDataHandler.saveLocalSettings(settingsChange: "filteredCategoriesZero", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false))
-            localDataHandler.saveLocalSettings(settingsChange: "filteredTagsZero", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false))
-            localDataHandler.saveLocalSettings(settingsChange: "firstLaunchDate", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "firstLaunchDate") as? Bool ?? false))
-            localDataHandler.saveLocalSettings(settingsChange: "lastCurrencyCode", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "lastCurrencyCode") as? Bool ?? false))
-            localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false))
-            localDataHandler.saveLocalSettings(settingsChange: "userCode", newValue: (dataHandler.loadData(entitie: "Settings", attibute: "userCode") as? Bool ?? false))
+        UserDefaults.standard.set(userCode, forKey: "userCode")
+        UserDefaults.standard.set(loginEnabled, forKey: "loginEnabled")
+        UserDefaults.standard.set(false, forKey: "filteredCategoriesZero")
+        UserDefaults.standard.set(false, forKey: "filteredTagsZero")
+        
+        
+        if UIDevice().model.contains("iPhone") {
+            UserDefaults.standard.set(false, forKey: "showSecondGraph")
+        } else {
+            UserDefaults.standard.set(true, forKey: "showSecondGraph")
         }
         
-        localDataHandler.saveNewGraphs()
-        
-        UserDefaults.standard.setValue(1, forKey: "update161")
+        UserDefaults.standard.set(false, forKey: "update170")
     }
     
     func doUpdate160() { // Initiate Cloud Sync

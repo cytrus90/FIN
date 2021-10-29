@@ -142,7 +142,7 @@ class setPasscode: UIViewController {
         case 2:
             let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
             if userInputCode == firstInput {
-                localDataHandler.saveLocalSettings(settingsChange: "userCode", newValue: userInputCode)
+                UserDefaults.standard.set(userInputCode, forKey: "userCode")
                 loginSuccessfull = false
                 loginEnabled = true
                 enterPasscodeLabel.text = NSLocalizedString("New Passcode Success", comment: "Enter New Passcode Success Title")
@@ -165,7 +165,7 @@ class setPasscode: UIViewController {
             break
         default:
             let userInputCode = String(codeInput[0] * 1000 + codeInput[1] * 100 + codeInput[2] * 10 + codeInput[3]).sha1()
-            if localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String == userInputCode {
+            if UserDefaults.standard.string(forKey: "userCode") == userInputCode {
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                 stage = 1
                 codeInput.removeAll()

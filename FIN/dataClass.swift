@@ -25,26 +25,26 @@ class dataClass {
         return container
     }()
     
-    lazy var managedObjectContext: NSManagedObjectContext = {
-        let coordinator = persistentContainer.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        managedObjectContext.persistentStoreCoordinator = coordinator
-        return managedObjectContext
-    }()
+//    lazy var managedObjectContext: NSManagedObjectContext = {
+//        let coordinator = persistentContainer.persistentStoreCoordinator
+//        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+//        managedObjectContext.persistentStoreCoordinator = coordinator
+//        return managedObjectContext
+//    }()
     
-    func saveContext () {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
+//    func saveContext () {
+//        let context = persistentContainer.viewContext
+//        if context.hasChanges {
+//            do {
+//                try context.save()
+//            } catch {
+//                // Replace this implementation with code to handle the error appropriately.
+//                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+//                let nserror = error as NSError
+//                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+//            }
+//        }
+//    }
     
     // MARK: -LOAD
     func loadDataBulk(entity:String) -> [NSManagedObject] {
@@ -788,6 +788,38 @@ class dataClass {
         }
     }
     
+    // MARK: SAVE GRAPHS
+    func saveNewGraphs() {
+        deleteDataBulk(entity: "GraphSettings")
+        for i in 0...2 {
+            let managedContext = persistentContainer.viewContext
+            
+            managedContext.automaticallyMergesChangesFromParent = true
+            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+            let graphSave = GraphSettings(context: managedContext)
+            
+            graphSave.graphID = Int16(i)
+            if i == 0 {
+                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
+                graphSave.graphActive = false
+            } else if i == 1 {
+                graphSave.graphName = NSLocalizedString("pieChartTitle", comment: "Pie Chart")
+                graphSave.graphActive = false
+            } else if i == 2 {
+                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Chart")
+                graphSave.graphActive = true
+            }
+            graphSave.graphOption1 = Int16(0)
+            graphSave.graphOption2 = Int16(0)
+            
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
+        }
+    }
+    
     // MARK: SAVE SETTINGS
     func saveNewSettings() {
         let countSettings = loadDataBulk(entity: "Settings").count
@@ -817,12 +849,12 @@ class dataClass {
     
         let loginEnabledSafe = false
         var firstLaunch = true
-        var filteredTagsZero = false
-        var filteredCategoriesZero = false
+//        var filteredTagsZero = false
+//        var filteredCategoriesZero = false
         var recoveryMail = ""
         var lastCurrencyCodeSafe = Locale.current.currencyCode ?? "EUR"
         var userColorSafe = Int16(0)
-        var userCodeSafe = ""
+//        var userCodeSafe = ""
         
         if countSettings > 1 {
             trueUserName = loadSettingsOldest(entitie: "Settings", attibute: "userName") as? String ?? NSLocalizedString("userTitle", comment: "User")
@@ -830,12 +862,12 @@ class dataClass {
             showAddsRAM = loadSettingsOldest(entitie: "Settings", attibute: "showAdds") as? Bool ?? true
 //            loginEnabledSafe = loadSettingsOldest(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false
             firstLaunch = loadSettingsOldest(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
-            filteredTagsZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
-            filteredCategoriesZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
+//            filteredTagsZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
+//            filteredCategoriesZero = loadSettingsOldest(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
             recoveryMail = loadSettingsOldest(entitie: "Settings", attibute: "recoveryMail") as? String ?? ""
             lastCurrencyCodeSafe = loadSettingsOldest(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? ""
             userColorSafe = loadSettingsOldest(entitie: "Settings", attibute: "userColor") as? Int16 ?? 0
-            userCodeSafe = loadSettingsOldest(entitie: "Settings", attibute: "userCode") as? String ?? ""
+//            userCodeSafe = loadSettingsOldest(entitie: "Settings", attibute: "userCode") as? String ?? ""
             
             deleteDataBulk(entity: "Settings")
         }
@@ -847,7 +879,7 @@ class dataClass {
             managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
             let settingsSave = Settings(context: managedContext)
             
-            settingsSave.userCode = ""
+//            settingsSave.userCode = ""
             settingsSave.showAdds = true
             settingsSave.firstLaunchDate = Date()
                 
@@ -865,15 +897,14 @@ class dataClass {
             saveSettings(settingsChange: "userName", newValue: trueUserName)
             saveSettings(settingsChange: "loginEnabled", newValue: loginEnabledSafe)
             saveSettings(settingsChange: "firstLaunch", newValue: firstLaunch)
-            saveSettings(settingsChange: "filteredTagsZero", newValue: filteredTagsZero)
-            saveSettings(settingsChange: "filteredCategoriesZero", newValue: filteredCategoriesZero)
+//            saveSettings(settingsChange: "filteredTagsZero", newValue: filteredTagsZero)
+//            saveSettings(settingsChange: "filteredCategoriesZero", newValue: filteredCategoriesZero)
             saveSettings(settingsChange: "recoveryMail", newValue: recoveryMail)
             saveSettings(settingsChange: "lastCurrencyCode", newValue: lastCurrencyCodeSafe)
             saveSettings(settingsChange: "userColor", newValue: userColorSafe)
-            saveSettings(settingsChange: "userCode", newValue: userCodeSafe)
+//            saveSettings(settingsChange: "userCode", newValue: userCodeSafe)
         }
     }
-    
     
     func saveSettings(settingsChange: String, newValue: Any) {
         let managedContext = persistentContainer.viewContext
@@ -894,6 +925,7 @@ class dataClass {
         }
     }
     
+    // MARK: SAVE GENERAL
     func saveSingleData(entity:String, attibute: String, newValue: Any, query: NSPredicate) {
         let managedContext = persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
@@ -1335,6 +1367,35 @@ class dataClass {
         }
     }
     
+    func saveRAMTransaction(amount: Double, realAmount:Double, category: String, currencyCode: String?, dateTime: Date, descriptionNote: String?, exchangeRate: Double = 1.0, cID: Int16, isSave: Bool) {
+        let currencyCodeSave: String?
+        if currencyCode == nil {
+            currencyCodeSave = Locale.current.currencyCode ?? "EUR"
+        } else {
+            currencyCodeSave = currencyCode
+        }
+
+        let managedContext = persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+        let importSave = ImportRAM(context: managedContext)
+            
+        importSave.amount = amount
+        importSave.category = category
+        importSave.currencyCode = currencyCodeSave ?? ""
+        importSave.dateTime = dateTime
+        importSave.descriptionNote = descriptionNote ?? ""
+        importSave.exchangeRate = exchangeRate
+        importSave.categoryID = cID
+        importSave.realAmount = realAmount
+        importSave.isSave = isSave
+            
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
     
     // MARK: -DELETE
     func deleteDataBulk(entity: String) {

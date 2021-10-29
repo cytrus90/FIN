@@ -649,12 +649,11 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             userDetailCells.removeAll()
             // Get Data
             checkSettingsDuplicates()
-            localDataHandler.checkDoubleLocalSettings()
             
             let userName = dataHandler.loadData(entitie: "Settings", attibute: "userName") as? String ?? NSLocalizedString("userTitle", comment: "User VC Title")
             let recoveryMail = dataHandler.loadData(entitie: "Settings", attibute: "recoveryMail") as? String ?? ""
-            let loginEnabled = localDataHandler.loadData(entitie: "SettingsLocal", attibute: "loginEnabled") as? Bool ?? false
-            if (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 || (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 {
+            let loginEnabled = UserDefaults.standard.bool(forKey: "loginEnabled")
+            if (UserDefaults.standard.string(forKey: "userCode"))?.count ?? 0 <= 0 || (UserDefaults.standard.string(forKey: "userCode"))?.count ?? 0 <= 0 {
                 codeIsSet = false
             } else {
                 codeIsSet = true
@@ -1453,12 +1452,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         var trueUserName = NSLocalizedString("userTitle", comment: "User")
         let loginEnabledSafe = false
         var firstLaunch = true
-        var filteredTagsZero = false
-        var filteredCategoriesZero = false
+//        var filteredTagsZero = false
+//        var filteredCategoriesZero = false
         var recoveryMail = ""
         var lastCurrencyCodeSafe = Locale.current.currencyCode ?? "EUR"
         var userColorSafe = Int16(0)
-        var userCodeSafe = ""
+//        var userCodeSafe = ""
         
         if countSettings > 1 {
             trueUserName = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "userName") as? String ?? NSLocalizedString("userTitle", comment: "User")
@@ -1466,12 +1465,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             showAddsRAM = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "showAdds") as? Bool ?? true
 //            loginEnabledSafe = loadSettingsOldest(entitie: "Settings", attibute: "loginEnabled") as? Bool ?? false
             firstLaunch = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "firstLaunch") as? Bool ?? false
-            filteredTagsZero = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
-            filteredCategoriesZero = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
+//            filteredTagsZero = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "filteredTagsZero") as? Bool ?? false
+//            filteredCategoriesZero = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "filteredCategoriesZero") as? Bool ?? false
             recoveryMail = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "recoveryMail") as? String ?? ""
             lastCurrencyCodeSafe = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "lastCurrencyCode") as? String ?? ""
             userColorSafe = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "userColor") as? Int16 ?? 0
-            userCodeSafe = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "userCode") as? String ?? ""
+//            userCodeSafe = dataHandler.loadSettingsOldest(entitie: "Settings", attibute: "userCode") as? String ?? ""
             
             dataHandler.deleteData(entity: "Settings")
         }
@@ -1483,7 +1482,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
             let settingsSave = Settings(context: managedContext)
             
-            settingsSave.userCode = ""
+//            settingsSave.userCode = ""
             settingsSave.showAdds = true
             settingsSave.firstLaunchDate = Date()
                 
@@ -1501,12 +1500,12 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             dataHandler.saveSettings(settingsChange: "userName", newValue: trueUserName)
             dataHandler.saveSettings(settingsChange: "loginEnabled", newValue: loginEnabledSafe)
             dataHandler.saveSettings(settingsChange: "firstLaunch", newValue: firstLaunch)
-            dataHandler.saveSettings(settingsChange: "filteredTagsZero", newValue: filteredTagsZero)
-            dataHandler.saveSettings(settingsChange: "filteredCategoriesZero", newValue: filteredCategoriesZero)
+//            dataHandler.saveSettings(settingsChange: "filteredTagsZero", newValue: filteredTagsZero)
+//            dataHandler.saveSettings(settingsChange: "filteredCategoriesZero", newValue: filteredCategoriesZero)
             dataHandler.saveSettings(settingsChange: "recoveryMail", newValue: recoveryMail)
             dataHandler.saveSettings(settingsChange: "lastCurrencyCode", newValue: lastCurrencyCodeSafe)
             dataHandler.saveSettings(settingsChange: "userColor", newValue: userColorSafe)
-            dataHandler.saveSettings(settingsChange: "userCode", newValue: userCodeSafe)
+//            dataHandler.saveSettings(settingsChange: "userCode", newValue: userCodeSafe)
         }
     }
     
@@ -1951,7 +1950,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 cell.cellLoginSwitch.isOn = false
             }
         } else {
-            if (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 || (localDataHandler.loadData(entitie: "SettingsLocal", attibute: "userCode") as? String ?? "").count <= 0 {
+            if (UserDefaults.standard.string(forKey: "userCode"))?.count ?? 0 <= 0 || (UserDefaults.standard.string(forKey: "userCode"))?.count ?? 0 <= 0 {
                 codeIsSet = false
             } else {
                 codeIsSet = true
@@ -1965,7 +1964,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 loginEnabled = false
             }
             
-            localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: loginEnabled)
+            UserDefaults.standard.set(loginEnabled, forKey: "loginEnabled")
             
             var dict = userDetailCells[0] as? [Int:Any]
             userDetailCells.removeAll()
@@ -2034,7 +2033,7 @@ extension userDetailVC: cellUserSettingsDelegate {
                 dataHandler.saveSettings(settingsChange: "recoveryMail", newValue: newText)
                 if newText.count <= 0 {
                     loginEnabled = false
-                    localDataHandler.saveLocalSettings(settingsChange: "loginEnabled", newValue: false)
+                    UserDefaults.standard.set(false, forKey: "loginEnabled")
                     if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
                         cell.cellLoginSwitch.isOn = false
                         loginToggle(newState: false)

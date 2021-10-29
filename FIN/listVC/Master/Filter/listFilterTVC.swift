@@ -270,10 +270,10 @@ extension listFilterTVC: listFilterCellDelegate {
         filterData[cellTag]?[1] = newState
         if cellTag == 0 {
             if selectedSegment == 0 {
-                localDataHandler.saveLocalSettings(settingsChange: "filteredCategoriesZero", newValue: !newState)
+                UserDefaults.standard.set(!newState, forKey: "filteredCategoriesZero")
                 filteredCategoriesZero = !newState
             } else {
-                localDataHandler.saveLocalSettings(settingsChange: "filteredTagsZero", newValue: !newState)
+                UserDefaults.standard.set(!newState, forKey: "filteredTagsZero")
                 filteredTagsZero = !newState
             }
             
