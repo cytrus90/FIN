@@ -708,7 +708,7 @@ class listMasterTVC: UITableViewController {
         //}
     }
     
-    func setCollectionCellData(scrollToId: Int = -1,completion: (Bool) -> ()) {
+    func setCollectionCellData(scrollToId: Int = -1, completion: (Bool) -> ()) {
         var numberTimeIntervalls:Int = 0
         
         collectionCellData.removeAll()

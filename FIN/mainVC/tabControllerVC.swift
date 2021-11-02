@@ -13,7 +13,13 @@ import StoreKit
 class tabController: UITabBarController {
     
     var previousIndex:Int?
-        
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        print("fjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjf")
+        print("Memory Warning received")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -22,8 +22,12 @@
 	<string>ca-app-pub-6709479231347115~4009385823</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>To add bills to your transactions</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To scan bills</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>To Protect the Data</string>
+	<string>To protect your Data</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

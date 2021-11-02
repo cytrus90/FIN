@@ -20,10 +20,8 @@ class cellAddTVC: UITableViewCell {
         cellAddOutlineView.layer.borderWidth = 1
         cellAddOutlineView.layer.cornerRadius = 10
         
-//        addButton.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 1)
         addButton.layer.borderWidth = 1
         addButton.layer.cornerRadius = 10
-//        addButton.backgroundColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 0.2)
         addButton.tintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1.0)
         
         initUI()

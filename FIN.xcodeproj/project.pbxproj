@@ -71,6 +71,8 @@
 		17686AE925DFCD30007ACD53 /* iconCarouselCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17686AE825DFCD30007ACD53 /* iconCarouselCell.swift */; };
 		17686AED25E40FBF007ACD53 /* iconsBlack.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17686AEC25E40FBF007ACD53 /* iconsBlack.xcassets */; };
 		17686AF025E40FD0007ACD53 /* iconsWhite.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17686AEF25E40FD0007ACD53 /* iconsWhite.xcassets */; };
+		1781BCF2272FFE0700B0710F /* cellShowReceiptTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1781BCF1272FFE0700B0710F /* cellShowReceiptTVC.swift */; };
+		1781BCF4272FFFAC00B0710F /* cellAddReceiptTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1781BCF3272FFFAC00B0710F /* cellAddReceiptTVC.swift */; };
 		1783A7D825921481005F64BE /* cellImportOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1783A7D725921481005F64BE /* cellImportOptions.swift */; };
 		1786C4AF24A103B000FE36E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1786C4AE24A103B000FE36E5 /* AppDelegate.swift */; };
 		1786C4B124A103B000FE36E5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1786C4B024A103B000FE36E5 /* SceneDelegate.swift */; };
@@ -226,6 +228,8 @@
 		17686AE825DFCD30007ACD53 /* iconCarouselCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconCarouselCell.swift; sourceTree = "<group>"; };
 		17686AEC25E40FBF007ACD53 /* iconsBlack.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iconsBlack.xcassets; sourceTree = "<group>"; };
 		17686AEF25E40FD0007ACD53 /* iconsWhite.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iconsWhite.xcassets; sourceTree = "<group>"; };
+		1781BCF1272FFE0700B0710F /* cellShowReceiptTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellShowReceiptTVC.swift; sourceTree = "<group>"; };
+		1781BCF3272FFFAC00B0710F /* cellAddReceiptTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellAddReceiptTVC.swift; sourceTree = "<group>"; };
 		1783A7D725921481005F64BE /* cellImportOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellImportOptions.swift; sourceTree = "<group>"; };
 		1786C4AB24A103B000FE36E5 /* FIN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FIN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1786C4AE24A103B000FE36E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -603,6 +607,8 @@
 				17DDCDC224C729E30093A749 /* cellAddTVC.swift */,
 				172EA57B24DC66850028027E /* cellSaveDeposit.swift */,
 				17117DE725765BE8001A143E /* cellDateNewTVC.swift */,
+				1781BCF1272FFE0700B0710F /* cellShowReceiptTVC.swift */,
+				1781BCF3272FFFAC00B0710F /* cellAddReceiptTVC.swift */,
 			);
 			path = "addTVC Cells";
 			sourceTree = "<group>";
@@ -989,6 +995,7 @@
 				17CA4519259082C6007525DC /* importPreviewTVC.swift in Sources */,
 				173B2F3A25AC60CE00CADA71 /* cellAboutText.swift in Sources */,
 				171ADE1E2594A83D00382710 /* cellExportTextTVC.swift in Sources */,
+				1781BCF4272FFFAC00B0710F /* cellAddReceiptTVC.swift in Sources */,
 				1786C4B924A103B000FE36E5 /* FIN.xcdatamodeld in Sources */,
 				1731FCCC252B70A400E4C9FE /* splitDetailTVC.swift in Sources */,
 				17A8CE0024BB4EE4003A2E39 /* userSplitVC.swift in Sources */,
@@ -1018,6 +1025,7 @@
 				17A4B40A2520EF4000EBEBDB /* cellSplitAddNewMain.swift in Sources */,
 				1722B17D2500BE5800DE302C /* cellListDetail.swift in Sources */,
 				172EA57C24DC66850028027E /* cellSaveDeposit.swift in Sources */,
+				1781BCF2272FFE0700B0710F /* cellShowReceiptTVC.swift in Sources */,
 				17CB2BDC25A5DA860015A85F /* cellSavingsOverview.swift in Sources */,
 				17CB681F24E3D7930012B239 /* listCollectionView.swift in Sources */,
 				17CB2BD825A5AA010015A85F /* categoryOverviewView.swift in Sources */,
@@ -1235,7 +1243,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.71;
+				MARKETING_VERSION = 1.72;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1268,7 +1276,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.71;
+				MARKETING_VERSION = 1.72;
 				PRODUCT_BUNDLE_IDENTIFIER = at.alpako.FIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

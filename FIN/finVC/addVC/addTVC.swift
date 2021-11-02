@@ -10,6 +10,8 @@ import UIKit
 import CoreData
 import TagListView
 import SmoothPicker
+import Vision
+import Photos
 
 var tags = [Int:[String:Any]]()
 var selectedCategory: Int = 1 // Category ID
@@ -22,13 +24,18 @@ var editSplit = false
 var selectedSplitRow = [Int:Bool]()
 var selectedSplitSegment:Int?
 
-class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
+class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
 
     @IBOutlet var addTable: UITableView!
     
     var updateCreateDate:Date?
     var updateUUID:UUID?
     var oldCategoryID:Int16?
+    
+    var receiptTransaction:Bool?
+    let fileManager = FileManager.default
+    var receiptImage:UIImage?
+    var imagePickerController : UIImagePickerController!
     
     var transactionDateTime:Date?
     var superRegularPayment:Bool = false
@@ -40,8 +47,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     
     var amount:Double?
     
-    var addCellRow = 3
-    // #### if addCellRow == 4 -> isSave == true in transaction. transactionDate[7] = withdraw or not. If withdraw, amount = negative ####
+    var addCellRow = 4
+    // #### if addCellRow == 5 -> isSave == true in transaction. transactionDate[7] = withdraw or not. If withdraw, amount = negative ####
     
     // Balance View
     let balanceViewXOffsetFactor:CGFloat = 0.05
@@ -113,15 +120,11 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         numberFormatter.groupingSize = 3
         numberFormatter.minimumFractionDigits = 2
         numberFormatter.maximumFractionDigits = 2
-//        isLeft = loadSettings(entitie: "Settings", attibute: "isLeft") as? Bool ?? true
-//        isOnEdge = loadSettings(entitie: "Settings", attibute: "isOnEdge") as? Bool ?? true
+
         currencyCodeSet = Locale.current.currencyCode ?? "EUR"
         initTransactionData()
         
         setTitle()
-        
-//        sumIncome = getSumIncome()
-//        sumExpenses = getSumExpenses()
     }
     
     override func viewDidLoad() {
@@ -145,6 +148,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(splitChanged), name: Notification.Name("splitChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(collectionViedDidScroll), name: Notification.Name("collectionViedDidScroll"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(imageUpdated), name: Notification.Name("imageSaved"), object: nil)
         
 //        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(transactionCancelled))
         addNavButtons()
@@ -231,7 +235,6 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         headerView.updatePosition()
-        // initBalanceView(left: isLeft, updatePosition: true)
         dismissDatePickerView()
     }
     
@@ -239,7 +242,6 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         super.traitCollectionDidChange(previousTraitCollection)
         initView()
         headerView.updatePosition()
-        // initBalanceView(left: isLeft, updatePosition: true)
     }
     
     @objc func transactionCancelled() {
@@ -265,16 +267,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     }
     
     // MARK: - Table view data source
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if addCellRow == 4 {
-            return 5
+        if addCellRow == 5 {
+            return 6
         } else {
-            return 4
+            return 5
         }
     }
 
@@ -285,12 +286,26 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         case 2:
             return getCategoryCell(indexPath: indexPath)
         case 3:
-            if addCellRow == 4 {
+            if addCellRow == 5 {
                 return getDepositCell(indexPath: indexPath)
+            } else {
+                if receiptTransaction ?? false {
+                    return getShowReceiptCell(indexPath: indexPath)
+                } else {
+                    return getAddReceiptCell(indexPath: indexPath)
+                }
+            }
+        case 4:
+            if addCellRow == 5 {
+                if receiptTransaction ?? false {
+                    return getShowReceiptCell(indexPath: indexPath)
+                } else {
+                    return getAddReceiptCell(indexPath: indexPath)
+                }
             } else {
                 return getAddCell(indexPath: indexPath)
             }
-        case 4:
+        case 5:
             return getAddCell(indexPath: indexPath)
         default:
             return getAmountCell(indexPath: indexPath)
@@ -321,6 +336,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         cell.delegate = self
         return cell
     }
+    
     func getAddCell(indexPath: IndexPath) -> cellAddTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "addCell", for: indexPath) as! cellAddTVC
         
@@ -422,6 +438,29 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
     func getCategoryCell(indexPath: IndexPath) -> cellCategoryNewTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellCategoryNewTVC", for: indexPath) as! cellCategoryNewTVC
         cell.delegate = self
+        
+        return cell
+    }
+    
+    func getAddReceiptCell(indexPath: IndexPath) -> cellAddReceiptTVC {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellAddReceiptTVC", for: indexPath) as! cellAddReceiptTVC
+//        cell.delegate = self
+        
+        return cell
+    }
+    
+    func getShowReceiptCell(indexPath: IndexPath) -> cellShowReceiptTVC {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellShowReceiptTVC", for: indexPath) as! cellShowReceiptTVC
+//        cell.delegate = self
+        
+        if receiptImage != nil {
+            cell.requestTextFromImage(image: receiptImage!)
+            cell.receiptImageView.isHidden = false
+            cell.activityIndicator.stopAnimating()
+        } else {
+            cell.activityIndicator.startAnimating()
+            cell.receiptImageView.isHidden = true
+        }
         
         return cell
     }
@@ -573,6 +612,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             currencyExchangeRate = exchangeRate ?? 1.00
             
             oldCategoryID = categoryID ?? -1
+            
+            receiptTransaction = checkIfReceiptImage(transactionUUID: uuid ?? UUID())
         } else {
             selectedCategory = Int(dataHandler.loadFirstCategory())
             transactionData[0] = "" // Amount
@@ -805,6 +846,52 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
                     break // Do nothing
                 }
             }
+    }
+    
+    // MARK: IMAGE FUNCTIONS
+    func checkIfReceiptImage(transactionUUID: UUID) -> Bool {
+        let imageName = transactionUUID.uuidString + ".png"
+        
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+        
+        if fileManager.fileExists(atPath: imagePath) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func getReceiptImage(transactionUUID: UUID) -> UIImage {
+        let imageName = transactionUUID.uuidString + ".png"
+        
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+        
+        if fileManager.fileExists(atPath: imagePath) {
+            return UIImage(contentsOfFile: imagePath) ?? UIImage(systemName: "xmark.octagon")!
+        } else {
+            return UIImage(systemName: "xmark.octagon")!
+        }
+    }
+    
+    func saveReceiptImage(transactionUUID: UUID, image: UIImage) {
+        let imageName = transactionUUID.uuidString + ".png"
+            
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+        //get the PNG data for this image
+        let data = (image).pngData()
+
+        //store it in the document directory
+        fileManager.createFile(atPath: imagePath as String, contents: data, attributes: nil)
+    }
+    
+    func setReceiptImage(transactionUUID: UUID) {
+        addTable.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .automatic)
+        addTable.layoutIfNeeded()
+    }
+    
+    @objc func imageUpdated() {
+        setReceiptImage(transactionUUID: transactionData[10] as? UUID ?? UUID())
     }
     
     // MARK: HELPER FUNCTIONS
@@ -1501,7 +1588,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
             saveAmount = (-1)*abs(saveAmount)
         }
         var isSave = false
-        if addCellRow == 4 {
+        if addCellRow == 5 {
             isSave = true
         }
         
@@ -1817,6 +1904,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate {
         }
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        receiptImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        
+        imagePickerController.dismiss(animated: true, completion: {
+            self.receiptTransaction = true
+            self.imageUpdated()
+        })
+    }
+    
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch (segue.identifier ?? "") {
@@ -1880,6 +1976,13 @@ extension addTVC: cellDateNewDelegate {
 }
 
 extension addTVC: cellTagAddDelegate {
+    func cameraButtonPressed() {
+        imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .camera
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
     func currencyButtonPressed() {
         DispatchQueue.main.async {
             self.performSegue(withIdentifier: "selectCurrencySeque", sender: nil)
@@ -2076,13 +2179,12 @@ extension addTVC: cellNewCategoryTVCDelegate {
                             cell.addButton.setTitle(NSLocalizedString("addButtonSaveIncreaseText", comment: "Increase Savings"), for: .normal)
                         }
                     }
-                    if addCellRow != 4 {
-                        addCellRow = 4
-//                        addTable.moveRow(at: IndexPath(row: (addCellRow-1), section: 0), to: IndexPath(row: (addCellRow), section: 0))
-                        addTable.insertRows(at: [IndexPath(row: (addCellRow-1), section: 0)], with: .automatic)
+                    if addCellRow == 4 {
+                        addCellRow = 5
+                        addTable.insertRows(at: [IndexPath(row: (addCellRow-2), section: 0)], with: .automatic)
                     }
                     
-                    if let cellSave = addTable.cellForRow(at: IndexPath(row: (addCellRow-1), section: 0)) as? cellSaveDeposit {
+                    if let cellSave = addTable.cellForRow(at: IndexPath(row: (addCellRow-2), section: 0)) as? cellSaveDeposit {
                         if (transactionData[8] as? Bool ?? false) {
                             cellSave.segmentControl.selectedSegmentIndex = 1
                         } else {
@@ -2103,9 +2205,9 @@ extension addTVC: cellNewCategoryTVCDelegate {
                     } else {
                         cell.addButton.setTitle(NSLocalizedString("addButtonIncomeText", comment: "Add to Income"), for: .normal)
                     }
-                    if addCellRow != 3 {
-                        addCellRow = 3
-                        addTable.deleteRows(at: [IndexPath(row: (addCellRow), section: 0)], with: .fade)
+                    if addCellRow == 5 {
+                        addCellRow = 4
+                        addTable.deleteRows(at: [IndexPath(row: (addCellRow-1), section: 0)], with: .fade)
                     }
                 }
             } else {
@@ -2125,13 +2227,12 @@ extension addTVC: cellNewCategoryTVCDelegate {
                             cell.addButton.setTitle(NSLocalizedString("addButtonSaveIncreaseText", comment: "Increase Savings"), for: .normal)
                         }
                     }
-                    if addCellRow != 4 {
-                        addCellRow = 4
-//                        addTable.moveRow(at: IndexPath(row: (addCellRow-1), section: 0), to: IndexPath(row: (addCellRow), section: 0))
-                        addTable.insertRows(at: [IndexPath(row: (addCellRow-1), section: 0)], with: .automatic)
+                    if addCellRow == 4 {
+                        addCellRow = 5
+                        addTable.insertRows(at: [IndexPath(row: (addCellRow-2), section: 0)], with: .automatic)
                     }
                     
-                    if let cellSave = addTable.cellForRow(at: IndexPath(row: (addCellRow-1), section: 0)) as? cellSaveDeposit {
+                    if let cellSave = addTable.cellForRow(at: IndexPath(row: (addCellRow-2), section: 0)) as? cellSaveDeposit {
                         if (transactionData[8] as? Bool ?? false) {
                             cellSave.segmentControl.selectedSegmentIndex = 1
                         } else {
@@ -2152,9 +2253,9 @@ extension addTVC: cellNewCategoryTVCDelegate {
                     } else {
                         cell.addButton.setTitle(NSLocalizedString("addButtonExpenseText", comment: "Add to Expenses"), for: .normal)
                     }
-                    if addCellRow != 3 {
-                        addCellRow = 3
-                        addTable.deleteRows(at: [IndexPath(row: (addCellRow), section: 0)], with: .fade)
+                    if addCellRow == 5 {
+                        addCellRow = 4
+                        addTable.deleteRows(at: [IndexPath(row: (addCellRow-1), section: 0)], with: .fade)
                     }
                 }
             }

@@ -176,6 +176,8 @@
 
 "skipWeekwends" = "Skip Weekends";
 
+"addReceiptButtonText" = "Add receipt";
+
 // Currency
 "Set"="Set";
 

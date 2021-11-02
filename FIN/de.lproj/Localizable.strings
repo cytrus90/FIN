@@ -176,6 +176,8 @@
 
 "skipWeekwends" = "Wochenenden überspringen";
 
+"addReceiptButtonText" = "Beleg hinzufügen";
+
 // Currency
 "Set" = "Übernehmen";
 

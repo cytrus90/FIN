@@ -21,6 +21,8 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
     
     @IBOutlet weak var currencyButton: UIButton!
     
+    @IBOutlet weak var cameraButton: UIButton!
+    
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextField!
     
@@ -44,6 +46,7 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
         cellAmountOutlineView.layer.cornerRadius = 10
         
         initCurrencyButton()
+        initCameraButton()
         initSplitButton()
         
         initView()
@@ -77,6 +80,10 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
     // MARK: -ACTIONS
     @IBAction func currencyButtonPressed(_ sender: Any) {
         self.delegate?.currencyButtonPressed()
+    }
+    
+    @IBAction func cameraButtonPressed(_ sender: Any) {
+        self.delegate?.cameraButtonPressed()
     }
     
     // MARK: -INIT VIEW
@@ -155,6 +162,14 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
         let currencyCode = Locale.current.currencyCode ?? "EUR"
         currencyButton.setTitle(getSymbol(forCurrencyCode: currencyCode), for: .normal)
         currencyButton.tintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
+    }
+    
+    func initCameraButton() {
+        cameraButton.layer.borderWidth = 1
+        cameraButton.layer.cornerRadius = 10
+        cameraButton.layer.borderColor = CGColor(srgbRed: 64/255, green: 156/255, blue: 255/255, alpha: 1)
+        
+//        cameraButton.tintColor = UIColor(red: 64/255, green: 156/255, blue: 255/255, alpha: 1)
     }
     
     func initSplitButton() {
@@ -250,4 +265,5 @@ protocol cellTagAddDelegate: AnyObject {
     func currencyButtonPressed()
     func textFieldEdited(text: String, tag: Int)
     func splitButtonPressed(amountValue:String)
+    func cameraButtonPressed()
 }
