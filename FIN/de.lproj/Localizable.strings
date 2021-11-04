@@ -184,6 +184,8 @@
 "photoLibraryTitle" = "Fotos";
 "savedAlbumsTitle" = "Fotoalben";
 
+"holdToEditReceipt" = "zum Bearbeiten berühren & halten";
+
 // Currency
 "Set" = "Übernehmen";
 
@@ -260,6 +262,14 @@
 "deleteTitleTransaction" = "Transaction entfernen?";
 "deleteRepeatedTitleTransaction" = "Regemäßige Zahlungen entfernen?";
 "deleteTextTransaction" = "Dies kann nicht rückgängig gemacht werden!";
+
+"saveReceiptTitle" = "Speichern";
+"saveReceiptText" = "Wollen Sie die Rechnung zu Ihren Fotos sichern?";
+
+"savedErrorTitle" = "Error";
+
+"savedSuccessTitle" = "Fertig";
+"savedSuccessText" = "Die Rechnung wurde gespeichert.";
 
 // #### Graph VC ####
 

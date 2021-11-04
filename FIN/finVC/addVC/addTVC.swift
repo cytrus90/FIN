@@ -908,13 +908,13 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         }
     }
     
-    func setReceiptImage(transactionUUID: UUID) {
+    func setReceiptImage() {
         addTable.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .automatic)
         addTable.layoutIfNeeded()
     }
     
     @objc func imageUpdated() {
-        setReceiptImage(transactionUUID: transactionData[10] as? UUID ?? UUID())
+        setReceiptImage()
     }
     
     // MARK: HELPER FUNCTIONS
@@ -1621,7 +1621,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
                     dataHandler.saveQueriedAttributeMultiple(entity: "Tags", attribute: "countEntries", query: query, value: numberTags)
                 }
             }
-            DispatchQueue.main.async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.deleteReceiptImage(transactionUUID: (self.transactionData[10] as? UUID ?? UUID()))
             }
             
@@ -1659,7 +1659,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
                 transactionData[10] = UUID()
             }
             
-            DispatchQueue.main.async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.saveReceiptImage(transactionUUID: self.transactionData[10] as? UUID ?? UUID(), image: self.receiptImage ?? UIImage(systemName: "xmark.octagon")!)
             }
         }

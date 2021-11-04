@@ -8,6 +8,7 @@
 
 import UIKit
 import Vision
+import SwiftUI
 
 class cellShowReceiptTVC: UITableViewCell {
 
@@ -17,6 +18,8 @@ class cellShowReceiptTVC: UITableViewCell {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
         
     @IBOutlet weak var imageAspectRatio: NSLayoutConstraint!
+    
+    @IBOutlet weak var changeReceiptButton: UIButton!
     
     weak var delegate: cellShowReceiptDelegate?
     
@@ -47,7 +50,7 @@ class cellShowReceiptTVC: UITableViewCell {
         numberFormatter.minimumFractionDigits = 2
         numberFormatter.maximumFractionDigits = 2
         
-        activityIndicator.translatesAutoresizingMaskIntoConstraints  = false
+//        activityIndicator.translatesAutoresizingMaskIntoConstraints  = false
         
         outlineView.layer.borderWidth = 1
         outlineView.layer.cornerRadius = 10
@@ -73,6 +76,8 @@ class cellShowReceiptTVC: UITableViewCell {
             outlineView.backgroundColor = .black
             outlineView.layer.borderColor = CGColor(srgbRed: 0/255, green: 0/255, blue: 0/255, alpha: 0.6)
         }
+        
+        changeReceiptButton.setImage(UIImage(named: "editIcon")?.withTintColor(.link), for: .normal)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -119,6 +124,18 @@ class cellShowReceiptTVC: UITableViewCell {
             return
         }
         performVisionRequest(image: cgImage, orientation: cgOrientation)
+    }
+    
+    @IBAction func editReceiptButtonPressed(_ sender: Any) {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.changeReceiptButton.transform = self.changeReceiptButton.transform.scaledBy(x: 0.8, y: 0.8)
+        }, completion: {_ in
+            UIView.animate(withDuration: 0.1, animations: {
+                self.changeReceiptButton.transform = CGAffineTransform.identity
+            }, completion: {_ in
+                self.delegate?.getNewImage()
+            })
+        })
     }
     
     @objc func getNewImage() {
@@ -267,18 +284,41 @@ class cellShowReceiptTVC: UITableViewCell {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
         for touch in touches {
             let point = touch.location(in: self)
             let numberLayers = pathLayer?.sublayers?.count ?? 0
-            for i in 0...(numberLayers-1) {
-                if (pathLayer?.sublayers![i].frame.contains(point)) == true || pathLayer?.sublayers![i].bounds.contains(point) == true {
-                    if (receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "").count > 0 {
-                        setTouchedValue(touchedValue: receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "")
+            if numberLayers > 1 {
+                for i in 0...(numberLayers-1) {
+                    if (pathLayer?.sublayers![i].frame.contains(point)) == true || pathLayer?.sublayers![i].bounds.contains(point) == true {
+                        if (receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "").count > 0 {
+                            setTouchedValue(touchedValue: receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "")
+                        }
+                        break
                     }
-                    break
                 }
             }
         }
+    }
+    
+    @objc func animateView() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.transform = self.transform.scaledBy(x: 0.98, y: 0.98)
+        })
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        UIView.animate(withDuration: 0.1, animations: {
+          self.transform = CGAffineTransform.identity
+        })
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        UIView.animate(withDuration: 0.1, animations: {
+          self.transform = CGAffineTransform.identity
+        })
     }
     
     fileprivate func setTouchedValue(touchedValue: String) {

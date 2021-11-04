@@ -184,6 +184,8 @@
 "photoLibraryTitle" = "Photo Library";
 "savedAlbumsTitle" = "Saved Albums";
 
+"holdToEditReceipt" = "touch & hold to edit";
+
 // Currency
 "Set"="Set";
 
@@ -259,6 +261,14 @@
 "deleteTitleTransaction" = "Delete transaction?";
 "deleteRepeatedTitleTransaction" = "Remove regular payment?";
 "deleteTextTransaction" = "This can't be undone!";
+
+"saveReceiptTitle" = "Save";
+"saveReceiptText" = "Do you want to save the receipt to your photo library?";
+
+"savedErrorTitle" = "Error";
+
+"savedSuccessTitle" = "Done";
+"savedSuccessText" = "Receipt has been saved to your photo library.";
 
 // #### Graph VC ####
 

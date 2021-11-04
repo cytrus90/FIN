@@ -1146,7 +1146,7 @@ class dataClass {
         transactionSave.isSplit = isSplit
         transactionSave.isLiquid = isLiquid
         transactionSave.uuid = uuid
-                
+
         do {
             try managedContext.save()
         } catch let error as NSError {

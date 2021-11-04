@@ -108,6 +108,7 @@
 		17B3E05825D5048E007A4182 /* categoriesBottomBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */; };
 		17B3E05B25D504B7007A4182 /* categoryBottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */; };
 		17B7E1072733D77400355E0D /* standardClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B7E1062733D77400355E0D /* standardClassExtensions.swift */; };
+		17B7E109273419B700355E0D /* cellDetailShowReceiptTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B7E108273419B700355E0D /* cellDetailShowReceiptTVC.swift */; };
 		17BA4A5E24C713D200AB800A /* finTSB.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17BA4A5D24C713D200AB800A /* finTSB.storyboard */; };
 		17C30A0024CA054700573E19 /* datePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C309FF24CA054700573E19 /* datePickerView.swift */; };
 		17C30A0224CA055900573E19 /* datePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17C30A0124CA055900573E19 /* datePickerView.xib */; };
@@ -269,6 +270,7 @@
 		17B3E05725D5048E007A4182 /* categoriesBottomBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = categoriesBottomBar.xib; sourceTree = "<group>"; };
 		17B3E05A25D504B7007A4182 /* categoryBottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = categoryBottomBar.swift; sourceTree = "<group>"; };
 		17B7E1062733D77400355E0D /* standardClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = standardClassExtensions.swift; sourceTree = "<group>"; };
+		17B7E108273419B700355E0D /* cellDetailShowReceiptTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cellDetailShowReceiptTVC.swift; sourceTree = "<group>"; };
 		17BA4A5D24C713D200AB800A /* finTSB.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = finTSB.storyboard; sourceTree = "<group>"; };
 		17C309FF24CA054700573E19 /* datePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = datePickerView.swift; sourceTree = "<group>"; };
 		17C30A0124CA055900573E19 /* datePickerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = datePickerView.xib; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 				17117DDD25751064001A143E /* dateDetailCellTVC.swift */,
 				17117DE0257517F8001A143E /* subtitleCellTVC.swift */,
 				17117DE325751D2C001A143E /* cellDetailGeneralTVC.swift */,
+				17B7E108273419B700355E0D /* cellDetailShowReceiptTVC.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -988,6 +991,7 @@
 				1713389324A520440075189B /* loginVC.swift in Sources */,
 				17CA450E258F9B58007525DC /* importTVC.swift in Sources */,
 				175F082D24DDD94800028DF9 /* listDetailTVC.swift in Sources */,
+				17B7E109273419B700355E0D /* cellDetailShowReceiptTVC.swift in Sources */,
 				172D998F253B55F000766DED /* transactionSplitRow.swift in Sources */,
 				17625E2A25A1CAE8002CAF2F /* localNotificationManager.swift in Sources */,
 				17117DE825765BE8001A143E /* cellDateNewTVC.swift in Sources */,

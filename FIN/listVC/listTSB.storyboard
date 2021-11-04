@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -679,6 +678,58 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="subtitleLabel" destination="MUd-b2-Pt2" id="XqK-NJ-DmH"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="cellShowReceiptTVC" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cellDetailShowReceiptTVC" id="dWS-e0-xPQ" customClass="cellDetailShowReceiptTVC" customModule="FIN" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="350" width="414" height="533.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dWS-e0-xPQ" id="Lga-D7-oGI">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="533.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qxd-Sc-qd9">
+                                            <rect key="frame" x="15" y="13" width="384" height="505.5"/>
+                                            <subviews>
+                                                <imageView hidden="YES" clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mu8-J8-euT">
+                                                    <rect key="frame" x="10" y="10" width="364" height="485.5"/>
+                                                    <gestureRecognizers/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="mu8-J8-euT" secondAttribute="height" multiplier="3:4" id="b8E-us-h3i"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="2Wb-Qd-mlG">
+                                                    <rect key="frame" x="182" y="243" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstItem="2Wb-Qd-mlG" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qxd-Sc-qd9" secondAttribute="top" constant="25" id="12a-6a-7I6"/>
+                                                <constraint firstAttribute="bottom" secondItem="mu8-J8-euT" secondAttribute="bottom" constant="10" id="2o1-uz-hHv"/>
+                                                <constraint firstItem="2Wb-Qd-mlG" firstAttribute="centerY" secondItem="qxd-Sc-qd9" secondAttribute="centerY" id="872-Dy-tRt"/>
+                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="2Wb-Qd-mlG" secondAttribute="bottom" constant="25" id="Bnu-7G-MdT"/>
+                                                <constraint firstItem="mu8-J8-euT" firstAttribute="top" secondItem="qxd-Sc-qd9" secondAttribute="top" constant="10" id="CfO-hR-ptH"/>
+                                                <constraint firstItem="mu8-J8-euT" firstAttribute="centerY" secondItem="qxd-Sc-qd9" secondAttribute="centerY" id="GEk-XR-h1v"/>
+                                                <constraint firstItem="mu8-J8-euT" firstAttribute="leading" secondItem="qxd-Sc-qd9" secondAttribute="leading" constant="10" id="KbS-tA-dFt"/>
+                                                <constraint firstItem="mu8-J8-euT" firstAttribute="centerX" secondItem="qxd-Sc-qd9" secondAttribute="centerX" id="YtJ-DC-e1L"/>
+                                                <constraint firstAttribute="trailing" secondItem="mu8-J8-euT" secondAttribute="trailing" constant="10" id="i7E-Sw-CJt"/>
+                                                <constraint firstItem="2Wb-Qd-mlG" firstAttribute="centerX" secondItem="qxd-Sc-qd9" secondAttribute="centerX" id="jeo-Bs-YWj"/>
+                                            </constraints>
+                                        </view>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="qxd-Sc-qd9" secondAttribute="bottom" constant="15" id="9SN-AN-gkh"/>
+                                        <constraint firstItem="qxd-Sc-qd9" firstAttribute="centerX" secondItem="Lga-D7-oGI" secondAttribute="centerX" id="Pji-wv-AFt"/>
+                                        <constraint firstAttribute="trailing" secondItem="qxd-Sc-qd9" secondAttribute="trailing" constant="15" id="dMF-Ov-VLV"/>
+                                        <constraint firstItem="qxd-Sc-qd9" firstAttribute="top" secondItem="Lga-D7-oGI" secondAttribute="top" constant="13" id="nQl-Zu-6Yr"/>
+                                        <constraint firstItem="qxd-Sc-qd9" firstAttribute="leading" secondItem="Lga-D7-oGI" secondAttribute="leading" constant="15" id="tjp-hK-T3k"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" red="0.90196078430000004" green="0.94901960780000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <outlet property="activityIndicator" destination="2Wb-Qd-mlG" id="ypk-lA-La8"/>
+                                    <outlet property="imageAspectRatio" destination="b8E-us-h3i" id="xeD-v8-V5x"/>
+                                    <outlet property="outlineView" destination="qxd-Sc-qd9" id="ehi-XK-FaB"/>
+                                    <outlet property="receiptImageView" destination="mu8-J8-euT" id="j40-fo-FbS"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

@@ -28,6 +28,8 @@
 	<string>To scan bills</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>To protect your Data</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To save receipts to your photos library</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

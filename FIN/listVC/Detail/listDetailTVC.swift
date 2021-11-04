@@ -39,6 +39,11 @@ class listDetailTVC: UITableViewController {
     var transactionPartOfGroupSplit:Bool = false
     var transactionPartOfSplit:Bool = false
     
+    let fileManager = FileManager.default
+    
+    var receiptImage: UIImage?
+    var receiptTransaction:Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -149,22 +154,38 @@ class listDetailTVC: UITableViewController {
         case 2: // Date Cell
             return getDateCell(indexPath: indexPath)
         case 3:
-            return getSubtitleCell(indexPath: indexPath)
-        case 4:
-            return getSplitCell(indexPath: indexPath)
-        case 5:
-            if transactionPartOfGroupSplit {
+            if (rowData[indexPath.row] as? [Int:Any])?[11] != nil {
+                return getReceiptCell(indexPath: indexPath)
+            } else {
                 return getSubtitleCell(indexPath: indexPath)
+            }
+        case 4:
+            if (rowData[indexPath.row] as? [Int:Any])?[11] != nil {
+                return getReceiptCell(indexPath: indexPath)
             } else {
                 return getSplitCell(indexPath: indexPath)
             }
+        case 5:
+            if (rowData[indexPath.row] as? [Int:Any])?[11] != nil {
+                return getReceiptCell(indexPath: indexPath)
+            } else {
+                if transactionPartOfGroupSplit {
+                    return getSubtitleCell(indexPath: indexPath)
+                } else {
+                    return getSplitCell(indexPath: indexPath)
+                }
+            }
         default: // Split Person Cell
-            return getSplitCell(indexPath: indexPath)
+            if (rowData[indexPath.row] as? [Int:Any])?[11] != nil {
+                return getReceiptCell(indexPath: indexPath)
+            } else {
+                return getSplitCell(indexPath: indexPath)
+            }
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 4 || (indexPath.row > 5 && transactionPartOfGroupSplit)  || (indexPath.row >= 5 && !transactionPartOfGroupSplit) {
+        if (indexPath.row == 4 || (indexPath.row > 5 && transactionPartOfGroupSplit)  || (indexPath.row >= 5 && !transactionPartOfGroupSplit)) && ((rowData[indexPath.row] as! [Int:Any])[11] == nil) {
             let settleSplitStoryBoard: UIStoryboard = UIStoryboard(name: "settleSplit", bundle: nil)
             let settleSplitVC = settleSplitStoryBoard.instantiateViewController(withIdentifier: "settleSplitTVC") as! settleSplitTVC
             
@@ -232,6 +253,23 @@ class listDetailTVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "dateDetailCell", for: indexPath) as! dateDetailCellTVC
         cell.dateButton.setTitle(getDayForDate(dayDate: (rowData[2] as? Date ?? Date())), for: .normal)
         cell.Delegate = self
+        return cell
+    }
+    
+    func getReceiptCell(indexPath: IndexPath) -> cellDetailShowReceiptTVC {
+//        let cell = tableView.cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellDetailShowReceiptTVC", for: indexPath) as! cellDetailShowReceiptTVC
+        if receiptImage == nil {
+            cell.receiptImageView.isHidden = true
+            cell.activityIndicator.startAnimating()
+            cell.requestImageForUUID(transactionUUID: (rowData[indexPath.row] as! [Int:Any])[11] as? UUID ?? UUID())
+        } else {
+            cell.setImage(image: receiptImage ?? UIImage(systemName: "xmark.octagon")!)
+            cell.receiptImageView.isHidden = false
+            cell.activityIndicator.stopAnimating()
+        }
+        cell.tag = indexPath.row
+        cell.delegate = self
         return cell
     }
     
@@ -517,6 +555,7 @@ class listDetailTVC: UITableViewController {
         var categoryID:Int16?
         var isSave:Bool?
         var isLiquid:Bool?
+        var uuid:UUID?
         
         var isIncome:Bool?
         var categoryName:String?
@@ -545,6 +584,7 @@ class listDetailTVC: UITableViewController {
             categoryID = transaction.value(forKey: "categoryID") as? Int16 ?? 0
             isSave = transaction.value(forKey: "isSave") as? Bool ?? false
             isLiquid = transaction.value(forKey: "isLiquid") as? Bool ?? true
+            uuid = transaction.value(forKey: "uuid") as? UUID ?? UUID()
         }
         
         createTags(tagsString: (transactionTags ?? ""))
@@ -688,6 +728,20 @@ class listDetailTVC: UITableViewController {
             ] as [Int : Any]
             rowData[rowData.count] = ramDict
         }
+        
+        if uuid != nil {
+            if self.checkIfReceiptImage(transactionUUID: uuid ?? UUID()) {
+                self.receiptTransaction = true
+                let addAtRowData = self.rowData.count
+                let ramDictReceipt = [
+                    11:uuid ?? UUID()
+                ] as [Int : Any]
+                self.rowData[addAtRowData] = ramDictReceipt
+                DispatchQueue.main.async {
+                    self.receiptImage = self.getReceiptImage(transactionUUID: uuid ?? UUID())
+                }
+            }
+        }
         completion(true)
     }
     
@@ -715,6 +769,84 @@ class listDetailTVC: UITableViewController {
         }
     }
     
+    func checkIfReceiptImage(transactionUUID: UUID) -> Bool {
+        let imageName = transactionUUID.uuidString + ".png"
+        
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+        
+        if fileManager.fileExists(atPath: imagePath) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func getReceiptImage(transactionUUID: UUID) -> UIImage {
+        let imageName = transactionUUID.uuidString + ".png"
+        
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+        
+        if fileManager.fileExists(atPath: imagePath) {
+            return UIImage(contentsOfFile: imagePath) ?? UIImage(systemName: "xmark.octagon")!
+        } else {
+            return UIImage(systemName: "xmark.octagon")!
+        }
+    }
+    
+    func setReceiptImage(refreshRow: Int) {
+        if receiptImage != nil {
+            if (tableviewListDetail.cellForRow(at: IndexPath(row: refreshRow, section: 0)) as? cellDetailShowReceiptTVC) != nil {
+                tableviewListDetail.reloadRows(at: [IndexPath(row: refreshRow, section: 0)], with: .automatic)
+                tableviewListDetail.layoutIfNeeded()
+            }
+        }
+    }
+    
+    //MARK: - Saving Image here
+    func saveImage() {
+        guard let selectedImage = receiptImage else {
+            print("Image not found!")
+            return
+        }
+        UIImageWriteToSavedPhotosAlbum(selectedImage, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    func showSavePrompt() {
+        let alertTitle = NSLocalizedString("saveReceiptTitle", comment: "saveReceiptTitle")
+        let alertText = NSLocalizedString("saveReceiptText", comment: "saveReceiptText")
+        
+        var alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .actionSheet)
+        if !UIDevice().model.contains("iPhone") {
+            alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
+        }
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .default, handler: { action in
+            self.saveImage()
+        }))
+        
+        alert.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .cancel, handler: nil ))
+        alert.popoverPresentationController?.sourceView = self.view
+        alert.popoverPresentationController?.sourceRect = self.view.bounds
+        
+        self.present(alert, animated: true)
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            showSuccessAlertWith(title: NSLocalizedString("savedErrorTitle", comment: "Error title"), message: error.localizedDescription)
+        } else {
+            showSuccessAlertWith(title: NSLocalizedString("savedSuccessTitle", comment: "Done"), message: NSLocalizedString("savedSuccessText", comment: "Done text"))
+        }
+    }
+
+    func showSuccessAlertWith(title: String, message: String) {
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        ac.popoverPresentationController?.sourceView = self.view
+        ac.popoverPresentationController?.sourceRect = self.view.bounds
+        present(ac, animated: true)
+    }
+    
     @objc func amountCellPressed() {
         if let cell = tableviewListDetail.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellAmountDetailTVC {
             UIView.animate(withDuration: 0.1, animations: {
@@ -731,6 +863,20 @@ class listDetailTVC: UITableViewController {
     
     @objc func categoryCellPressed() {
         if let cell = tableviewListDetail.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDetailGeneralTVC {
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.transform = cell.transform.scaledBy(x: 0.98, y: 0.98)
+                }, completion: { _ in
+                  UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = CGAffineTransform.identity
+                  }, completion: { _ in
+                    self.editTransaction()
+                  })
+                })
+        }
+    }
+    
+    func receiptCellPressed(tag: Int) {
+        if let cell = tableviewListDetail.cellForRow(at: IndexPath(row: tag, section: 0)) as? cellDetailShowReceiptTVC {
             UIView.animate(withDuration: 0.1, animations: {
                 cell.transform = cell.transform.scaledBy(x: 0.98, y: 0.98)
                 }, completion: { _ in
@@ -865,5 +1011,19 @@ extension listDetailTVC: cellAmountDetailTVCDelegate {
 extension listDetailTVC: dateDetailCellDelegate {
     func dateButtonPressed() {
         editTransaction()
+    }
+}
+
+extension listDetailTVC: cellDetailShowReceiptDelegate {
+    func cellTouched(tag: Int) {
+        receiptCellPressed(tag: tag)
+    }
+    
+    func returnReceiptImage(image: UIImage) {
+        receiptImage = image
+    }
+    
+    func saveImageTriggered() {
+        showSavePrompt()
     }
 }
