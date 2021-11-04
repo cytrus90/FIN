@@ -911,6 +911,23 @@ extension splitDetailTVC: UIContextMenuInteractionDelegate {
             let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: transactionDate)!
 
             let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+
+            let uuidTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "uuid", query: queryDelete) as? UUID ?? UUID()
+            
+            DispatchQueue.main.async {
+                let fileManager = FileManager.default
+                let imageName = uuidTransaction.uuidString + ".png"
+                let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+                if fileManager.fileExists(atPath: imagePath) {
+                    do {
+                        try fileManager.removeItem(atPath: imagePath)
+                    } catch {
+                        print("Image not deleted")
+                    }
+                }
+            }
+
             dataHandler.deleteDataQueried(entity: "Transactions", query: queryDelete)
 
             let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)

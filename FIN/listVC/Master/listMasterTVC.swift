@@ -885,8 +885,9 @@ class listMasterTVC: UITableViewController {
             let isSplit = regularPayment.value(forKey: "isSplit") as? Int16 ?? 0
             let realAmount = regularPayment.value(forKey: "realAmount") as? Double ?? 0.00
             let tags = regularPayment.value(forKey: "tags") as? String ?? ""
+            let uuid = regularPayment.value(forKey: "uuid") as? UUID ?? UUID()
             
-            if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit) {
+            if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit, uuid: uuid) {
                 let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
                 let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
                 
@@ -1294,6 +1295,20 @@ extension listMasterTVC: UIContextMenuInteractionDelegate {
             
             if (transferData[(row)]?[11] as? UUID) != nil {
                 queryDelete = NSPredicate(format: "uuid == %@", (transferData[(row)]?[11] as? UUID)?.uuidString ?? "")
+            }
+            
+            DispatchQueue.main.async {
+                let fileManager = FileManager.default
+                let imageName = ((self.transferData[(row)]?[11] as? UUID)?.uuidString ?? "") + ".png"
+                let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+                if fileManager.fileExists(atPath: imagePath) {
+                    do {
+                        try fileManager.removeItem(atPath: imagePath)
+                    } catch {
+                        print("Image not deleted")
+                    }
+                }
             }
             
             dataHandler.deleteData(entity: "Transactions", query: queryDelete)

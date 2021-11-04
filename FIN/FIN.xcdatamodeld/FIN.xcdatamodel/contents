@@ -171,6 +171,6 @@
         <element name="Splits" positionX="265.578125" positionY="-168.0625" width="128" height="14"/>
         <element name="SplitsRegularPayments" positionX="144" positionY="-9" width="128" height="14"/>
         <element name="Tags" positionX="144" positionY="-18" width="128" height="14"/>
-        <element name="Transactions" positionX="-49.8671875" positionY="116.1484375" width="128" height="14"/>
+        <element name="Transactions" positionX="-49.8671875" positionY="116.1484375" width="128" height="239"/>
     </elements>
 </model>

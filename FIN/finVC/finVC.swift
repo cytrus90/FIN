@@ -41,6 +41,7 @@ class finTVC: UITableViewController {
         self.title = ""
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTransactionTabbed))
+        
         NotificationCenter.default.addObserver(self, selector: #selector(addTransactionTabbed), name: Notification.Name("showAddVC"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("updateFinVC"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: Notification.Name("dataImported"), object: nil)
@@ -1081,8 +1082,24 @@ extension finTVC: UIContextMenuInteractionDelegate {
     func deleteTransaction(from action: UIAction) {
         let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: topOverviewCellData[7] as? Date ?? Date())!
         let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: topOverviewCellData[7] as? Date ?? Date())!
-        
+                
         let queryDelete = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+        let uuidTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "uuid", query: queryDelete) as? UUID ?? UUID()
+        
+        DispatchQueue.main.async {
+            let fileManager = FileManager.default
+            let imageName = uuidTransaction.uuidString + ".png"
+            let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+            if fileManager.fileExists(atPath: imagePath) {
+                do {
+                    try fileManager.removeItem(atPath: imagePath)
+                } catch {
+                    print("Image not deleted")
+                }
+            }
+        }
+        
         dataHandler.deleteData(entity: "Transactions", query: queryDelete)
         
         let querySplits = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)

@@ -178,6 +178,12 @@
 
 "addReceiptButtonText" = "Beleg hinzufügen";
 
+"photoPopTitle" = "Foto auswählen";
+"photoPopSubTitle" = "Bitte ein Foto auswählen";
+"cameraTitle" = "Kamera";
+"photoLibraryTitle" = "Fotos";
+"savedAlbumsTitle" = "Fotoalben";
+
 // Currency
 "Set" = "Übernehmen";
 

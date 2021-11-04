@@ -1156,7 +1156,7 @@ class dataClass {
         return true
     }
     
-    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String, dateTime: Date, descriptionNote: String, exchangeRate: Double, tags: String, isSave: Bool = false, isLiquid:Bool, isSplit:Int16, uuid:UUID = UUID()) -> Bool {
+    func saveTransaction(amount: Double, realAmount:Double, category: Int16, currencyCode: String, dateTime: Date, descriptionNote: String, exchangeRate: Double, tags: String, isSave: Bool = false, isLiquid:Bool, isSplit:Int16, uuid:UUID) -> Bool {
         var managedContext:NSManagedObjectContext {
             persistentContainer.viewContext
         }
@@ -1276,7 +1276,7 @@ class dataClass {
         }
     }
     
-    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) {
+    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) { // HERE ERROR
         var managedContext:NSManagedObjectContext {
             persistentContainer.viewContext
         }
@@ -1522,7 +1522,7 @@ class dataClass {
     
     // MARK: -ADDVC
     // MARK: SAVE
-    func saveTransaction(amount: Double, category: Int16, currencyCode: String?, dateTime: Date?, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, uuid:UUID = UUID()) -> (Bool,Date?) {
+    func saveTransaction(amount: Double, category: Int16, currencyCode: String?, dateTime: Date?, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, uuid:UUID) -> (Bool,Date?) {
         let currencyCodeSave: String?
         if currencyCode == nil {
             currencyCodeSave = Locale.current.currencyCode ?? "EUR"

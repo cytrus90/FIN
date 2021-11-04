@@ -36,6 +36,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     let fileManager = FileManager.default
     var receiptImage:UIImage?
     var imagePickerController : UIImagePickerController!
+    var firstLoad: Bool = true
+    var directlyFromCamera: Bool = false
     
     var transactionDateTime:Date?
     var superRegularPayment:Bool = false
@@ -444,24 +446,24 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     
     func getAddReceiptCell(indexPath: IndexPath) -> cellAddReceiptTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellAddReceiptTVC", for: indexPath) as! cellAddReceiptTVC
-//        cell.delegate = self
+        cell.delegate = self
         
         return cell
     }
     
     func getShowReceiptCell(indexPath: IndexPath) -> cellShowReceiptTVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellShowReceiptTVC", for: indexPath) as! cellShowReceiptTVC
-//        cell.delegate = self
+        cell.delegate = self
         
         if receiptImage != nil {
-            cell.requestTextFromImage(image: receiptImage!)
+            cell.requestTextFromImage(image: receiptImage!, directlyFromCamera: directlyFromCamera)
             cell.receiptImageView.isHidden = false
             cell.activityIndicator.stopAnimating()
         } else {
             cell.activityIndicator.startAnimating()
             cell.receiptImageView.isHidden = true
         }
-        
+        directlyFromCamera = false
         return cell
     }
     
@@ -614,6 +616,13 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
             oldCategoryID = categoryID ?? -1
             
             receiptTransaction = checkIfReceiptImage(transactionUUID: uuid ?? UUID())
+            
+            if receiptTransaction ?? false {
+                DispatchQueue.main.async {
+                    self.receiptImage = self.getReceiptImage(transactionUUID: uuid ?? UUID())
+                    self.imageUpdated()
+                }
+            }
         } else {
             selectedCategory = Int(dataHandler.loadFirstCategory())
             transactionData[0] = "" // Amount
@@ -875,7 +884,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     
     func saveReceiptImage(transactionUUID: UUID, image: UIImage) {
         let imageName = transactionUUID.uuidString + ".png"
-            
+        
         let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
 
         //get the PNG data for this image
@@ -883,6 +892,20 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
 
         //store it in the document directory
         fileManager.createFile(atPath: imagePath as String, contents: data, attributes: nil)
+    }
+    
+    func deleteReceiptImage(transactionUUID: UUID) {
+        let imageName = transactionUUID.uuidString + ".png"
+        
+        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+        if fileManager.fileExists(atPath: imagePath) {
+            do {
+                try fileManager.removeItem(atPath: imagePath)
+            } catch {
+                print("Image not deleted")
+            }
+        }
     }
     
     func setReceiptImage(transactionUUID: UUID) {
@@ -1035,6 +1058,64 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     
     @objc func collectionViedDidScroll() {
         self.view.endEditing(true)
+    }
+    
+    func getNewImageAlert() {
+        let prompt = UIAlertController(title: NSLocalizedString("photoPopTitle", comment: "Choose photo title"),
+                                       message: NSLocalizedString("photoPopSubTitle", comment: "Choose photo sub title"),
+                                       preferredStyle: .actionSheet)
+        
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        
+        func presentCamera(_ _: UIAlertAction) {
+            cameraButtonPressed()
+        }
+        
+        let cameraAction = UIAlertAction(title: NSLocalizedString("cameraTitle", comment: "Camera"),
+                                         style: .default,
+                                         handler: presentCamera)
+        
+        func presentLibrary(_ _: UIAlertAction) {
+            photoLibraryPressed()
+        }
+        
+        let libraryAction = UIAlertAction(title: NSLocalizedString("photoLibraryTitle", comment: "Photo library"),
+                                          style: .default,
+                                          handler: presentLibrary)
+        
+        func presentAlbums(_ _: UIAlertAction) {
+            albumLibraryPressed()
+        }
+        
+        let albumsAction = UIAlertAction(title: NSLocalizedString("savedAlbumsTitle", comment: "Saved Albums"),
+                                         style: .default,
+                                         handler: presentAlbums)
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("cancelImport", comment: "Cancel"),
+                                         style: .cancel,
+                                         handler: nil)
+        
+        prompt.addAction(cameraAction)
+        prompt.addAction(libraryAction)
+        prompt.addAction(albumsAction)
+        prompt.addAction(cancelAction)
+        
+        self.present(prompt, animated: true, completion: nil)
+    }
+    
+    func photoLibraryPressed() {
+        imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func albumLibraryPressed() {
+        imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .savedPhotosAlbum
+        present(imagePickerController, animated: true, completion: nil)
     }
     
     // MARK: - Balance View
@@ -1540,6 +1621,9 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
                     dataHandler.saveQueriedAttributeMultiple(entity: "Tags", attribute: "countEntries", query: query, value: numberTags)
                 }
             }
+            DispatchQueue.main.async {
+                self.deleteReceiptImage(transactionUUID: (self.transactionData[10] as? UUID ?? UUID()))
+            }
             
             self.transactionData.removeAll()
             split.removeAll()
@@ -1570,6 +1654,16 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     }
     
     func saveTransaction(amount: Double) {
+        if receiptTransaction ?? false {
+            if transactionData[10] as? UUID == nil {
+                transactionData[10] = UUID()
+            }
+            
+            DispatchQueue.main.async {
+                self.saveReceiptImage(transactionUUID: self.transactionData[10] as? UUID ?? UUID(), image: self.receiptImage ?? UIImage(systemName: "xmark.octagon")!)
+            }
+        }
+        
         var saveAmount = amount
         
         var seconds = 0.05
@@ -1637,7 +1731,7 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     }
     
     func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double) {
-        let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true)
+        let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, uuid: (transactionData[10] as? UUID ?? UUID()))
         if saveTransactionReturn.0 {
             transactionDateTime = saveTransactionReturn.1
             afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount)
@@ -1905,6 +1999,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        directlyFromCamera = true
+        
         receiptImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         
         imagePickerController.dismiss(animated: true, completion: {
@@ -1935,6 +2031,60 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         default:
             break
         }
+    }
+}
+
+extension addTVC: cellAddReceiptPressedDelegate {
+    func addReceiptPressed() {
+        firstLoad = false
+        getNewImageAlert()
+    }
+}
+
+extension addTVC: cellShowReceiptDelegate {
+    func receiptDatePressed(toSetDate: Date) {
+        if !firstLoad {
+            dateSelected = toSetDate
+            if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
+                cell.datePicker.setDate(toSetDate, animated: true)
+            }
+        } else {
+            firstLoad = false
+        }
+    }
+    
+    func receiptStringPressed(toSetDescription: String) {
+        if !firstLoad {
+            transactionData[3] = toSetDescription
+            if let cell = addTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellAmountTVC {
+                cell.descriptionTextField.text = toSetDescription
+            }
+        } else {
+            firstLoad = false
+        }
+    }
+    
+    func receiptAmountPressed(toSetAmount: String) {
+        if !firstLoad {
+            transactionData[0] = toSetAmount
+            if let cell = addTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellAmountTVC {
+                let amountFormatter = NumberFormatter()
+                amountFormatter.locale = .current
+                let thSep:String = Locale.current.groupingSeparator ?? ","
+                cell.amountTextField.text = numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: (transactionData[0] as? String ?? "0").replacingOccurrences(of: thSep, with: "")) as? Double) ?? 0.00))
+            }
+            showSplitButton()
+        } else {
+            firstLoad = false
+        }
+    }
+    
+    func getNewImage() {
+        getNewImageAlert()
+    }
+    
+    func replaceImage(newImage: UIImage) {
+        receiptImage = newImage
     }
 }
 
@@ -1977,6 +2127,7 @@ extension addTVC: cellDateNewDelegate {
 
 extension addTVC: cellTagAddDelegate {
     func cameraButtonPressed() {
+        firstLoad = false
         imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         imagePickerController.sourceType = .camera

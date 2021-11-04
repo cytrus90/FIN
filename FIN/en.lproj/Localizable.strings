@@ -178,6 +178,12 @@
 
 "addReceiptButtonText" = "Add receipt";
 
+"photoPopTitle" = "Choose a Photo";
+"photoPopSubTitle" = "Please choose a photo.";
+"cameraTitle" = "Camera";
+"photoLibraryTitle" = "Photo Library";
+"savedAlbumsTitle" = "Saved Albums";
+
 // Currency
 "Set"="Set";
 

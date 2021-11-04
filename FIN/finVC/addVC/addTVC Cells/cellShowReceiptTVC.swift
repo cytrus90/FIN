@@ -18,20 +18,46 @@ class cellShowReceiptTVC: UITableViewCell {
         
     @IBOutlet weak var imageAspectRatio: NSLayoutConstraint!
     
+    weak var delegate: cellShowReceiptDelegate?
+    
     // Layer into which to draw bounding box paths.
     var pathLayer: CALayer?
+//    var pathLayerView: UIView?
     
     // Image parameters for reuse
     var imageWidth: CGFloat = 0
     var imageHeight: CGFloat = 0
     
+    var numberReceiptSelected:String?
+    var dateReceiptSelected:Date?
+    
+    var receiptData = [Int:String]()
+    
+    var numberFormatter = NumberFormatter()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        numberFormatter.numberStyle = .decimal
+//        numberFormatter.locale = Locale.current
+        
+        numberFormatter.usesGroupingSeparator = true
+        numberFormatter.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatter.groupingSize = 3
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
         
         activityIndicator.translatesAutoresizingMaskIntoConstraints  = false
         
         outlineView.layer.borderWidth = 1
         outlineView.layer.cornerRadius = 10
+        
+        if receiptImageView != nil {
+            let tabGesture = UILongPressGestureRecognizer(target: self, action: #selector(getNewImage))
+            tabGesture.minimumPressDuration = 1.0
+            
+            receiptImageView.addGestureRecognizer(tabGesture)
+        }
         
         initUI()
     }
@@ -64,30 +90,30 @@ class cellShowReceiptTVC: UITableViewCell {
         }
         
         if receiptImageView.image != nil {
-            requestTextFromImage(image: receiptImageView.image!)
+            requestTextFromImage(image: receiptImageView.image!, directlyFromCamera: false)
         }
     }
 
-    public func requestTextFromImage(image: UIImage) {
+    public func requestTextFromImage(image: UIImage, directlyFromCamera:Bool) {
         if image.size.height < image.size.width {
             if imageAspectRatio != nil {
                 imageAspectRatio.isActive = false
             }
-            receiptImageView.heightAnchor.constraint(equalTo: receiptImageView.widthAnchor, multiplier: 3.0/4.0).isActive = true
+            receiptImageView.heightAnchor.constraint(equalTo: receiptImageView.widthAnchor, multiplier: image.size.height/image.size.width).isActive = true
             self.layoutIfNeeded()
         } else {
             if imageAspectRatio != nil {
                 imageAspectRatio.isActive = false
             }
-            receiptImageView.heightAnchor.constraint(equalTo: receiptImageView.widthAnchor, multiplier: 4.0/3.0).isActive = true
+            receiptImageView.heightAnchor.constraint(equalTo: receiptImageView.widthAnchor, multiplier: image.size.height/image.size.width).isActive = true
             self.layoutIfNeeded()
         }
         // Display image on screen.
-        show(image: image)
+        show(image: image, directlyFromCamera: directlyFromCamera)
         
         // Convert from UIImageOrientation to CGImagePropertyOrientation.
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
-        
+
         // Fire off request based on URL of chosen photo.
         guard let cgImage = image.cgImage else {
             return
@@ -95,44 +121,57 @@ class cellShowReceiptTVC: UITableViewCell {
         performVisionRequest(image: cgImage, orientation: cgOrientation)
     }
     
+    @objc func getNewImage() {
+        self.delegate?.getNewImage()
+    }
+    
     // MARK: -TEXT RECONGNITION
-    func show(image: UIImage) {
-        
+    fileprivate func show(image: UIImage, directlyFromCamera:Bool) {
+
         // Remove previous paths & image
         pathLayer?.removeFromSuperlayer()
         pathLayer = nil
         receiptImageView.image = nil
-        
+        receiptImageView.subviews.forEach { $0.removeFromSuperview() }
+
         // Account for image orientation by transforming view.
         let correctedImage = scaleAndOrient(image: image)
-        
+
         // Place photo inside imageView.
         receiptImageView.image = correctedImage
+
+        if directlyFromCamera {
+            self.delegate?.replaceImage(newImage: correctedImage)
+        }
         
         let drawingLayer = CALayer()
         drawingLayer.anchorPoint = CGPoint.zero
         drawingLayer.opacity = 0.5
         drawingLayer.bounds = receiptImageView.frame
         pathLayer = drawingLayer
-        receiptImageView.layer.addSublayer(pathLayer!)
-    }
-    
-    lazy var textDetectionRequest: VNDetectTextRectanglesRequest = {
-        let textDetectRequest = VNDetectTextRectanglesRequest(completionHandler: self.handleDetectedText)
-        // Tell Vision to report bounding box around each character.
-        textDetectRequest.reportCharacterBoxes = true
-        return textDetectRequest
-    }()
-    
-    fileprivate func performVisionRequest(image: CGImage, orientation: CGImagePropertyOrientation) {
         
+//        pathLayerView?.layer.addSublayer(pathLayer!)
+        
+        receiptImageView.layer.addSublayer(pathLayer!)
+//        receiptImageView.addSubview(pathLayerView!)
+    }
+
+    lazy var textDetectionRequest: VNRecognizeTextRequest = {
+        let textRequest = VNRecognizeTextRequest(completionHandler: self.handleDetectedText)
+        let localLanguage = (Locale.current.languageCode ?? "en") + "_" + (Locale.current.regionCode ?? "GB")
+        textRequest.recognitionLanguages = ["en_GB", "de_DE", localLanguage]
+        return textRequest
+    }()
+
+    fileprivate func performVisionRequest(image: CGImage, orientation: CGImagePropertyOrientation) {
+
         // Fetch desired requests based on switch status.
         let requests = createVisionRequests()
         // Create a request handler.
         let imageRequestHandler = VNImageRequestHandler(cgImage: image, orientation: orientation, options: [:])
-        
+
         // Send the requests to the request handler.
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInteractive).async {
             do {
                 try imageRequestHandler.perform(requests)
             } catch let error as NSError {
@@ -141,19 +180,18 @@ class cellShowReceiptTVC: UITableViewCell {
             }
         }
     }
-    
+
     fileprivate func createVisionRequests() -> [VNRequest] {
-        
         // Create an array to collect all desired requests.
         var requests: [VNRequest] = []
-        
+
 //        requests.append(self.rectangleDetectionRequest)
         requests.append(textDetectionRequest)
-        
+
         // Return grouped requests as a single array.
         return requests
     }
-    
+
     fileprivate func handleDetectedText(request: VNRequest?, error: Error?) {
         if let nsError = error as NSError? {
             print("Text Detection Error: \(nsError)")
@@ -162,88 +200,176 @@ class cellShowReceiptTVC: UITableViewCell {
         // Perform drawing on the main thread.
         DispatchQueue.main.async {
             guard let drawLayer = self.pathLayer,
-                let results = request?.results as? [VNTextObservation] else {
+                let results = request?.results as? [VNRecognizedTextObservation] else {
                     return
             }
             self.draw(text: results, onImageWithBounds: self.receiptImageView.bounds)
             drawLayer.setNeedsDisplay()
+            
+            let amountFormatter = NumberFormatter()
+            amountFormatter.locale = .current
+            let thSep:String = Locale.current.groupingSeparator ?? ","
+            
+            for result in results.reversed() {
+                if result.topCandidates(1).count > 0 {
+                    let textValue = result.topCandidates(1)[0].string
+                    let textNoCurrencySymbol = textValue.replacingOccurrences(of: Locale.current.currencySymbol ?? "€", with: "")
+                    for partText in textNoCurrencySymbol.split(separator: " ") {
+                        if String(partText).isDateNoTime() && self.dateReceiptSelected == nil {
+                            self.dateReceiptSelected = String(partText).stringToDate()
+                            if self.numberReceiptSelected != nil {
+                                break
+                            }
+                        } else {
+                            let number = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: (partText).replacingOccurrences(of: thSep, with: "")) as? Double) ?? -0.00)))
+                            let compareNumber = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: ("-0.00")) as? Double) ?? -0.00)))
+                            if number != compareNumber && self.numberReceiptSelected == nil {
+                                self.numberReceiptSelected = number
+                                if self.dateReceiptSelected != nil {
+                                    break
+                                }
+                            }
+                        }
+                    }
+                    if self.numberReceiptSelected != nil && self.dateReceiptSelected != nil {
+                        break
+                    }
+                }
+            }
+            if self.numberReceiptSelected != nil {
+                self.delegate?.receiptAmountPressed(toSetAmount: self.numberReceiptSelected ?? "0")
+                self.numberReceiptSelected = nil
+            }
+            if self.dateReceiptSelected != nil {
+                self.delegate?.receiptDatePressed(toSetDate: self.dateReceiptSelected ?? Date())
+                self.dateReceiptSelected = nil
+            }
         }
     }
-    
+
     // Lines of text are RED.  Individual characters are PURPLE.
-    fileprivate func draw(text: [VNTextObservation], onImageWithBounds bounds: CGRect) {
+    fileprivate func draw(text: [VNRecognizedTextObservation], onImageWithBounds bounds: CGRect) {
         CATransaction.begin()
+        var i = 0
         for wordObservation in text {
             let wordBox = boundingBox(forRegionOfInterest: wordObservation.boundingBox, withinImageBounds: bounds)
             let wordLayer = shapeLayer(color: .red, frame: wordBox)
+
+            wordLayer.name = String(i)
+            receiptData[i] = wordObservation.topCandidates(1)[0].string
+            i = i + 1
             
             // Add to pathLayer on top of image.
             pathLayer?.addSublayer(wordLayer)
+            
         }
         CATransaction.commit()
     }
     
-    fileprivate func boundingBox(forRegionOfInterest: CGRect, withinImageBounds bounds: CGRect) -> CGRect {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let point = touch.location(in: self)
+            let numberLayers = pathLayer?.sublayers?.count ?? 0
+            for i in 0...(numberLayers-1) {
+                if (pathLayer?.sublayers![i].frame.contains(point)) == true || pathLayer?.sublayers![i].bounds.contains(point) == true {
+                    if (receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "").count > 0 {
+                        setTouchedValue(touchedValue: receiptData[Int(pathLayer?.sublayers![i].name ?? "0") ?? 0] ?? "")
+                    }
+                    break
+                }
+            }
+        }
+    }
+    
+    fileprivate func setTouchedValue(touchedValue: String) {
+        var valueSent = false
         
+        let amountFormatter = NumberFormatter()
+        amountFormatter.locale = .current
+        let thSep:String = Locale.current.groupingSeparator ?? ","
+        
+        let textNoCurrencySymbol = touchedValue.replacingOccurrences(of: Locale.current.currencySymbol ?? "€", with: "")
+        for partText in textNoCurrencySymbol.split(separator: " ") {
+            if String(partText).isDateNoTime() {
+                self.delegate?.receiptDatePressed(toSetDate: String(partText).stringToDate())
+                valueSent = true
+                break
+            } else {
+                let number = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: (partText).replacingOccurrences(of: thSep, with: "")) as? Double) ?? -0.00)))
+                let compareNumber = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: ("-0.00")) as? Double) ?? -0.00)))
+                if number != compareNumber && valueSent == false {
+                    self.delegate?.receiptAmountPressed(toSetAmount: number ?? "")
+                    valueSent = true
+                    break
+                }
+            }
+        }
+        
+        if valueSent == false {
+            self.delegate?.receiptStringPressed(toSetDescription: touchedValue)
+        }
+    }
+
+    fileprivate func boundingBox(forRegionOfInterest: CGRect, withinImageBounds bounds: CGRect) -> CGRect {
         let imageWidth = bounds.width
         let imageHeight = bounds.height
-        
+
         // Begin with input rect.
         var rect = forRegionOfInterest
-        
+
         // Reposition origin.
         rect.origin.x *= imageWidth
         rect.origin.x += bounds.origin.x + 10 // + 10 because of inset inside cell
         rect.origin.y = (1 - rect.origin.y) * imageHeight + bounds.origin.y + 10 // + 10 because of inset inside cell
-        
+
         // Rescale normalized coordinates.
         rect.size.width *= imageWidth
         rect.size.height *= imageHeight
-        
+
         return rect
     }
-    
+
     fileprivate func shapeLayer(color: UIColor, frame: CGRect) -> CAShapeLayer {
         // Create a new layer.
         let layer = CAShapeLayer()
-        
+
         // Configure layer's appearance.
         layer.fillColor = nil // No fill to show boxed object
         layer.shadowOpacity = 0
         layer.shadowRadius = 0
         layer.borderWidth = 2
-        
+
         // Vary the line color according to input.
         layer.borderColor = color.cgColor
-        
+
         // Locate the layer.
         layer.anchorPoint = .zero
         layer.frame = frame
         layer.masksToBounds = true
-        
+
         // Transform the layer to have same coordinate system as the imageView underneath it.
         layer.transform = CATransform3DMakeScale(1, -1, 1)
-        
+
         return layer
     }
-    
-    func scaleAndOrient(image: UIImage) -> UIImage {
-        
+
+    fileprivate func scaleAndOrient(image: UIImage) -> UIImage {
+
         // Set a default value for limiting image size.
-        let maxResolution: CGFloat = 640
-        
+        let maxResolution: CGFloat = 1024
+
         guard let cgImage = image.cgImage else {
             print("UIImage has no CGImage backing it!")
             return image
         }
-        
+
         // Compute parameters for transform.
         let width = CGFloat(cgImage.width)
         let height = CGFloat(cgImage.height)
         var transform = CGAffineTransform.identity
-        
+
         var bounds = CGRect(x: receiptImageView.frame.minX, y: receiptImageView.frame.minY, width: width, height: height)
-        
+
         if width > maxResolution || height > maxResolution {
             let ratio = width / height
             if width > height {
@@ -254,7 +380,7 @@ class cellShowReceiptTVC: UITableViewCell {
                 bounds.size.height = maxResolution
             }
         }
-        
+                
         let scaleRatio = bounds.size.width / width
         let orientation = image.imageOrientation
         switch orientation {
@@ -292,7 +418,7 @@ class cellShowReceiptTVC: UITableViewCell {
         
         return UIGraphicsImageRenderer(size: bounds.size).image { rendererContext in
             let context = rendererContext.cgContext
-            
+
             if orientation == .right || orientation == .left {
                 context.scaleBy(x: -scaleRatio, y: scaleRatio)
                 context.translateBy(x: -height, y: 0)
@@ -304,6 +430,14 @@ class cellShowReceiptTVC: UITableViewCell {
             context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
         }
     }
+}
+
+protocol cellShowReceiptDelegate: AnyObject {
+    func receiptDatePressed(toSetDate: Date)
+    func receiptStringPressed(toSetDescription: String)
+    func receiptAmountPressed(toSetAmount: String)
+    func getNewImage()
+    func replaceImage(newImage: UIImage)
 }
 
 // Convert UIImageOrientation to CGImageOrientation for use in Vision analysis.
