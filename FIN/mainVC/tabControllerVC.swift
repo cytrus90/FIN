@@ -16,7 +16,6 @@ class tabController: UITabBarController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("fjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjf")
         print("Memory Warning received")
     }
     

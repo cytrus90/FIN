@@ -133,13 +133,13 @@ class cellShowReceiptTVC: UITableViewCell {
             UIView.animate(withDuration: 0.1, animations: {
                 self.changeReceiptButton.transform = CGAffineTransform.identity
             }, completion: {_ in
-                self.delegate?.getNewImage()
+                self.delegate?.receiptLongPressed()
             })
         })
     }
     
     @objc func getNewImage() {
-        self.delegate?.getNewImage()
+        self.delegate?.receiptLongPressed()
     }
     
     // MARK: -TEXT RECONGNITION
@@ -476,7 +476,7 @@ protocol cellShowReceiptDelegate: AnyObject {
     func receiptDatePressed(toSetDate: Date)
     func receiptStringPressed(toSetDescription: String)
     func receiptAmountPressed(toSetAmount: String)
-    func getNewImage()
+    func receiptLongPressed()
     func replaceImage(newImage: UIImage)
 }
 

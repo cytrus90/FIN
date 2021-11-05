@@ -892,9 +892,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
 
         //store it in the document directory
         fileManager.createFile(atPath: imagePath as String, contents: data, attributes: nil)
+        if updateCreateDate != nil {
+            DispatchQueue.main.asyncAfter(deadline: (.now() + 0.1), execute: {
+                let nc = NotificationCenter.default
+                nc.post(name: Notification.Name("receiptImageAdded"), object: nil, userInfo: ["transactionCreateDate": (self.transactionData[5] as? Date ?? Date()), "oldCreateDate":(self.updateCreateDate ?? Date())])
+            })
+        }
     }
     
-    func deleteReceiptImage(transactionUUID: UUID) {
+    func deleteReceiptImage(transactionUUID: UUID, updateRows:Bool = false) {
         let imageName = transactionUUID.uuidString + ".png"
         
         let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
@@ -902,6 +908,11 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         if fileManager.fileExists(atPath: imagePath) {
             do {
                 try fileManager.removeItem(atPath: imagePath)
+                self.receiptImage = nil
+                self.receiptTransaction = false
+                if updateRows {
+                    self.setReceiptImage()
+                }
             } catch {
                 print("Image not deleted")
             }
@@ -909,6 +920,12 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     }
     
     func setReceiptImage() {
+        if updateCreateDate != nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                let nc = NotificationCenter.default
+                nc.post(name: Notification.Name("transactionUpdated"), object: nil, userInfo: ["transactionCreateDate": (self.transactionData[5] as? Date ?? Date()), "oldCreateDate":(self.updateCreateDate ?? Date())])
+            })
+        }
         addTable.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .automatic)
         addTable.layoutIfNeeded()
     }
@@ -1058,6 +1075,46 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
     
     @objc func collectionViedDidScroll() {
         self.view.endEditing(true)
+    }
+    
+    func askWhatToDoWithImageAlert() {
+        let promptTitle = NSLocalizedString("whatToDoWithImageTitle", comment: "What to do Title")
+        let promptText = NSLocalizedString("whatToDoWithImageText", comment: "What to do Text")
+        
+        let prompt = UIAlertController(title: promptTitle, message: promptText, preferredStyle: .actionSheet)
+        
+        prompt.addAction(UIAlertAction(title: NSLocalizedString("deleteButton", comment: "Delete Receipt"), style: .destructive, handler: { action in
+            self.getDeleteImageAlert()
+        }))
+        
+        prompt.addAction(UIAlertAction(title: NSLocalizedString("changeReceipt", comment: "Change Receipt"), style: .default, handler: { action in
+            self.getNewImageAlert()
+        }))
+        
+        prompt.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .cancel, handler: nil))
+        
+        prompt.popoverPresentationController?.sourceView = self.view
+        prompt.popoverPresentationController?.sourceRect = self.view.bounds
+        
+        self.present(prompt, animated: true)
+    }
+    
+    func getDeleteImageAlert() {
+        let deletePromptTitle = NSLocalizedString("deleteReceiptTitle", comment: "Delete Receipt Title")
+        let deletePromptText = NSLocalizedString("deleteReceiptText", comment: "Delete Receipt Text")
+        
+        let deletePrompt = UIAlertController(title: deletePromptTitle, message: deletePromptText, preferredStyle: .actionSheet)
+        
+        deletePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .destructive, handler: { action in
+            self.deleteReceiptImage(transactionUUID: (self.transactionData[10] as? UUID ?? UUID()), updateRows: true)
+        }))
+        
+        deletePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .cancel, handler: nil))
+        
+        deletePrompt.popoverPresentationController?.sourceView = self.view
+        deletePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+        
+        self.present(deletePrompt, animated: true)
     }
     
     func getNewImageAlert() {
@@ -2079,8 +2136,8 @@ extension addTVC: cellShowReceiptDelegate {
         }
     }
     
-    func getNewImage() {
-        getNewImageAlert()
+    func receiptLongPressed() {
+        askWhatToDoWithImageAlert()
     }
     
     func replaceImage(newImage: UIImage) {

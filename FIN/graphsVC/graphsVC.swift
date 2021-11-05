@@ -190,7 +190,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         setCollectionCellData(completion: {(success) -> Void in
             carouselView.reloadData()
             if secondGraph {
-                print("00000000")
                 secondCarouselView.reloadData()
             }
         })
@@ -199,19 +198,16 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         //secondCarouselView.backgroundColor = .red
         
         showChart()
-        print("55555_666666")
         self.title = ""
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        print("666666_666666")
         if UIDevice().model.contains("iPhone") && (view.frame.height < view.frame.width) {
             hideCarouselView()
         } else if UIDevice().model.contains("iPhone") && (view.frame.height > view.frame.width) {
             showCarouselView()
         }
-        print("6666666")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -220,13 +216,11 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
         viewAppeared = true
         viewDisappear = false
         showChart(viewAppeared: true)
-        print("777777777")
         // secondCarouselView.layoutSubviews()
         if reloadGraphView && !initialLoad {
             reloadGraphView = false
             refresh()
         }
-        print("888888888")
         initialLoad = false
     }
     
@@ -491,12 +485,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     // MARK: -FUNCTIONS
     // MARK: CHART FUNCTIONS
     func showChart(viewAppeared:Bool = false, refresh: Bool = false) {
-//        if secondGraph && (viewAppeared || refresh) {
-//            print("111111111")
-//            initSecondCarouselView()
-//        }
-        print("11111111")
-        print(graphIDActive)
         if graphIDActive == 0 && (viewAppeared || refresh) { // Line Chart
             activityIndicator.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
@@ -543,18 +531,13 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             }
         } else if graphIDActive == 2 && (viewAppeared || refresh) { // Bar Chart
             viewBarChart(createNew: true)
-            print("22222222")
             if secondGraph {
                 initSecondOutlineView()
-                print("333333333")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    print("4444444")
                     self.viewSecondBarChart(createNew: true)
-                    print("55555555")
                 }
             }
         }
-        print("55555555888888")
     }
     
     func viewPieChart(createNew:Bool = false) {
@@ -2266,8 +2249,6 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             carouselScrollingTodayId = 0
             break
         }
-        print("aaaaaaaa")
-        print(carouselScrollingTodayId)
         if carouselScrollingTodayId == -1 {
             if collectionCellData.count != 0 {
                 carouselScrollingTodayId = max((collectionCellData.count-1),0)
@@ -2289,12 +2270,9 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             }
             
             if secondGraph {
-                print("eeeeeeeee")
                 if (secondCarouselView.cellForItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0)) as? graphCarouselCell) != nil {
-                    print("ffffffff")
                     secondCarouselView.scrollToItem(at: IndexPath(row: (scrollToIdRAM ?? 0), section: 0), at: .centeredHorizontally, animated: true)
                 } else if secondCarouselView.numberOfItems(inSection: 0) > 0 {
-                    print("gggggggg")
                     secondCarouselView.scrollToItem(at: IndexPath(row: (secondCarouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
                 }
             }
@@ -2307,19 +2285,15 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
                 carouselView.scrollToItem(at: IndexPath(row: (carouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
             }
             if secondGraph {
-                print("hhhhhhhhh")
                 if (secondCarouselView.cellForItem(at: IndexPath(row: carouselScrollingTodayId, section: 0)) as? graphCarouselCell) != nil {
-                    print("iiiiiiiii")
                     secondCarouselView.scrollToItem(at: IndexPath(row: carouselScrollingTodayId, section: 0), at: .centeredHorizontally, animated: true)
                 } else if secondCarouselView.numberOfItems(inSection: 0) > 0 {
-                    print("jjjjjjjj")
                     secondCarouselView.scrollToItem(at: IndexPath(row: (secondCarouselView.numberOfItems(inSection: 0) - 1), section: 0), at: .centeredHorizontally, animated: true)
                 }
             }
             carouselScrollingId = carouselScrollingTodayId
             secondCarouselScrollingId = carouselScrollingTodayId
         }
-        print("kkkkkkkkk")
         completion(true)
     }
     
@@ -2875,96 +2849,3 @@ extension graphsVC: IAxisValueFormatter {
         }
     }
 }
-
-//extension graphsVC {
-//    // MARK: -DATA
-//
-//    // MARK: SAVE GRAPHS
-//    func saveNewGraphs() {
-//        deleteDataBulk(entity: "GraphSettingsLocal")
-//        for i in 0...1 {
-//            let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
-//
-//            managedContext.automaticallyMergesChangesFromParent = true
-//            managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-//            let graphSave = GraphSettingsLocal(context: managedContext)
-//
-//            graphSave.graphID = Int16(i)
-//            if i == 0 {
-//                graphSave.graphName = NSLocalizedString("lineChartTitle", comment: "Line Cahrt")
-//                graphSave.graphActive = false
-//            } else if i == 1 {
-//                graphSave.graphName = NSLocalizedString("barChartTitle", comment: "Bar Cahrt")
-//                graphSave.graphActive = true
-//            }
-//            graphSave.graphOption1 = Int16(0)
-//            graphSave.graphOption2 = Int16(0)
-//
-//            do {
-//                try managedContext.save()
-//            } catch let error as NSError {
-//                print("Could not save. \(error), \(error.userInfo)")
-//            }
-//        }
-//    }
-//
-//    // MARK: -LOAD
-//    func loadBulkSorted(entitie:String, sort:[NSSortDescriptor]) -> [NSManagedObject] {
-//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
-//        managedContext.automaticallyMergesChangesFromParent = true
-//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-//        fetchRequest.returnsObjectsAsFaults = false
-//        fetchRequest.sortDescriptors = sort
-//        do {
-//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-//            if loadData.count > 0 {
-//                return loadData
-//            }
-//        } catch {
-//            print("Could not fetch. \(error)")
-//        }
-//        return [NSManagedObject]()
-//    }
-//
-//    func loadQueriedAttribute(entitie:String, attibute:String, query:NSPredicate) -> Any {
-//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
-//        managedContext.automaticallyMergesChangesFromParent = true
-//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
-//        fetchRequest.returnsObjectsAsFaults = false
-//        fetchRequest.predicate = query
-//        do {
-//            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
-//            for data in loadData {
-//                if data.value(forKey: attibute) != nil {
-//                    return data.value(forKey: attibute) ?? false
-//                }
-//            }
-//        } catch {
-//            print("Could not fetch. \(error)")
-//        }
-//        return false
-//    }
-//
-//    // MARK: DELETE
-//    func deleteDataBulk(entity: String) {
-//        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentLocalContainer.viewContext
-//        managedContext.automaticallyMergesChangesFromParent = true
-//        managedContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-//        do {
-//            let delete = try managedContext.fetch(fetchRequest)
-//            for data in delete {
-//                managedContext.delete(data as! NSManagedObject)
-//            }
-//            do {
-//                try managedContext.save()
-//            } catch let error as NSError {
-//                print("Could not save. \(error), \(error.userInfo)")
-//            }
-//        } catch {
-//            print(error)
-//        }
-//    }
-//}

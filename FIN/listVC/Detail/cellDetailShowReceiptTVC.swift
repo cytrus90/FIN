@@ -32,7 +32,7 @@ class cellDetailShowReceiptTVC: UITableViewCell {
         
         if receiptImageView != nil {
             let tabGesture = UILongPressGestureRecognizer(target: self, action: #selector(saveReceipt))
-            tabGesture.minimumPressDuration = 1.0
+            tabGesture.minimumPressDuration = 0.4
             
             receiptImageView.addGestureRecognizer(tabGesture)
         }

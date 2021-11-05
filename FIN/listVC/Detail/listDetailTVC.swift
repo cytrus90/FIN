@@ -56,6 +56,8 @@ class listDetailTVC: UITableViewController {
 //        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deletePressed))
         
         NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(notification:)), name: Notification.Name("transactionUpdated"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(notification:)), name: Notification.Name("receiptImageAdded"), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(transactionDeleted), name: Notification.Name("transactionDeleted"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(settleSplitDisappeared), name: Notification.Name("settleSplitDisappeared"), object: nil)
         
@@ -740,6 +742,8 @@ class listDetailTVC: UITableViewController {
                 DispatchQueue.main.async {
                     self.receiptImage = self.getReceiptImage(transactionUUID: uuid ?? UUID())
                 }
+            } else {
+                self.receiptTransaction = false
             }
         }
         completion(true)
@@ -934,19 +938,19 @@ class listDetailTVC: UITableViewController {
             dateOfSelectedRow = newCreateDate
             createData(completion: {(success) -> Void in
                 setNavButtons()
-            })
-            tableviewListDetail.reloadData()
-            if let cell = tableviewListDetail.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellAmountDetailTVC {
-                cell.initTags()
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                if let cellDate = self.tableviewListDetail.cellForRow(at: IndexPath(row: 2, section: 0)) as? dateDetailCellTVC {
-                    cellDate.dateButton.setTitle(self.getDayForDate(dayDate: (self.rowData[2] as? Date ?? Date())), for: .normal)
+                tableviewListDetail.reloadData()
+                if let cell = tableviewListDetail.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellAmountDetailTVC {
+                    cell.initTags()
                 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                    if let cellDate = self.tableviewListDetail.cellForRow(at: IndexPath(row: 2, section: 0)) as? dateDetailCellTVC {
+                        cellDate.dateButton.setTitle(self.getDayForDate(dayDate: (self.rowData[2] as? Date ?? Date())), for: .normal)
+                    }
+                })
+                tableviewListDetail.beginUpdates()
+                tableviewListDetail.needsUpdateConstraints()
+                tableviewListDetail.endUpdates()
             })
-            tableviewListDetail.beginUpdates()
-            tableviewListDetail.needsUpdateConstraints()
-            tableviewListDetail.endUpdates()
         }
     }
     

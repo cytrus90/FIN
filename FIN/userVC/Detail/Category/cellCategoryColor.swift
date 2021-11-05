@@ -56,7 +56,6 @@ class cellCategoryColor: UITableViewCell, ColorPickerViewDelegate, ColorPickerVi
     
     func colorPickerView(_ colorPickerView: ColorPickerView, didSelectItemAt indexPath: IndexPath) {
         self.delegate?.colorChanged(newColor: Int16(indexPath.row))
-        print(indexPath.row)
     }
     
     func colorPickerView(_ colorPickerView: ColorPickerView, didDeselectItemAt indexPath: IndexPath) {

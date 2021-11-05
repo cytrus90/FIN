@@ -186,6 +186,13 @@
 
 "holdToEditReceipt" = "zum Bearbeiten berühren & halten";
 
+"whatToDoWithImageTitle" = "Rechnung";
+"whatToDoWithImageText" = "Rechnung bearbeiten";
+"changeReceipt" = "Ändern";
+
+"deleteReceiptTitle" = "Rechnung löschen";
+"deleteReceiptText" = "Wollen Sie die Rechnung wirklich löschen? Dies kann nicht rückgängig gemacht werden!";
+
 // Currency
 "Set" = "Übernehmen";
 

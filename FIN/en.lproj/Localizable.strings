@@ -186,6 +186,13 @@
 
 "holdToEditReceipt" = "touch & hold to edit";
 
+"whatToDoWithImageTitle" = "Receipt";
+"whatToDoWithImageText" = "Edit receipt";
+"changeReceipt" = "Change";
+
+"deleteReceiptTitle" = "Remove Receipt";
+"deleteReceiptText" = "Do you want to remove the receipt from the transaction? This cannot be undone!";
+
 // Currency
 "Set"="Set";
 
