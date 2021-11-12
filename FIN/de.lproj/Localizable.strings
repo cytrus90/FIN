@@ -7,6 +7,7 @@
 */
 // #### Shortcut Items
 "addNewTransactionTitle" = "Transaktion";
+"scanBillShortcutTitle" = "Beleg scannen";
 
 // #### Intro ####
 "skipButtonLabel" = "Überspringen";

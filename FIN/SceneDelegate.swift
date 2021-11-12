@@ -32,6 +32,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let shortcutItem = connectionOptions.shortcutItem {
             if shortcutItem.type == "info.alpako.fin.new" {
                 openNewTransaction = true
+            } else if shortcutItem.type == "info.alpako.fin.scanBill" {
+                scanNewBill = true
             }
         }
     }
@@ -51,12 +53,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).
-        let icon = UIApplicationShortcutIcon(type: .add)
-        let item = UIApplicationShortcutItem(type: "info.alpako.fin.new", localizedTitle: NSLocalizedString("addNewTransactionTitle", comment: "Add new Title"), localizedSubtitle: "", icon: icon, userInfo: nil)
+        let iconAdd = UIApplicationShortcutIcon(type: .add)
+        let itemAdd = UIApplicationShortcutItem(type: "info.alpako.fin.new", localizedTitle: NSLocalizedString("addNewTransactionTitle", comment: "Add new Title"), localizedSubtitle: "", icon: iconAdd, userInfo: nil)
+        
+        let iconScan = UIApplicationShortcutIcon(type: .capturePhoto)
+        let itemScan = UIApplicationShortcutItem(type: "info.alpako.fin.scanBill", localizedTitle: NSLocalizedString("scanBillShortcutTitle", comment: "Add new Title"), localizedSubtitle: "", icon: iconScan, userInfo: nil)
         
         var shortcutItems = UIApplication.shared.shortcutItems ?? []
         if shortcutItems.isEmpty {
-            shortcutItems += [item]
+            shortcutItems += [itemAdd]
+            shortcutItems += [itemScan]
         } else {
             if let mutableShortcutItem = shortcutItems.first?.mutableCopy() as? UIMutableApplicationShortcutItem {
                 mutableShortcutItem.type = "info.alpako.fin.new"
@@ -83,8 +89,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         filteredTagsZero = UserDefaults.standard.bool(forKey: "filteredTagsZero")
         filteredCategoriesZero = UserDefaults.standard.bool(forKey: "filteredCategoriesZero")
-        
-        regularPayments()
+        print("-0000")
+        DispatchQueue.main.async {
+            self.regularPayments()
+        }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -100,6 +108,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         if shortcutItem.type == "info.alpako.fin.new" {
             openNewTransaction = true
+        } else if shortcutItem.type == "info.alpako.fin.scanBill" {
+            scanNewBill = true
         }
     }
     
@@ -110,7 +120,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let query = NSPredicate(format: "dateTimeNext < %@", Date() as NSDate)
         
         let dummyDate = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: 1900, month: 1, day: 1, hour: 1, minute: 1, second: 1)) ?? Date()
-        
         let regularPaymentsData = dataHandler.loadBulkQueriedSorted(entitie: "RegularPayments", query: query, sort: [NSSortDescriptor(key: "dateTimeNext", ascending: true)])
         
         if regularPaymentsData.count > 0 {
@@ -130,13 +139,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let tags = regularPayment.value(forKey: "tags") as? String ?? ""
                 let uuid = regularPayment.value(forKey: "uuid") as? UUID ?? UUID()
                 
+                let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
+                let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
+                
+                let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
+                
                 let queryTransInDB = NSPredicate(format: "uuid == %@", uuid as CVarArg)
                 if dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransInDB).count <= 0 {
                     if dataHandler.saveTransaction(amount: amount, realAmount: realAmount, category: categoryID, currencyCode: currencyCode, dateTime: dateTime, descriptionNote: descriptionNote, exchangeRate: exchangeRate, tags: tags, isSave: isSave, isLiquid: isLiquid, isSplit: isSplit, uuid: uuid) {
-                        let dateTimePlus = Calendar.current.date(byAdding: .second, value: 1, to: dateTime)!
-                        let dateTimeMinus = Calendar.current.date(byAdding: .second, value: -1, to: dateTime)!
-                        
-                        let querySplit = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
                         
                         for split in dataHandler.loadBulkQueriedSorted(entitie: "SplitsRegularPayments", query: querySplit, sort: [NSSortDescriptor(key: "dateTimeTransaction", ascending: true)]) {
                             let createDateGroup = split.value(forKey: "createDateGroup") as? Date ?? dummyDate
@@ -152,72 +162,98 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                             
                             dataHandler.saveSplit(createDateGroup: createDateGroup, createDatePerson: createDatePerson, createDatePersonWhoPaid: createDatePersonWhoPaid, dateTimeTransaction: dateTimeTransaction, nameGroup: nameGroup, namePerson: namePerson, namePersonWhoPaid: namePersonWhoPaid, paidByUser: paidByUser, ratio: ratio, settled: settled)
                         }
-                        
-                        var nextDateTime:Date?
-                        switch (regularPayment.value(forKey: "frequency") as? Int16 ?? 0) {
-                        case 0: // Weekly
-                            nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTimeOriginal)!
-                            break
-                        case 1: // Monthly
-                            nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTimeOriginal)!
-                            break
-                        case 2: // Yearly
-                            nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTimeOriginal)!
-                            break
-                        default: // Daily
-                            nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTimeOriginal)!
-                            break
-                        }
-                        
-                        nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: nextDateTime?.get(.hour), minute: nextDateTime?.get(.minute), second: nextDateTime?.get(.second)))
-                        
-                        let nextDateTimeOriginal = nextDateTime
-                        
-                        if skipWeekends {
-                            if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
-                                nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
-                            } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
-                                nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
-                            }
-                        }
-                        
-                        var doubleTransaction = true
-                        
-                        repeat {
-                            let dateTimeTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: nextDateTime ?? dummyDate)!
-                            let dateTimeTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: nextDateTime ?? dummyDate)!
-                            
-                            let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
-                            
-                            if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
-                                doubleTransaction = true
-                                nextDateTime = dateTimeTransactionPlus
-                            } else {
-                                doubleTransaction = false
-                            }
-                        } while doubleTransaction
-                        
-                        let querySaveRegularPayment = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
-                        
-                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNextOriginal", query: querySaveRegularPayment, value: nextDateTimeOriginal ?? dummyDate)
-                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
-                        dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "uuid", query: querySaveRegularPayment, value: UUID())
-                        dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
-                        
-                        let manager = LocalNotificationManager()
-                        
-                        let longDate = DateFormatter()
-                        longDate.dateFormat = "ddMMyyyyHHmmss"
-
-                        let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
-                        let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
-                        
-                        manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
-                        manager.schedule()
-                        
-                        break
                     }
                 }
+                        
+                var nextDateTime:Date?
+                switch (regularPayment.value(forKey: "frequency") as? Int16 ?? 0) {
+                case 0: // Weekly
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTimeOriginal)!
+                    break
+                case 1: // Monthly
+                    nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTimeOriginal)!
+                    break
+                case 2: // Yearly
+                    nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTimeOriginal)!
+                    break
+                default: // Daily
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTimeOriginal)!
+                    break
+                }
+                        
+                nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: nextDateTime?.get(.hour), minute: nextDateTime?.get(.minute), second: nextDateTime?.get(.second)))
+                        
+                let nextDateTimeOriginal = nextDateTime
+                        
+                if skipWeekends {
+                    if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
+                        nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
+                    } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
+                        nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
+                    }
+                }
+                        
+                var doubleTransaction = true
+                        
+                repeat {
+                    let dateTimeTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: nextDateTime ?? dummyDate)!
+                    let dateTimeTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: nextDateTime ?? dummyDate)!
+                    
+                    let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
+                            
+                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
+                        doubleTransaction = true
+                        nextDateTime = dateTimeTransactionPlus
+                    } else {
+                        doubleTransaction = false
+                    }
+                } while doubleTransaction
+                        
+                doubleTransaction = true
+                repeat {
+                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransInDB).count > 0 {
+                        dataHandler.deleteDataSingle(entity: "Transactions", query: queryTransInDB)
+                        doubleTransaction = true
+                    } else {
+                        doubleTransaction = false
+                    }
+                } while doubleTransaction
+                        
+                let newUUID = UUID()
+                        
+                let querySaveRegularPayment = NSPredicate(format: "uuid == %@", uuid as CVarArg)
+                DispatchQueue.main.async {
+                    dataHandler.saveUpdatedRegularPayment(query: querySaveRegularPayment, newUUID: newUUID, dateTimeNextOriginal: nextDateTimeOriginal ?? dummyDate, dateTimeNext: nextDateTime ?? dummyDate)
+                            
+                    dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
+                            
+                    // If image present, save a copy as new UUID name
+                    let fileManager = FileManager.default
+                        
+                    let imageNameOld = uuid.uuidString + ".png"
+                    let imagePathOld = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageNameOld)
+                    if fileManager.fileExists(atPath: imagePathOld) {
+                        let imageReceiptData = UIImage(contentsOfFile: imagePathOld)?.pngData()
+                            
+                        let imageNameNew = newUUID.uuidString + ".png"
+                        let imagePathNew = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageNameNew)
+                                
+                        fileManager.createFile(atPath: imagePathNew as String, contents: imageReceiptData, attributes: nil)
+                    }
+                }
+                        
+                let manager = LocalNotificationManager()
+                        
+                let longDate = DateFormatter()
+                longDate.dateFormat = "ddMMyyyyHHmmss"
+
+                let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
+                let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+                        
+                manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
+                manager.schedule()
+                        
+                break
             }
             regularPayments()
         }

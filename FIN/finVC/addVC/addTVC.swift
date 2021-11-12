@@ -188,6 +188,12 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         if repeatTransaction {
             checkNotificationAuthorization()
         }
+        
+        let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
+        if numbersOpened > 0 && (scanNewBill) {
+            scanNewBill = false
+            cameraButtonPressed()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -456,6 +462,11 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         cell.delegate = self
         
         if receiptImage != nil {
+            if updateCreateDate != nil {
+                cell.dateReceiptSelected = transactionData[5] as? Date ?? updateCreateDate
+                cell.numberReceiptSelected = (transactionData[0] as? String ?? "0")
+            }
+            
             cell.requestTextFromImage(image: receiptImage!, directlyFromCamera: directlyFromCamera)
             cell.receiptImageView.isHidden = false
             cell.activityIndicator.stopAnimating()
@@ -908,14 +919,15 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         if fileManager.fileExists(atPath: imagePath) {
             do {
                 try fileManager.removeItem(atPath: imagePath)
-                self.receiptImage = nil
-                self.receiptTransaction = false
-                if updateRows {
-                    self.setReceiptImage()
-                }
             } catch {
                 print("Image not deleted")
             }
+        }
+        
+        self.receiptImage = nil
+        self.receiptTransaction = false
+        if updateRows {
+            self.setReceiptImage()
         }
     }
     
@@ -1781,21 +1793,21 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         } while doubleTransaction
         
         if repeatTransaction && (transactionData[5] as? Date ?? Date()) > Date() {
-            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: true, amount: saveAmount)
+            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: true, amount: saveAmount, uuid: (transactionData[10] as? UUID ?? UUID()))
         } else {
-            beforeTransactionSave(saveAmount: saveAmount, isSave: isSave, seconds: seconds)
+            beforeTransactionSave(saveAmount: saveAmount, isSave: isSave, seconds: seconds, uuid: (transactionData[10] as? UUID ?? UUID()))
         }
     }
     
-    func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double) {
-        let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, uuid: (transactionData[10] as? UUID ?? UUID()))
+    func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double, uuid: UUID) {
+        let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, uuid: uuid)
         if saveTransactionReturn.0 {
             transactionDateTime = saveTransactionReturn.1
-            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount)
+            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount, uuid: uuid)
         }
     }
     
-    func afterTransactionSave(seconds: Double, isSave: Bool, futureRepeatTransaction: Bool, amount: Double) {
+    func afterTransactionSave(seconds: Double, isSave: Bool, futureRepeatTransaction: Bool, amount: Double, uuid: UUID) {
         var nextDateTime:Date?
         saveNewTag(newTags: transactionData[6] as? String ?? "")
         
@@ -1844,7 +1856,14 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
                 }
             } while doubleTransaction
             
-            saveRepeatedTransaction(dateTimeNext: nextDateTime ?? (transactionData[5] as? Date ?? Date()), isSave: isSave, amount: amount, repeatFrequency: repeatFrequency, dateTimeNextOriginal: nextDateTimeOriginal ?? Date())
+            saveRepeatedTransaction(dateTimeNext: nextDateTime ?? (transactionData[5] as? Date ?? Date()), isSave: isSave, amount: amount, repeatFrequency: repeatFrequency, dateTimeNextOriginal: nextDateTimeOriginal ?? Date(), uuid: uuid)
+            
+            if receiptTransaction ?? false {
+                DispatchQueue.main.async {
+                    self.saveReceiptImage(transactionUUID: uuid, image: self.receiptImage ?? UIImage(systemName: "xmark.octagon")!)
+                }
+            }
+            
             if futureRepeatTransaction {
                 transactionDateTime = nextDateTime ?? (transactionData[5] as? Date ?? Date())
             }
@@ -1929,8 +1948,8 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         }
     }
     
-    func saveRepeatedTransaction(dateTimeNext: Date, isSave: Bool, amount: Double, repeatFrequency: Int, dateTimeNextOriginal: Date) {
-        dataHandler.saveRepeatTransaction(amount: amount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTimeNext: dateTimeNext, descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, repeatFrequency: repeatFrequency, skipWeekends: skipWeekends, dateTimeNextOriginal: dateTimeNextOriginal)
+    func saveRepeatedTransaction(dateTimeNext: Date, isSave: Bool, amount: Double, repeatFrequency: Int, dateTimeNextOriginal: Date, uuid: UUID) {
+        dataHandler.saveRepeatTransaction(amount: amount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTimeNext: dateTimeNext, descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, repeatFrequency: repeatFrequency, skipWeekends: skipWeekends, dateTimeNextOriginal: dateTimeNextOriginal, uuid: uuid)
     }
     
     func initCategories() {

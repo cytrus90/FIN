@@ -89,6 +89,7 @@ class Network{
             //}
             
             do {
+                print("responseExchangeRates")
                 let ratesArray = try JSONDecoder().decode(ratesArrayFromJSON.self, from: data)
 
                 var rates = [rate]()
@@ -120,6 +121,7 @@ class Network{
                     }
                 }
                 if self.writeExchangeRates(rates: calculatedRates) {
+                    print("writeExchangeRates_done")
                     //let nc = NotificationCenter.default
                     //nc.post(name: Notification.Name("savedUpdatedExchangeRates"), object: nil)
                 }
@@ -131,17 +133,22 @@ class Network{
     }
     
     func writeExchangeRates(rates: [String: Double]) -> Bool {
+        print("writeExchangeRates")
         var data = readDataFromCSV(fileName: "currency_table", fileType: "csv")
         data = cleanRows(file: data ?? "")
         let csvRows = csv(data: data ?? "", sep: ";")
         var j:Int16 = 0
         for currency in csvRows {
             if rates[currency[0]] != nil {
-                let query = NSPredicate(format: "currencyCode == %@", currency[0] as NSString)
-                dataHandler.saveQueriedAttributeMultiple(entity: "Currency", attribute: "exchangeRate", query: query, value: rates[currency[0]] ?? 1.01)
+                DispatchQueue.main.async {
+                    let query = NSPredicate(format: "currencyCode == %@", currency[0] as NSString)
+                    dataHandler.saveQueriedAttributeMultiple(entity: "Currency", attribute: "exchangeRate", query: query, value: rates[currency[0]] ?? 1.00)
+                }
                 j += j
             } else {
-                print("Error: Currency: " + String(currency[0]) + " not found")
+                if currency[0].count > 0 {
+                    print("Error: Currency: " + String(currency[0]) + " not found")
+                }
             }
         }
         return true

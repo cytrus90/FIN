@@ -116,6 +116,11 @@ class cellShowReceiptTVC: UITableViewCell {
         // Display image on screen.
         show(image: image, directlyFromCamera: directlyFromCamera)
         
+        if directlyFromCamera {
+            numberReceiptSelected = nil
+            dateReceiptSelected = nil
+        }
+        
         // Convert from UIImageOrientation to CGImagePropertyOrientation.
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
 
@@ -180,6 +185,15 @@ class cellShowReceiptTVC: UITableViewCell {
         return textRequest
     }()
 
+    lazy var rectangleDetectionRequest: VNDetectRectanglesRequest = {
+        let rectDetectRequest = VNDetectRectanglesRequest(completionHandler: self.handleDetectedRectangles)
+        // Customize & configure the request to detect only certain rectangles.
+        rectDetectRequest.maximumObservations = 8 // Vision currently supports up to 16.
+        rectDetectRequest.minimumConfidence = 0.7 // Be confident.
+//        rectDetectRequest.minimumAspectRatio = 0.3 // height / width
+        return rectDetectRequest
+    }()
+    
     fileprivate func performVisionRequest(image: CGImage, orientation: CGImagePropertyOrientation) {
 
         // Fetch desired requests based on switch status.
@@ -202,13 +216,29 @@ class cellShowReceiptTVC: UITableViewCell {
         // Create an array to collect all desired requests.
         var requests: [VNRequest] = []
 
-//        requests.append(self.rectangleDetectionRequest)
+//        requests.append(rectangleDetectionRequest)
         requests.append(textDetectionRequest)
 
         // Return grouped requests as a single array.
         return requests
     }
 
+    fileprivate func handleDetectedRectangles(request: VNRequest?, error: Error?) {
+        if (error as NSError?) != nil {
+            print("Rectangle Detection Error")
+            return
+        }
+        // Since handlers are executing on a background thread, explicitly send draw calls to the main thread.
+        DispatchQueue.main.async {
+            guard let drawLayer = self.pathLayer,
+                let results = request?.results as? [VNRectangleObservation] else {
+                    return
+            }
+            self.draw(rectangles: results, onImageWithBounds: drawLayer.bounds)
+            drawLayer.setNeedsDisplay()
+        }
+    }
+    
     fileprivate func handleDetectedText(request: VNRequest?, error: Error?) {
         if let nsError = error as NSError? {
             print("Text Detection Error: \(nsError)")
@@ -227,36 +257,31 @@ class cellShowReceiptTVC: UITableViewCell {
             amountFormatter.locale = .current
             let thSep:String = Locale.current.groupingSeparator ?? ","
             
+            var amountValue = 0.00
+            
             for result in results.reversed() {
                 if result.topCandidates(1).count > 0 {
                     let textValue = result.topCandidates(1)[0].string
-                    let textNoCurrencySymbol = textValue.replacingOccurrences(of: Locale.current.currencySymbol ?? "€", with: "")
+                    let textNoCurrencySymbol = textValue.replacingOccurrences(of: Locale.current.currencySymbol ?? "€", with: "").replacingOccurrences(of: Locale.current.currencyCode ?? "EUR", with: "")
                     for partText in textNoCurrencySymbol.split(separator: " ") {
-                        if String(partText).isDateNoTime() && self.dateReceiptSelected == nil {
-                            self.dateReceiptSelected = String(partText).stringToDate()
-                            if self.numberReceiptSelected != nil {
-                                break
+                        if String(partText).isDateNoTime() {
+                            if self.dateReceiptSelected == nil {
+                                self.dateReceiptSelected = String(partText).stringToDate()
                             }
                         } else {
-                            let number = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: (partText).replacingOccurrences(of: thSep, with: "")) as? Double) ?? -0.00)))
-                            let compareNumber = (self.numberFormatter.string(from: NSNumber(value: (amountFormatter.number(from: ("-0.00")) as? Double) ?? -0.00)))
-                            if number != compareNumber && self.numberReceiptSelected == nil {
-                                self.numberReceiptSelected = number
-                                if self.dateReceiptSelected != nil {
-                                    break
-                                }
+                            if partText.split(separator: ".").count == 2 || partText.split(separator: ",").count == 2 {
+                                let number = Double(truncating: NSNumber(value: (amountFormatter.number(from: (partText).replacingOccurrences(of: thSep, with: "")) as? Double) ?? -0.00))
+                                amountValue = max(amountValue, number)
                             }
                         }
                     }
-                    if self.numberReceiptSelected != nil && self.dateReceiptSelected != nil {
-                        break
-                    }
                 }
             }
-            if self.numberReceiptSelected != nil {
-                self.delegate?.receiptAmountPressed(toSetAmount: self.numberReceiptSelected ?? "0")
-                self.numberReceiptSelected = nil
+            
+            if amountValue != -0.00 {
+                self.delegate?.receiptAmountPressed(toSetAmount: self.numberFormatter.string(from: NSNumber(value: amountValue)) ?? "0.00")
             }
+            
             if self.dateReceiptSelected != nil {
                 self.delegate?.receiptDatePressed(toSetDate: self.dateReceiptSelected ?? Date())
                 self.dateReceiptSelected = nil
@@ -264,6 +289,8 @@ class cellShowReceiptTVC: UITableViewCell {
         }
     }
 
+    
+    
     // Lines of text are RED.  Individual characters are PURPLE.
     fileprivate func draw(text: [VNRecognizedTextObservation], onImageWithBounds bounds: CGRect) {
         CATransaction.begin()
@@ -279,6 +306,19 @@ class cellShowReceiptTVC: UITableViewCell {
             // Add to pathLayer on top of image.
             pathLayer?.addSublayer(wordLayer)
             
+        }
+        CATransaction.commit()
+    }
+    
+    // Rectangles are BLUE.
+    fileprivate func draw(rectangles: [VNRectangleObservation], onImageWithBounds bounds: CGRect) {
+        CATransaction.begin()
+        for observation in rectangles {
+            let rectBox = boundingBox(forRegionOfInterest: observation.boundingBox, withinImageBounds: bounds)
+            let rectLayer = shapeLayer(color: .green, frame: rectBox)
+            
+            // Add to pathLayer on top of image.
+            pathLayer?.addSublayer(rectLayer)
         }
         CATransaction.commit()
     }

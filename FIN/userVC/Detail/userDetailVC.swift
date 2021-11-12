@@ -1833,7 +1833,7 @@ extension userDetailVC: UIContextMenuInteractionDelegate {
 
             let queryDelete = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
             
-            let uuidTransaction = dataHandler.loadQueriedAttribute(entitie: "Transactions", attibute: "uuid", query: queryDelete) as? UUID ?? UUID()
+            let uuidTransaction = dataHandler.loadQueriedAttribute(entitie: "RegularPayments", attibute: "uuid", query: queryDelete) as? UUID ?? UUID()
             
             DispatchQueue.main.async {
                 let fileManager = FileManager.default

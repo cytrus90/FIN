@@ -55,8 +55,8 @@ class finTVC: UITableViewController {
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = Locale.current
         
-        Task {
-            await getCurrencyData()
+        DispatchQueue.main.async {
+            self.getCurrencyData()
         }
         
         initView()
@@ -1123,11 +1123,13 @@ extension finTVC {
     }
     
     // MARK: -Load Exchange Rates
-    func getCurrencyData() async {
+    func getCurrencyData() {
+        print("getCurrencyData_#1")
         let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
         if currencyDB.count > 0 {
             for data in currencyDB {
-                if (data.value(forKey: "saved") as? Date ?? Date() < Calendar.current.date(byAdding: .hour, value: -12, to: Date()) ?? Date()) {
+                if (data.value(forKey: "saved") as? Date ?? Date() < Calendar.current.date(byAdding: .second, value: -12, to: Date()) ?? Date()) {
+                    print("getCurrencyData_#2")
                     let parameters = ["requestType":"0"]
                     remote.getExchangeRates(parameters: parameters, url: "https://fin.alpako.info/getExchangeRates.php")
                     break

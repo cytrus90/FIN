@@ -270,25 +270,61 @@ class categoryTVC: UITableViewController {
                 dataHandler.deleteData(entity: "Categories", query: query)
                 
                 let queryDeleteTransactions = NSPredicate(format: "categoryID == %i", (self.categoryData[5] as? Int16 ?? -1))
-                dataHandler.deleteData(entity: "Transactions", query: queryDeleteTransactions)
                 
-                for regularPayment in dataHandler.loadBulkDataWithQuery(entitie: "RegularPayments", query: queryDeleteTransactions) {
+                let fileManager = FileManager.default
+                
+                DispatchQueue.main.async {
+                    let uuidImages = dataHandler.loadBulkQueried(entitie: "Transactions", query: queryDeleteTransactions)
                     
-                    let createDateRegularPlus = Calendar.current.date(byAdding: .second, value: 1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
-                    let createDateRegularMinus = Calendar.current.date(byAdding: .second, value: -1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
-                    let queryDeleteSplitsRegularPayments = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateRegularPlus as NSDate, createDateRegularMinus as NSDate)
+                    for data in uuidImages {
+                        let imageName = (data.value(forKey: "uuid") as? UUID ?? UUID()).uuidString + ".png"
+                        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+                        if fileManager.fileExists(atPath: imagePath) {
+                            do {
+                                try fileManager.removeItem(atPath: imagePath)
+                            } catch {
+                                print("Image not deleted")
+                            }
+                        }
+                    }
                     
-                    dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
+                    dataHandler.deleteData(entity: "Transactions", query: queryDeleteTransactions)
+                        
+                    for regularPayment in dataHandler.loadBulkDataWithQuery(entitie: "RegularPayments", query: queryDeleteTransactions) {
+                            
+                        let createDateRegularPlus = Calendar.current.date(byAdding: .second, value: 1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
+                        let createDateRegularMinus = Calendar.current.date(byAdding: .second, value: -1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
+                        let queryDeleteSplitsRegularPayments = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateRegularPlus as NSDate, createDateRegularMinus as NSDate)
+                            
+                        dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
+                    }
+                        
+                    let uuidImagesRegular = dataHandler.loadBulkQueried(entitie: "Transactions", query: queryDeleteTransactions)
+                        
+                    for data in uuidImagesRegular {
+                        let imageName = (data.value(forKey: "uuid") as? UUID ?? UUID()).uuidString + ".png"
+                        let imagePath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageName)
+
+                        if fileManager.fileExists(atPath: imagePath) {
+                            do {
+                                try fileManager.removeItem(atPath: imagePath)
+                            } catch {
+                                print("Image not deleted")
+                            }
+                        }
+                    }
+                    dataHandler.deleteData(entity: "RegularPayments", query: queryDeleteTransactions)
+                        
+                    NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
+                    NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name("detailListDisappeared"), object: nil, userInfo: nil)
+                        
+                    self.updateCategoryOrder()
+                        
+                    self.dismiss(animated: true, completion: nil)
+                    reloadAddView = true
                 }
-                dataHandler.deleteData(entity: "RegularPayments", query: queryDeleteTransactions)
-                
-                self.updateCategoryOrder()
-                
-                NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
-                NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
-                NotificationCenter.default.post(name: Notification.Name("detailListDisappeared"), object: nil, userInfo: nil)
-                self.dismiss(animated: true, completion: nil)
-                reloadAddView = true
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .cancel, handler: nil))
             alert.popoverPresentationController?.sourceView = self.view

@@ -878,6 +878,8 @@ class listMasterTVC: UITableViewController {
             let categoryID = regularPayment.value(forKey: "categoryID") as? Int16 ?? 0
             let currencyCode = regularPayment.value(forKey: "currencyCode") as? String ?? "EUR"
             let dateTime = regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()
+            let dateTimeOriginal = regularPayment.value(forKey: "dateTimeNextOriginal") as? Date ?? Date()
+            let skipWeekends = regularPayment.value(forKey: "skipWeekends") as? Bool ?? true
             let descriptionNote = regularPayment.value(forKey: "descriptionNote") as? String ?? ""
             let exchangeRate = regularPayment.value(forKey: "exchangeRate") as? Double ?? 1.00
             let isLiquid = regularPayment.value(forKey: "isLiquid") as? Bool ?? true
@@ -911,20 +913,30 @@ class listMasterTVC: UITableViewController {
                 var nextDateTime:Date?
                 switch (regularPayment.value(forKey: "frequency") as? Int16 ?? 0) {
                 case 0: // Weekly
-                    nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTime)!
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 7, to: dateTimeOriginal)!
                     break
                 case 1: // Monthly
-                    nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTime)!
+                    nextDateTime = Calendar.current.date(byAdding: .month, value: 1, to: dateTimeOriginal)!
                     break
                 case 2: // Yearly
-                    nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTime)!
+                    nextDateTime = Calendar.current.date(byAdding: .year, value: 1, to: dateTimeOriginal)!
                     break
                 default: // Daily
-                    nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTime)!
+                    nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: dateTimeOriginal)!
                     break
                 }
                 
-                nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: 6, minute: 0, second: 0))
+                nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: nextDateTime?.get(.hour), minute: nextDateTime?.get(.minute), second: nextDateTime?.get(.second)))
+                
+                let nextDateTimeOriginal = nextDateTime
+                
+                if skipWeekends {
+                    if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 1 {
+                        nextDateTime = Calendar.current.date(byAdding: .day, value: 1, to: nextDateTime ?? dummyDate)!
+                    } else if Calendar.current.dateComponents([.weekday], from: nextDateTime ?? dummyDate).weekday == 7 {
+                        nextDateTime = Calendar.current.date(byAdding: .day, value: 2, to: nextDateTime ?? dummyDate)!
+                    }
+                }
                 
                 var doubleTransaction = true
                 
@@ -942,16 +954,34 @@ class listMasterTVC: UITableViewController {
                     }
                 } while doubleTransaction
                 
-                let querySaveRegularPayment = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTimePlus as NSDate, dateTimeMinus as NSDate)
+                let newUUID = UUID()
                 
-                dataHandler.saveQueriedAttributeMultiple(entity: "RegularPayments", attribute: "dateTimeNext", query: querySaveRegularPayment, value: nextDateTime ?? dummyDate)
-                dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
+                let querySaveRegularPayment = NSPredicate(format: "uuid == %@", uuid as CVarArg)
+                DispatchQueue.main.async {
+                    dataHandler.saveUpdatedRegularPayment(query: querySaveRegularPayment, newUUID: newUUID, dateTimeNextOriginal: nextDateTimeOriginal ?? dummyDate, dateTimeNext: nextDateTime ?? dummyDate)
+                    
+                    dataHandler.saveQueriedAttributeMultiple(entity: "SplitsRegularPayments", attribute: "dateTimeTransaction", query: querySplit, value: nextDateTime ?? dummyDate)
+                    
+                    // If image present, save a copy as new UUID name
+                    let fileManager = FileManager.default
+                    
+                    let imageNameOld = uuid.uuidString + ".png"
+                    let imagePathOld = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageNameOld)
+                    if fileManager.fileExists(atPath: imagePathOld) {
+                        let imageReceiptData = UIImage(contentsOfFile: imagePathOld)?.pngData()
+                        
+                        let imageNameNew = newUUID.uuidString + ".png"
+                        let imagePathNew = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(imageNameNew)
+                        
+                        fileManager.createFile(atPath: imagePathNew as String, contents: imageReceiptData, attributes: nil)
+                    }
+                }
                 
                 let manager = LocalNotificationManager()
                 
                 let longDate = DateFormatter()
                 longDate.dateFormat = "ddMMyyyyHHmmss"
-                
+
                 let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
                 let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
                 

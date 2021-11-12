@@ -156,8 +156,8 @@ class dataClass {
         }
         return [NSManagedObject]()
     }
-    
-    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] {
+    // MARK: -ERROR
+    func loadBulkQueriedSorted(entitie:String, query:NSPredicate, sort:[NSSortDescriptor]) -> [NSManagedObject] { // ERROR #2 HERE
         var managedContext:NSManagedObjectContext {
             persistentContainer.viewContext
         }
@@ -166,7 +166,7 @@ class dataClass {
         fetchRequest.sortDescriptors = sort
         fetchRequest.predicate = query
         do {
-            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            let loadData = try managedContext.fetch(fetchRequest) as! [NSManagedObject] // EXC_BAD_ACCESS
             if loadData.count > 0 {
                 return loadData
             }
@@ -764,6 +764,29 @@ class dataClass {
         }
     }
     
+    func saveUpdatedRegularPayment(query:NSPredicate, newUUID:UUID, dateTimeNextOriginal:Date, dateTimeNext:Date) {
+        var managedContext:NSManagedObjectContext {
+            persistentContainer.viewContext
+        }
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "RegularPayments")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let fetchedData = try managedContext.fetch(fetchRequest) as! [NSManagedObject]
+            if fetchedData.count > 1 || fetchedData.count <= 0 {
+                return
+            } else {
+                fetchedData[0].setValue(newUUID, forKey: "uuid")
+                fetchedData[0].setValue(dateTimeNextOriginal, forKey: "dateTimeNextOriginal")
+                fetchedData[0].setValue(dateTimeNext, forKey: "dateTimeNext")
+                try managedContext.save()
+            }
+        } catch {
+            fatalError("Failed to fetch or save regular payments: \(error)")
+        }
+    }
+    
     // MARK: SAVE CURRENCY
     func saveCurrency(currencyCode: String, exchangeRate: Double?, automated: Bool, id: Int16) {
         var managedContext:NSManagedObjectContext {
@@ -1276,7 +1299,7 @@ class dataClass {
         }
     }
     
-    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate ,value: Any) { // HERE ERROR
+    func saveQueriedAttributeMultiple(entity: String, attribute: String, query: NSPredicate, value: Any) { // HERE ERROR
         var managedContext:NSManagedObjectContext {
             persistentContainer.viewContext
         }
@@ -1620,7 +1643,7 @@ class dataClass {
         }
     }
     
-    func saveRepeatTransaction(amount: Double, category: Int16, currencyCode: String?, dateTimeNext: Date, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, repeatFrequency: Int, skipWeekends: Bool, dateTimeNextOriginal: Date) {
+    func saveRepeatTransaction(amount: Double, category: Int16, currencyCode: String?, dateTimeNext: Date, descriptionNote: String?, exchangeRate: Double = 1.0, tags: String?, isSave: Bool = false, isLiquid:Bool, repeatFrequency: Int, skipWeekends: Bool, dateTimeNextOriginal: Date, uuid: UUID) {
         let currencyCodeSave: String?
         if currencyCode == nil {
             currencyCodeSave = Locale.current.currencyCode ?? "EUR"
@@ -1650,6 +1673,7 @@ class dataClass {
         transactionRepeatSave.isLiquid = isLiquid
         transactionRepeatSave.frequency = Int16(repeatFrequency)
         transactionRepeatSave.skipWeekends = skipWeekends
+        transactionRepeatSave.uuid = uuid
                 
         do {
             try managedContext.save()

@@ -204,7 +204,7 @@ class tabController: UITabBarController {
             self.performSegue(withIdentifier: "unwindToLogin", sender: nil)
         }
         let numbersOpened = UserDefaults.standard.integer(forKey: "numbersOpened")
-        if numbersOpened > 0 && openNewTransaction {
+        if numbersOpened > 0 && (openNewTransaction || scanNewBill) {
             openNewTransaction = false
             let finStoryBoard: UIStoryboard = UIStoryboard(name: "finTSB", bundle: nil)
             let addVC = finStoryBoard.instantiateViewController(withIdentifier: "addTVC") as! addTVC
@@ -216,8 +216,7 @@ class tabController: UITabBarController {
         
     // MARK: - Navigation
     // MARK: Prepare
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?)
-    {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //        super.prepare(for: segue, sender: sender)
         switch(segue.identifier ?? "") {
         case "unwindToLogin":
