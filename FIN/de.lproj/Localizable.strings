@@ -170,7 +170,7 @@
 "bottomSegmentRepeatMonthly" = "Monatlich";
 "bottomSegmentRepeatYearly" = "Jährlich";
 
-"hasBeenAdded" = "wurde hinzugefügt.";
+"hasBeenAdded" = "wurde hinzugefügt";
 
 "addTagButton" = "Hinzufügen";
 "transactionAddedNotificationTitle" = "Hinzugefügt";

@@ -24,6 +24,8 @@ var editSplit = false
 var selectedSplitRow = [Int:Bool]()
 var selectedSplitSegment:Int?
 
+var dateSelected = Date()
+
 class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
 
     @IBOutlet var addTable: UITableView!
@@ -167,16 +169,16 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
             )
         })
         showSplitButton()
-        
-        if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
-            dayComponent.day = 0
-            let ramDate = calendar.date(byAdding: dayComponent, to: transactionData[5] as? Date ?? (updateCreateDate ?? Date())) ?? Date()
-            cell.datePicker.setDate(ramDate, animated: false)
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
+            cell.datePicker.setDate(dateSelected, animated: true)
+            cell.layoutIfNeeded()
+        }
+        
         initCategories()
         if reloadAddView {
             reloadAddView = false
@@ -211,13 +213,19 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
         if split.count != 0 {
             split.removeAll()
         }
-        if repeatTransaction {
-            repeatTransaction = false
-        }
+        
         tags.removeAll()
         selectedCategory = 1
         currencyExchangeRate = 1.00
     }
+    
+//    override func viewDidDisappear(_ animated: Bool) {
+//        super.viewDidDisappear(animated)
+//
+//        if repeatTransaction {
+//            repeatTransaction = false
+//        }
+//    }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -849,6 +857,10 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
             checkNotificationAuthorization()
         } else {
             addTable.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .fade)
+        }
+        if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
+            cell.datePicker.setDate(dateSelected, animated: true)
+            cell.layoutIfNeeded()
         }
         addNavButtons()
         setTitle()
@@ -1792,22 +1804,32 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
             }
         } while doubleTransaction
         
+        let debug = false
+        
         if repeatTransaction && (transactionData[5] as? Date ?? Date()) > Date() {
-            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: true, amount: saveAmount, uuid: (transactionData[10] as? UUID ?? UUID()))
+            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: true, amount: saveAmount, uuid: (transactionData[10] as? UUID ?? UUID()), debug: debug)
         } else {
-            beforeTransactionSave(saveAmount: saveAmount, isSave: isSave, seconds: seconds, uuid: (transactionData[10] as? UUID ?? UUID()))
+            beforeTransactionSave(saveAmount: saveAmount, isSave: isSave, seconds: seconds, uuid: (transactionData[10] as? UUID ?? UUID()), debug: debug)
         }
     }
     
-    func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double, uuid: UUID) {
+    func beforeTransactionSave(saveAmount: Double, isSave: Bool, seconds: Double, uuid: UUID, debug: Bool) {
         let saveTransactionReturn = dataHandler.saveTransaction(amount: saveAmount, category: transactionData[4] as? Int16 ?? 0, currencyCode: transactionData[1] as? String ?? "EUR", dateTime: transactionData[5] as? Date ?? Date(), descriptionNote: transactionData[3] as? String ?? "", exchangeRate: currencyExchangeRate ?? 1.0, tags: transactionData[6] as? String ?? "", isSave: isSave, isLiquid: transactionData[9] as? Bool ?? true, uuid: uuid)
         if saveTransactionReturn.0 {
             transactionDateTime = saveTransactionReturn.1
-            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount, uuid: uuid)
+            
+            if receiptTransaction ?? false {
+                DispatchQueue.main.async {
+                    self.saveReceiptImage(transactionUUID: uuid, image: self.receiptImage ?? UIImage(systemName: "xmark.octagon")!)
+                }
+            }
+            let uuidNEW = UUID()
+            
+            afterTransactionSave(seconds: seconds, isSave: isSave, futureRepeatTransaction: false, amount: saveAmount, uuid: uuidNEW, debug: debug)
         }
     }
     
-    func afterTransactionSave(seconds: Double, isSave: Bool, futureRepeatTransaction: Bool, amount: Double, uuid: UUID) {
+    func afterTransactionSave(seconds: Double, isSave: Bool, futureRepeatTransaction: Bool, amount: Double, uuid: UUID, debug: Bool) {
         var nextDateTime:Date?
         saveNewTag(newTags: transactionData[6] as? String ?? "")
         
@@ -1869,9 +1891,10 @@ class addTVC: UITableViewController, UIPopoverPresentationControllerDelegate, UI
             }
             
             let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
-            let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (transactionData[3] as? String ?? "") + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
-            
-            manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
+//            let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (transactionData[3] as? String ?? "") + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+            let notificationMsg = (transactionData[3] as? String ?? "") + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+
+            manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: "FIN", body: notificationMsg, datetime: comps)]
             manager.schedule()
             
             if !futureRepeatTransaction {
@@ -2121,6 +2144,7 @@ extension addTVC: cellShowReceiptDelegate {
     func receiptDatePressed(toSetDate: Date) {
         if !firstLoad {
             dateSelected = toSetDate
+            transactionData[5] = toSetDate
             if let cell = addTable.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellDateNewTVC {
                 cell.datePicker.setDate(toSetDate, animated: true)
             }

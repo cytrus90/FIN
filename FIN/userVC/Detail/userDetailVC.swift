@@ -445,7 +445,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                     8:categoryIsSave,
                     9:false,
                     10:categoryIcon,
-                    11:categoryIconLight
+                    11:categoryIconLight,
                 ] as [Int : Any]
                 userDetailCells[i] = dictRAM
                 i = i + 1

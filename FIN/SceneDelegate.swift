@@ -89,7 +89,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         filteredTagsZero = UserDefaults.standard.bool(forKey: "filteredTagsZero")
         filteredCategoriesZero = UserDefaults.standard.bool(forKey: "filteredCategoriesZero")
-        print("-0000")
+
         DispatchQueue.main.async {
             self.regularPayments()
         }
@@ -182,7 +182,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
                         
                 nextDateTime = Calendar.current.date(from: DateComponents(calendar: Calendar.current, year: nextDateTime?.get(.year), month: nextDateTime?.get(.month), day: nextDateTime?.get(.day), hour: nextDateTime?.get(.hour), minute: nextDateTime?.get(.minute), second: nextDateTime?.get(.second)))
-                        
+                
                 let nextDateTimeOriginal = nextDateTime
                         
                 if skipWeekends {
@@ -201,7 +201,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     
                     let querySaveTransaction = NSPredicate(format: "dateTime < %@ AND dateTime > %@", dateTimeTransactionPlus as NSDate, dateTimeTransactionMinus as NSDate)
                             
-                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 0 {
+                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: querySaveTransaction).count > 1 {
                         doubleTransaction = true
                         nextDateTime = dateTimeTransactionPlus
                     } else {
@@ -211,7 +211,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         
                 doubleTransaction = true
                 repeat {
-                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransInDB).count > 0 {
+                    if dataHandler.loadBulkQueried(entitie: "Transactions", query: queryTransInDB).count > 1 {
                         dataHandler.deleteDataSingle(entity: "Transactions", query: queryTransInDB)
                         doubleTransaction = true
                     } else {
@@ -248,14 +248,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 longDate.dateFormat = "ddMMyyyyHHmmss"
 
                 let comps = Calendar.current.dateComponents([.year, .month, .day , .hour, .minute, .second], from: nextDateTime ?? Date())
-                let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+//                let notificationMsg = NSLocalizedString("regularPaymentsTitle", comment: "Regular Payment") + ": " + (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
+                let notificationMsg = (descriptionNote) + " " + NSLocalizedString("hasBeenAdded", comment: "has been added")
                         
-                manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: notificationMsg, datetime: comps)]
+                manager.notifications = [LocalNotificationManager.Notification(id: longDate.string(from: nextDateTime ?? Date()), title: "FIN", body: notificationMsg, datetime: comps)]
                 manager.schedule()
-                        
-                break
+                                        
+//                break
             }
-            regularPayments()
+//            regularPayments()
         }
     }
 }

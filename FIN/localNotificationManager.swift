@@ -15,6 +15,7 @@ class LocalNotificationManager
     struct Notification {
         var id:String
         var title:String
+        var body:String
         var datetime:DateComponents
     }
     
@@ -52,9 +53,10 @@ class LocalNotificationManager
     
     private func scheduleNotifications() {
         for notification in notifications {
-            let content      = UNMutableNotificationContent()
-            content.title    = notification.title
-            content.sound    = .default
+            let content = UNMutableNotificationContent()
+            content.title = notification.title
+            content.body = notification.body
+            content.sound = .default
 
             let trigger = UNCalendarNotificationTrigger(dateMatching: notification.datetime, repeats: false)
             let request = UNNotificationRequest(identifier: notification.id, content: content, trigger: trigger)

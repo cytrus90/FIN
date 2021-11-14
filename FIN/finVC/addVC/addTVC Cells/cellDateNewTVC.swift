@@ -8,8 +8,6 @@
 
 import UIKit
 
-var dateSelected = Date()
-
 class cellDateNewTVC: UITableViewCell {
     
     @IBOutlet weak var cellDateOutlineView: UIView!
@@ -65,6 +63,8 @@ class cellDateNewTVC: UITableViewCell {
         
         datePicker.semanticContentAttribute = .forceRightToLeft
         datePicker.subviews.first?.semanticContentAttribute = .forceRightToLeft
+        
+        datePicker.setDate(dateSelected, animated: true)
         
         cellDateOutlineView.layer.borderWidth = 1
         cellDateOutlineView.layer.cornerRadius = 10
