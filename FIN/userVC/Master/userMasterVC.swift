@@ -65,9 +65,15 @@ class userMasterVC: UITableViewController {
 //        (self.splitViewController as! userSplitVC).initFirstSelected()
     }
     
+//    let alpakoImageView = UIImageView()
+//    var alpakoImageTrailingAnchor:NSLayoutConstraint?
+//    var alpakoImageBottomAnchor:NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        self.title = ""
+//        initInitialAlpakaImage()
+        
         if showAdds {
             NotificationCenter.default.addObserver(self, selector: #selector(purchaseFailed), name: Notification.Name("purchaseFailed"), object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(purchaseDone), name: Notification.Name("purchaseDone"), object: nil)
@@ -87,19 +93,21 @@ class userMasterVC: UITableViewController {
         
         initFirstSelected()
         initView(table: userTable)
-        
-        self.title = ""
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         activityIndicator.stopAnimating()
+//        self.userTable.backgroundView = UIView(frame: self.userTable.bounds)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         initFirstSelected()
         self.title = ""
+//        updateUserHeader()
+//        print("fjalösfjlkdjf")
+//        print(navTitle)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -128,6 +136,11 @@ class userMasterVC: UITableViewController {
         }
         viewDisappear = false
     }
+    
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        initAlpakaImage()
+//    }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -274,6 +287,33 @@ class userMasterVC: UITableViewController {
         activityIndicator.centerYAnchor.constraint(equalTo: table.safeAreaLayoutGuide.centerYAnchor, constant: 0).isActive = true
         activityIndicator.centerXAnchor.constraint(equalTo: table.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
     }
+    
+//    func initInitialAlpakaImage() {
+//        alpakoImageView.translatesAutoresizingMaskIntoConstraints = false
+//        alpakoImageView.heightAnchor.constraint(equalTo: alpakoImageView.widthAnchor, multiplier: 1.875).isActive = true // 1:1
+//        alpakoImageView.widthAnchor.constraint(equalToConstant: 50.00).isActive = true
+//        alpakoImageView.alpha = 1.0
+//    }
+//
+//    func initAlpakaImage() {
+//        alpakoImageView.removeFromSuperview()
+//
+//        if self.userTable.backgroundView != nil {
+//            userTable.backgroundView?.addSubview(alpakoImageView)
+//
+//            let heightTabPlus = (self.tabBarController?.tabBar.frame.size.height ?? 0.00) + 15.00
+//
+//            alpakoImageTrailingAnchor?.isActive = false
+//            alpakoImageTrailingAnchor = alpakoImageView.leadingAnchor.constraint(equalTo: (userTable.backgroundView?.safeAreaLayoutGuide.leadingAnchor)!, constant: 20.0)
+//            alpakoImageTrailingAnchor?.isActive = true
+//
+//            alpakoImageBottomAnchor?.isActive = false
+//            alpakoImageBottomAnchor = alpakoImageView.bottomAnchor.constraint(equalTo: (userTable.backgroundView?.safeAreaLayoutGuide.bottomAnchor)!, constant: -heightTabPlus)
+//            alpakoImageBottomAnchor?.isActive = true
+//
+//            alpakoImageView.image = UIImage(named: "userMasterTVC_alpaka")// UIImage(named: "userMasterTVC_alpaka")
+//        }
+//    }
     
     func initRows(indexPathSelected: IndexPath = IndexPath(row: 0, section: 0), clearRows: Bool = false) {
         for (row, _) in cellTitle {

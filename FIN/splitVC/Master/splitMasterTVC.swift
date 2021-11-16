@@ -44,8 +44,14 @@ class splitMasterTVC: UITableViewController {
     
     var initialLoad:Bool = true
     
+    let alpakoImageView = UIImageView()
+    var alpakoImageTrailingAnchor:NSLayoutConstraint?
+    var alpakoImageBottomAnchor:NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        initInitialAlpakaImage()
         
         self.title = ""
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNew))
@@ -107,6 +113,11 @@ class splitMasterTVC: UITableViewController {
 //        (self.splitViewController as! splitVC).initFirstSelected()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        initAlpakaImage()
+    }
+    
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         headerView.updatePosition()
@@ -132,6 +143,7 @@ class splitMasterTVC: UITableViewController {
     
     // MARK: -initViewFunctions
     func initView() {
+        self.splitTableView.backgroundView = UIView(frame: self.splitTableView.bounds)
         initTableAndHeaderView()
         initBottomBar()
     }
@@ -171,6 +183,36 @@ class splitMasterTVC: UITableViewController {
             bottom: 40,
             right: 0
         )
+    }
+    
+    func initInitialAlpakaImage() {
+        alpakoImageView.translatesAutoresizingMaskIntoConstraints = false
+        alpakoImageView.heightAnchor.constraint(equalTo: alpakoImageView.widthAnchor, multiplier: 0.82042).isActive = true // 1:1
+        alpakoImageView.widthAnchor.constraint(equalToConstant: 50.00).isActive = true
+        alpakoImageView.alpha = 1.0
+    }
+    
+    func initAlpakaImage() {
+        alpakoImageView.removeFromSuperview()
+        
+        if self.splitTableView.backgroundView != nil {
+            splitTableView.backgroundView?.addSubview(alpakoImageView)
+
+            var heightTabPlus = (self.tabBarController?.tabBar.frame.size.height ?? 0.00) + 5.0
+            if self.splitBottomBar.frame.width > (self.view.frame.width - alpakoImageView.frame.width) {
+                heightTabPlus = heightTabPlus + self.splitBottomBar.frame.height
+            }
+            
+            alpakoImageTrailingAnchor?.isActive = false
+            alpakoImageTrailingAnchor = alpakoImageView.trailingAnchor.constraint(equalTo: (splitTableView.backgroundView?.safeAreaLayoutGuide.trailingAnchor)!, constant: -25.0)
+            alpakoImageTrailingAnchor?.isActive = true
+            
+            alpakoImageBottomAnchor?.isActive = false
+            alpakoImageBottomAnchor = alpakoImageView.bottomAnchor.constraint(equalTo: (splitTableView.backgroundView?.safeAreaLayoutGuide.bottomAnchor)!, constant: -heightTabPlus)
+            alpakoImageBottomAnchor?.isActive = true
+
+            alpakoImageView.image = UIImage(named: "splitMasterTVC_alpaka")
+        }
     }
     
     func initBottomBar() {

@@ -79,10 +79,16 @@ class listMasterTVC: UITableViewController {
     var createDateUser:Date?
     var userDatePlus:Date = Date()
     var userDateMinus:Date = Date()
+
+    let alpakoImageView = UIImageView()
+    var alpakoImageTrailingAnchor:NSLayoutConstraint?
+    var alpakoImageBottomAnchor:NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        initInitialAlpakaImage()
+        
         self.title = ""
         
         // Keyboard dismiss
@@ -122,10 +128,6 @@ class listMasterTVC: UITableViewController {
         })
         initView()
         setData(timeInterval: timeInterval ?? 2, fDateShown: collectionCellData[carouselScrollingTodayId]?[4] as? Date ?? Date())
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -169,6 +171,11 @@ class listMasterTVC: UITableViewController {
             }
         }
         viewDisappear = false
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        initAlpakaImage()
     }
     
     override func viewSafeAreaInsetsDidChange() {
@@ -387,6 +394,7 @@ class listMasterTVC: UITableViewController {
     }
     
     func initView() {
+        self.listTable.backgroundView = UIView(frame: self.listTable.bounds)
         initSearchBar()
         initBottomBar()
         initCollectionView()
@@ -434,6 +442,36 @@ class listMasterTVC: UITableViewController {
         activityIndicator.centerXAnchor.constraint(equalTo: listTable.safeAreaLayoutGuide.centerXAnchor, constant: 0).isActive = true
         
         toggleListViewContentInset()
+    }
+    
+    func initInitialAlpakaImage() {
+        alpakoImageView.translatesAutoresizingMaskIntoConstraints = false
+        alpakoImageView.heightAnchor.constraint(equalTo: alpakoImageView.widthAnchor, multiplier: 1.04924).isActive = true // 1:1
+        alpakoImageView.widthAnchor.constraint(equalToConstant: 50.00).isActive = true
+        alpakoImageView.alpha = 1.0
+    }
+    
+    func initAlpakaImage() {
+        alpakoImageView.removeFromSuperview()
+        
+        if self.listTable.backgroundView != nil {
+            listTable.backgroundView?.addSubview(alpakoImageView)
+
+            var heightTabPlus = (self.tabBarController?.tabBar.frame.size.height ?? 0.00) + 5.0
+            if self.listBottomBar.frame.width > (self.view.frame.width - alpakoImageView.frame.width) {
+                heightTabPlus = heightTabPlus + self.listBottomBar.frame.height
+            }
+            
+            alpakoImageTrailingAnchor?.isActive = false
+            alpakoImageTrailingAnchor = alpakoImageView.trailingAnchor.constraint(equalTo: (listTable.backgroundView?.safeAreaLayoutGuide.trailingAnchor)!, constant: -25.0)
+            alpakoImageTrailingAnchor?.isActive = true
+            
+            alpakoImageBottomAnchor?.isActive = false
+            alpakoImageBottomAnchor = alpakoImageView.bottomAnchor.constraint(equalTo: (listTable.backgroundView?.safeAreaLayoutGuide.bottomAnchor)!, constant: -heightTabPlus)
+            alpakoImageBottomAnchor?.isActive = true
+
+            alpakoImageView.image = UIImage(named: "listMasterTVC_alpaka")
+        }
     }
     
     func updateCellIconAlpha() {

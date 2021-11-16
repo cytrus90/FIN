@@ -430,6 +430,8 @@
 "purchaseText" = "Wollen Sie diese und alle Premium Funktionen der App freischalten?";
 "buyTitle" = "Kaufen";
 
+"purchaseTextMaxReached" = "Maximale Anzahl erreicht. Wollen Sie diese und alle anderen Premium Funktionen der App freischalten?";
+
 "notFoundTitle" = "Nicht gefunden";
 "notFoundText" = "Es konnten keine vorhergehenden Einkäufe gefunden werden.";
 

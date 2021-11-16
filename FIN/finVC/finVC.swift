@@ -31,9 +31,15 @@ class finTVC: UITableViewController {
     var selectedSecond = 0
     var activeBudget = false
     
+    let alpakoImageView = UIImageView()
+    var alpakoImageTrailingAnchor:NSLayoutConstraint?
+    var alpakoImageBottomAnchor:NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         (self.tabBarController as? tabController)?.previousIndex = 0
+        
+        initInitialAlpakaImage()
         
         // Init Data
         initSettingsAndData()
@@ -61,6 +67,11 @@ class finTVC: UITableViewController {
         
         initView()
         initData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.finTableView.backgroundView = UIView(frame: self.finTableView.bounds)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -158,6 +169,8 @@ class finTVC: UITableViewController {
         if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
             cell.setLargeStackTrailingConstraint()
         }
+        
+        initAlpakaImage()
     }
     
     // MARK: -TABLE
@@ -460,6 +473,33 @@ class finTVC: UITableViewController {
             bottom: 5,
             right: 0
         )
+    }
+    
+    func initInitialAlpakaImage() {
+        alpakoImageView.translatesAutoresizingMaskIntoConstraints = false
+        alpakoImageView.heightAnchor.constraint(equalTo: alpakoImageView.widthAnchor, multiplier: 1.875).isActive = true // 1:1
+        alpakoImageView.heightAnchor.constraint(equalToConstant: 50.00).isActive = true
+        alpakoImageView.alpha = 1.0
+    }
+    
+    func initAlpakaImage() {
+        alpakoImageView.removeFromSuperview()
+        
+        if self.finTableView.backgroundView != nil {
+            finTableView.backgroundView?.addSubview(alpakoImageView)
+
+            let heightTabPlus = (self.tabBarController?.tabBar.frame.size.height ?? 0.00) + 7.00
+
+            alpakoImageTrailingAnchor?.isActive = false
+            alpakoImageTrailingAnchor = alpakoImageView.trailingAnchor.constraint(equalTo: (finTableView.backgroundView?.safeAreaLayoutGuide.trailingAnchor)!, constant: -25.0)
+            alpakoImageTrailingAnchor?.isActive = true
+            
+            alpakoImageBottomAnchor?.isActive = false
+            alpakoImageBottomAnchor = alpakoImageView.bottomAnchor.constraint(equalTo: (finTableView.backgroundView?.safeAreaLayoutGuide.bottomAnchor)!, constant: -heightTabPlus)
+            alpakoImageBottomAnchor?.isActive = true
+
+            alpakoImageView.image = UIImage(named: "finVC_alpaka")
+        }
     }
     
     // MARK: -Init Data

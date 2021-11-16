@@ -464,7 +464,9 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             numberOfSections = 1
             userDetailCells.removeAll()
             
-            var countData = dataHandler.loadDataGrouped(entitie: "Transactions", groupByColumn: "categoryID") as? [[String:Any]]
+            let queryTransactionsCount = NSPredicate(format: "dateTime != nil")
+            
+            var countData = dataHandler.loadDataGroupedQueried(entitie: "Transactions", groupByColumn: "categoryID", query: queryTransactionsCount) as? [[String:Any]]
 
             var j:Int = 0 // order within Group (expenses, income, savings)
             var i = 0 // order within Table
@@ -1258,8 +1260,8 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func addCategoryTabbed() {
-        if showAdds {
-            let purchaseText = NSLocalizedString("purchaseText", comment: "Unlock Features Text")
+        if showAdds && (dataHandler.loadBulk(entitie: "Categories").count >= 5) {
+            let purchaseText = NSLocalizedString("purchaseTextMaxReached", comment: "Unlock Unlimited Features Text")
             let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
             let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
 
@@ -1267,10 +1269,10 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                 self.purchaseButtonPressed()
             }))
             purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-                
+                    
             purchasePrompt.popoverPresentationController?.sourceView = self.view
             purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-                
+                    
             self.present(purchasePrompt, animated: true)
         } else {
             selectedCategoryDetail = -1

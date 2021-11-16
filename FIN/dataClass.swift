@@ -507,6 +507,35 @@ class dataClass {
         return false
     }
     
+    func loadDataGroupedQueried(entitie:String, groupByColumn:String, query: NSPredicate) -> Any {
+        var managedContext:NSManagedObjectContext {
+            persistentContainer.viewContext
+        }
+        let keypathExp = NSExpression(forKeyPath: groupByColumn) // can be any column
+        let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer64AttributeType
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entitie)
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.propertiesToGroupBy = [groupByColumn]
+        fetchRequest.propertiesToFetch = [groupByColumn, countDesc]
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = query
+        
+        do {
+            let loadData = try managedContext.fetch(fetchRequest)
+            return loadData
+        } catch {
+            print("Could not fetch. \(error)")
+        }
+        return false
+    }
+    
     func loadDataGroupedQueriedSorted(entitie:String, groupByColumn:String, query:NSPredicate, sort:[NSSortDescriptor]) -> Any {
         var managedContext:NSManagedObjectContext {
             persistentContainer.viewContext

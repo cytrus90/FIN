@@ -290,17 +290,14 @@ class categoryTVC: UITableViewController {
                     }
                     
                     dataHandler.deleteData(entity: "Transactions", query: queryDeleteTransactions)
-                        
-                    for regularPayment in dataHandler.loadBulkDataWithQuery(entitie: "RegularPayments", query: queryDeleteTransactions) {
-                            
+                    for regularPayment in dataHandler.loadBulkQueried(entitie: "RegularPayments", query: queryDeleteTransactions) {
                         let createDateRegularPlus = Calendar.current.date(byAdding: .second, value: 1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
                         let createDateRegularMinus = Calendar.current.date(byAdding: .second, value: -1, to: (regularPayment.value(forKey: "dateTimeNext") as? Date ?? Date()))!
                         let queryDeleteSplitsRegularPayments = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", createDateRegularPlus as NSDate, createDateRegularMinus as NSDate)
                             
                         dataHandler.deleteData(entity: "SplitsRegularPayments", query: queryDeleteSplitsRegularPayments)
                     }
-                        
-                    let uuidImagesRegular = dataHandler.loadBulkQueried(entitie: "Transactions", query: queryDeleteTransactions)
+                    let uuidImagesRegular = dataHandler.loadBulkQueried(entitie: "RegularPayments", query: queryDeleteTransactions)
                         
                     for data in uuidImagesRegular {
                         let imageName = (data.value(forKey: "uuid") as? UUID ?? UUID()).uuidString + ".png"
@@ -319,7 +316,7 @@ class categoryTVC: UITableViewController {
                     NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "categoryChanged")))
                     NotificationCenter.default.post(name: Notification.Name("updateFinVC"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name("detailListDisappeared"), object: nil, userInfo: nil)
-                        
+                    
                     self.updateCategoryOrder()
                         
                     self.dismiss(animated: true, completion: nil)
@@ -334,6 +331,7 @@ class categoryTVC: UITableViewController {
     }
     
     func updateCategoryOrder() {
+        print("ORDER____")
         // get & order all categories
         // order each one
         // update enties
@@ -343,6 +341,7 @@ class categoryTVC: UITableViewController {
         var savings = [CategoryEntry]()
         
         for category in dataHandler.loadBulkDataSorted(entitie: "Categories", sort: [NSSortDescriptor(key: "cID", ascending: true)]) {
+            print(category)
             if (category.value(forKey: "isSave") as? Bool ?? false) { // isSave
                 savings.append(CategoryEntry(
                                 cID: category.value(forKey: "cID") as? Int16 ?? -1,
@@ -363,7 +362,10 @@ class categoryTVC: UITableViewController {
                                     order: category.value(forKey: "order") as? Int16 ?? category.value(forKey: "cID") as? Int16 ?? -1))
             }
         }
-        
+        print("0003")
+        print(expenses)
+        print(income)
+        print(savings)
         var expensesSorted = expenses.sorted(by: { $0.order < $1.order })
         var incomeSorted = income.sorted(by: { $0.order < $1.order })
         var savingsSorted = savings.sorted(by: { $0.order < $1.order })
@@ -398,6 +400,7 @@ class categoryTVC: UITableViewController {
                 _ = dataHandler.saveQueriedAttribute(entity: "Categories", attribute: "order", query: querySave, value: savingsSorted[i].order)
             }
         }
+        print("0004")
     }
     
     @objc func openIconPicker() {
