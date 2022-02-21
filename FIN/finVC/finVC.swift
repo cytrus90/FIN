@@ -1164,7 +1164,6 @@ extension finTVC {
     
     // MARK: -Load Exchange Rates
     func getCurrencyData() {
-        print("getCurrencyData_#1")
         let currencyDB = dataHandler.loadBulkData(entitie: "Currency", orderBy: "currencyCode")
         if currencyDB.count > 0 {
             for data in currencyDB {

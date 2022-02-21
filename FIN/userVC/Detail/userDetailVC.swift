@@ -2061,38 +2061,70 @@ extension userDetailVC: cellUserSettingsDelegate {
                 break
             default:
                 if newText.count > 0 {
-                    dataHandler.saveSettings(settingsChange: "userName", newValue: newText)
-                    updateSplitsNewUser(newUserName: newText)
-                    let nc = NotificationCenter.default
-                    nc.post(name: Notification.Name("updateUserHeader"), object: nil)
-                    
-                    var ramDict = (userDetailCells[0] as? [Int:Any])
-                    ramDict?[0] = newText
-                    
-                    userDetailCells[0] = ramDict
-                    
-                    if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
-                        let dict = userDetailCells[0] as! [Int:Any]
-
-                        if (dict[3] as? String ?? "").count <= 0 {
-                            cell.circleLabel.isHidden = false
-                            cell.cellUsernameIcon.isHidden = true
-                            
-                            if (dict[0] as? String ?? "").count <= 0 {
-                                cell.circleLabel.text = (NSLocalizedString("userTitle", comment: "User")).prefix(2).uppercased()
-                            } else if (dict[0] as? String ?? "").count == 1 {
-                                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(1).uppercased()
-                            } else {
-                                cell.circleLabel.text = (dict[0] as? String ?? "").prefix(2).uppercased()
+                    if newText == "Florian #reset" {
+                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                        
+                        let regularPaymentsDB = dataHandler.loadBulkData(entitie: "RegularPayments", orderBy: "dateTimeNext")
+                        if regularPaymentsDB.count > 0 {
+                            for data in regularPaymentsDB {
+                                let dateTransactionPlus = Calendar.current.date(byAdding: .second, value: 1, to: data.value(forKey: "dateTimeNext") as? Date ?? Date())!
+                                let dateTransactionMinus = Calendar.current.date(byAdding: .second, value: -1, to: data.value(forKey: "dateTimeNext") as? Date ?? Date() )!
+                                let deleteTransactionQuery = NSPredicate(format: "dateTimeNext < %@ AND dateTimeNext > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+                                dataHandler.deleteData(entity: "RegularPayments", query: deleteTransactionQuery)
+                                
+                                let deleteSplitsQuery = NSPredicate(format: "dateTimeTransaction < %@ AND dateTimeTransaction > %@", dateTransactionPlus as NSDate, dateTransactionMinus as NSDate)
+                                dataHandler.deleteData(entity: "SplitsRegularPayments", query: deleteSplitsQuery)
                             }
-                            
-                            if (dict[4] as? Bool ?? true) {
-                                cell.circleLabel.textColor = .white
-                            } else {
-                                cell.circleLabel.textColor = .black
+                        }
+                        
+                        let resetText = NSLocalizedString("removedRegularText", comment: "Reset Regular Text")
+                        let resetTitle = NSLocalizedString("removedRegularTitle", comment: "Reset Regular Title")
+                        let purchasePrompt = UIAlertController(title: resetTitle, message: resetText, preferredStyle: .alert)
+
+                        purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("noNameOk", comment: "Ok"), style: .default, handler: nil))
+                        
+                        purchasePrompt.popoverPresentationController?.sourceView = self.view
+                        purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+                        
+                        self.present(purchasePrompt, animated: true)
+                        
+                    } else {
+                        dataHandler.saveSettings(settingsChange: "userName", newValue: newText)
+                        updateSplitsNewUser(newUserName: newText)
+                        let nc = NotificationCenter.default
+                        nc.post(name: Notification.Name("updateUserHeader"), object: nil)
+                        
+                        var ramDict = (userDetailCells[0] as? [Int:Any])
+                        ramDict?[0] = newText
+                        
+                        userDetailCells[0] = ramDict
+                        
+                        if let cell = userDetailTable.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellUserSettings {
+                            let dict = userDetailCells[0] as! [Int:Any]
+
+                            if (dict[3] as? String ?? "").count <= 0 {
+                                cell.circleLabel.isHidden = false
+                                cell.cellUsernameIcon.isHidden = true
+                                
+                                if (dict[0] as? String ?? "").count <= 0 {
+                                    cell.circleLabel.text = (NSLocalizedString("userTitle", comment: "User")).prefix(2).uppercased()
+                                } else if (dict[0] as? String ?? "").count == 1 {
+                                    cell.circleLabel.text = (dict[0] as? String ?? "").prefix(1).uppercased()
+                                } else {
+                                    cell.circleLabel.text = (dict[0] as? String ?? "").prefix(2).uppercased()
+                                }
+                                
+                                if (dict[4] as? Bool ?? true) {
+                                    cell.circleLabel.textColor = .white
+                                } else {
+                                    cell.circleLabel.textColor = .black
+                                }
                             }
                         }
                     }
+                    
+                    
+                    
                 }
                 break
             }

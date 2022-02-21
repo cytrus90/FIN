@@ -428,6 +428,9 @@
 "purchaseText" = "Do you want to unlock this and all other premium features?";
 "buyTitle" = "Buy";
 
+"removedRegularTitle" = "Deleted";
+"removedRegularText" = "All Regular Payments have been removed.";
+
 "purchaseTextMaxReached" = "You have reached the maximum number of free categories. Do you want to unlock this and all other premium features?";
 
 "notFoundTitle" = "Not found";

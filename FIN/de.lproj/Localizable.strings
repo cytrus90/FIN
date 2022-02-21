@@ -430,6 +430,9 @@
 "purchaseText" = "Wollen Sie diese und alle Premium Funktionen der App freischalten?";
 "buyTitle" = "Kaufen";
 
+"removedRegularTitle" = "Gelöscht";
+"removedRegularText" = "Alle regelmäßigen Zahlungen wurden gelöscht.";
+
 "purchaseTextMaxReached" = "Maximale Anzahl erreicht. Wollen Sie diese und alle anderen Premium Funktionen der App freischalten?";
 
 "notFoundTitle" = "Nicht gefunden";
