@@ -56,7 +56,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
     var monthNameFormat = DateFormatter()
     var yearNameFormat = DateFormatter()
     
-    weak var axisFormatDelegate: IAxisValueFormatter?
+    weak var axisFormatDelegate: AxisValueFormatter?
     
     var numberFormatter = NumberFormatter()
     var lineNumberFormatter = NumberFormatter()
@@ -704,7 +704,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
 //            line2.fillColor = NSUIColor.red.withAlphaComponent(0.2)
             line2.fillColor = .clear
             
-            data.addDataSet(line2)
+            data.append(line2)
             
             break
         case 1: // Savings
@@ -737,7 +737,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             line1.lineWidth = 3
         }
         
-        data.addDataSet(line1)
+        data.append(line1)
         
         lineChart.data = data
         lineChart.data?.setDrawValues(false)
@@ -856,7 +856,7 @@ class graphsVC: UIViewController, UICollectionViewDelegate {
             line1.lineWidth = 3
         }
         
-        data.addDataSet(line1)
+        data.append(line1)
         
         secondLineChart.data = data
         secondLineChart.data?.setDrawValues(false)
@@ -2815,7 +2815,7 @@ extension graphsVC: ChartViewDelegate {
 }
 
 // MARK: axisFormatDelegate
-extension graphsVC: IAxisValueFormatter {
+extension graphsVC: AxisValueFormatter {
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
         if graphOption2 == 1 { // Monthly
             let dateFormatterRAM = DateFormatter()

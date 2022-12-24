@@ -216,7 +216,7 @@ class finTVC: UITableViewController {
         cell.pieChart.clear()
         cell.pieChart.data?.dataSets.removeAll()
         
-        let dataSet = PieChartDataSet(entries: (topOverviewCellData[1] as? [PieChartDataEntry]), label: "")
+        let dataSet = PieChartDataSet(entries: ((topOverviewCellData[1] as? [PieChartDataEntry])!), label: "")
         dataSet.colors = (topOverviewCellData[2] as? [UIColor] ?? [UIColor.red])
         
         let data = PieChartData(dataSet: dataSet)
@@ -814,7 +814,7 @@ class finTVC: UITableViewController {
             cell.pieChart.clear()
             cell.pieChart.data?.dataSets.removeAll()
             
-            let dataSet = PieChartDataSet(entries: (topOverviewCellData[1] as? [PieChartDataEntry]), label: "")
+            let dataSet = PieChartDataSet(entries: ((topOverviewCellData[1] as? [PieChartDataEntry])!), label: "")
             dataSet.colors = (topOverviewCellData[2] as? [UIColor] ?? [UIColor.red])
             
             let data = PieChartData(dataSet: dataSet)

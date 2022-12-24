@@ -8,5 +8,5 @@ pod 'SmoothPicker'
 pod 'IGColorPicker'
 pod 'ScalingCarousel'
 pod 'CSVImporter'
-pod 'Charts'
+pod 'Charts', :git => 'https://github.com/danielgindi/Charts.git', :branch => 'master'
 end

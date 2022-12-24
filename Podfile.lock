@@ -1,7 +1,8 @@
 PODS:
-  - Charts (3.6.0):
-    - Charts/Core (= 3.6.0)
-  - Charts/Core (3.6.0)
+  - Charts (4.1.0):
+    - Charts/Core (= 4.1.0)
+  - Charts/Core (4.1.0):
+    - SwiftAlgorithms (~> 1.0)
   - CSVImporter (1.9.1):
     - HandySwift (~> 2.5)
   - HandySwift (2.8.0)
@@ -12,10 +13,11 @@ PODS:
   - SmoothPicker (1.1.3):
     - SnapKit (~> 4.2.0)
   - SnapKit (4.2.0)
+  - SwiftAlgorithms (1.0.0)
   - TagListView (1.4.1)
 
 DEPENDENCIES:
-  - Charts
+  - Charts (from `https://github.com/danielgindi/Charts.git`, branch `master`)
   - CSVImporter
   - IGColorPicker
   - ScalingCarousel
@@ -24,7 +26,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Charts
     - CSVImporter
     - HandySwift
     - IGColorPicker
@@ -32,10 +33,21 @@ SPEC REPOS:
     - ScalingCarousel
     - SmoothPicker
     - SnapKit
+    - SwiftAlgorithms
     - TagListView
 
+EXTERNAL SOURCES:
+  Charts:
+    :branch: master
+    :git: https://github.com/danielgindi/Charts.git
+
+CHECKOUT OPTIONS:
+  Charts:
+    :commit: 203700608a6e956e591e7387d77423fa3fea6947
+    :git: https://github.com/danielgindi/Charts.git
+
 SPEC CHECKSUMS:
-  Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
+  Charts: 354f86803d11d9c35de280587fef50d1af063978
   CSVImporter: 1543192354ecf8abccd2cc77947d190fd9cf2b18
   HandySwift: 0a32500215166a56a58f972f7ce1641361307e8b
   IGColorPicker: f6034f8629aa90cce308a76ecc0fdf2afed0bf34
@@ -43,8 +55,9 @@ SPEC CHECKSUMS:
   ScalingCarousel: d40f0ce438af5cfb2225e2f723f7161597961128
   SmoothPicker: a3f4b3c3a95fff73f20d526856aeff2c32696375
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
+  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
 
-PODFILE CHECKSUM: 9bb66fa224bbc19239f3d9a3fb58e5d88ba42164
+PODFILE CHECKSUM: 173a2660e5a8c6c21044c8fe535b2bf3182b3dce
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
