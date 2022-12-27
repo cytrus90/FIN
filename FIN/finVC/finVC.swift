@@ -165,6 +165,7 @@ class finTVC: UITableViewController {
                 cell.stackView.addArrangedSubview(label)
             }
             cell.initSelectedCell(selectedIndex: self.selectedSecond)
+            cell.layoutSubviews()
         }
         if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
             cell.setLargeStackTrailingConstraint()

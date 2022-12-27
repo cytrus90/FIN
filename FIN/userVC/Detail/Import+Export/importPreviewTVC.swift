@@ -244,7 +244,7 @@ class importPreviewTVC: UITableViewController {
             var dateTime = importRAM.value(forKey: "dateTime") as? Date ?? Date()
             let currencyCode = importRAM.value(forKey: "currencyCode") as? String ?? "EUR"
             let amount = importRAM.value(forKey: "amount") as? Double ?? 0.00
-            let realAmount = importRAM.value(forKey: "realAmount") as? Double ?? 0.00
+            let realAmount = abs(importRAM.value(forKey: "realAmount") as? Double ?? 0.00)
             
             let color = rowData[i]?[12] as? Int16 ?? 0
             
@@ -333,7 +333,7 @@ class importPreviewTVC: UITableViewController {
             }
             
             rowData[i] = [
-                0:(importRAM.value(forKey: "realAmount") as? Double ?? 0.00),
+                0:abs(importRAM.value(forKey: "realAmount") as? Double ?? 0.00),
                 1:getSymbol(forCurrencyCode: importRAM.value(forKey: "currencyCode") as? String ?? "EUR") ?? "€",
                 6:(importRAM.value(forKey: "descriptionNote") as? String ?? (importRAM.value(forKey: "category") as? String ?? "")),
                 7:mediumDate.string(from: (importRAM.value(forKey: "dateTime") as? Date ?? Date())),

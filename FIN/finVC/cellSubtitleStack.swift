@@ -40,7 +40,7 @@ class cellSubtitleStack: UITableViewCell {
     }
 
     func setLargeStackTrailingConstraint() {
-        stackViewTrailingConstraint.constant = 15
+        stackViewTrailingConstraint.constant = 0
     }
     
     func initCells() {
