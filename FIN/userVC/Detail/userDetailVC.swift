@@ -446,6 +446,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
                     9:false,
                     10:categoryIcon,
                     11:categoryIconLight,
+                    12:(repeatingTransaction.value(forKey: "tags") as? String) ?? ""
                 ] as [Int : Any]
                 userDetailCells[i] = dictRAM
                 i = i + 1
@@ -805,6 +806,13 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         cell.descriptionSubtitleLabel.text = (getDayForDate(dayDate: ((userDetailCells[indexPath.row] as? [Int:Any])?[4] as? Date ?? Date())))
 
         // NSLocalizedString("nextText", comment: "Next") + 
+        
+        if ((userDetailCells[indexPath.row] as? [Int:Any])?[12] as? String ?? "").count > 0 {
+            cell.tagsCellView = createTags(tagsString: (userDetailCells[indexPath.row] as? [Int:Any])?[12] as? String ?? "")
+            cell.initTags()
+        } else {
+            cell.removeTags()
+        }
         
         if ((userDetailCells[indexPath.row] as? [Int:Any])?[8] as? Bool ?? false) { // isSave
             cell.icon.isHidden = false
@@ -1260,26 +1268,26 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func addCategoryTabbed() {
-        if showAdds && (dataHandler.loadBulk(entitie: "Categories").count >= 5) {
-            let purchaseText = NSLocalizedString("purchaseTextMaxReached", comment: "Unlock Unlimited Features Text")
-            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-                self.purchaseButtonPressed()
-            }))
-            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-                    
-            purchasePrompt.popoverPresentationController?.sourceView = self.view
-            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-                    
-            self.present(purchasePrompt, animated: true)
-        } else {
+//        if showAdds && (dataHandler.loadBulk(entitie: "Categories").count >= 5) {
+//            let purchaseText = NSLocalizedString("purchaseTextMaxReached", comment: "Unlock Unlimited Features Text")
+//            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+//            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+//
+//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+//                self.purchaseButtonPressed()
+//            }))
+//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+//
+//            purchasePrompt.popoverPresentationController?.sourceView = self.view
+//            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+//
+//            self.present(purchasePrompt, animated: true)
+//        } else {
             selectedCategoryDetail = -1
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
             }
-        }
+//        }
     }
     
     @objc func categoryReorderDone() {
@@ -1558,6 +1566,31 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
             }
             checkForCategoryDuplicates()
         }
+    }
+    
+    func createTags(tagsString:String) -> [Int:[String:Any]] {
+        var tagsCellView = [Int:[String:Any]]()
+
+        for tag in tagsString.components(separatedBy: "*;*") {
+            if tag.count <= 0 {
+                continue
+            } else {
+                let tagName = tag
+                var tagColor:Int?
+                
+                let queryTag = NSPredicate(format: "tagName == %@", (tag as NSString))
+                
+                for tagData in dataHandler.loadBulkQueried(entitie: "Tags", query: queryTag) {
+                    tagColor = Int(tagData.value(forKey: "tagColor") as? Int16 ?? 0)
+                }
+                
+                tagsCellView[tagsCellView.count] = [
+                    "Title":tagName,
+                    "Color":tagColor ?? 0
+                ]
+            }
+        }
+        return tagsCellView
     }
     
     // MARK: HELPER FUNCTIONS

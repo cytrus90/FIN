@@ -74,6 +74,7 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(traitCollection)
+        initTags()
         initView()
     }
     
@@ -221,8 +222,12 @@ class cellAmountTVC: UITableViewCell, TagListViewDelegate, UITextFieldDelegate {
             for tag in tags {
                 let newTag = tagListView.addTag(tag.value["Title"] as? String ?? "Tag")
                 newTag.borderColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0)
-                newTag.tagBackgroundColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0).withAlphaComponent(0.7)
-                newTag.textColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0)
+                newTag.tagBackgroundColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0).withAlphaComponent(0.5)
+                if userInterfaceStyle == .light {
+                    newTag.textColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0).darker() ?? UIColor.black
+                } else {
+                    newTag.textColor = UIColor.randomColor(color: tag.value["Color"] as? Int ?? 0).lighter() ?? UIColor.white
+                }
                 newTag.selectedTextColor = newTag.textColor
                 newTag.tag = tag.key
             }

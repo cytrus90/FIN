@@ -37,6 +37,7 @@ class cellAmountDetailTVC: UITableViewCell {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(traitCollection)
+        initTags()
         initView()
     }
     
@@ -103,8 +104,12 @@ class cellAmountDetailTVC: UITableViewCell {
             for (_,value) in tagsDetailView.enumerated() {
                 let newTag = tagListView.addTag(value.value["Title"] as? String ?? "Tag")
                 newTag.borderColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
-                newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.7)
-                newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
+                newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.5)
+                if userInterfaceStyle == .light {
+                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).darker() ?? UIColor.black
+                } else {
+                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).lighter() ?? UIColor.white
+                }
                 newTag.tag = value.key
             }
             tagListHeight?.isActive = false

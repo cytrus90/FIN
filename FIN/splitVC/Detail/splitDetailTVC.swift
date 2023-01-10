@@ -41,7 +41,7 @@ class splitDetailTVC: UITableViewController {
     
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! headerView
+        return nib.instantiate(withOwner: splitDetailTVC.self, options: nil).first as! headerView
     }()
     let headerHeightFactor = CGFloat(0.10)
     var navTitle:String?
@@ -272,6 +272,13 @@ class splitDetailTVC: UITableViewController {
         }
         
         cell.amountLabel.text = rowData[indexPath.row]?[0] as? String ?? ""
+        
+        if (rowData[indexPath.row]?[11] as? String ?? "").count > 0 {
+            cell.tagsCellView = createTags(tagsString: (rowData[indexPath.row]?[11] as? String ?? ""))
+            cell.initTags()
+        } else {
+            cell.removeTags()
+        }
         
         if (rowData[indexPath.row]?[2] as? Bool ?? false) {
             if (rowData[indexPath.row]?[6] as? Bool ?? false) {
@@ -558,6 +565,7 @@ class splitDetailTVC: UITableViewController {
                         8:isSplit(transactionDateTime: (split.value(forKey: "dateTimeTransaction") as? Date ?? Date())),
                         9:icon,
                         10:iconLight,
+                        11:(transaction.value(forKey: "tags") as? String ?? ""),
                         13:false
                     ]
                     i = i + 1
@@ -730,6 +738,31 @@ class splitDetailTVC: UITableViewController {
             break
         }
         return isSplit
+    }
+    
+    func createTags(tagsString:String) -> [Int:[String:Any]] {
+        var tagsCellView = [Int:[String:Any]]()
+
+        for tag in tagsString.components(separatedBy: "*;*") {
+            if tag.count <= 0 {
+                continue
+            } else {
+                let tagName = tag
+                var tagColor:Int?
+                
+                let queryTag = NSPredicate(format: "tagName == %@", (tag as NSString))
+                
+                for tagData in dataHandler.loadBulkQueried(entitie: "Tags", query: queryTag) {
+                    tagColor = Int(tagData.value(forKey: "tagColor") as? Int16 ?? 0)
+                }
+                
+                tagsCellView[tagsCellView.count] = [
+                    "Title":tagName,
+                    "Color":tagColor ?? 0
+                ]
+            }
+        }
+        return tagsCellView
     }
     
     @objc func settleSplits() {

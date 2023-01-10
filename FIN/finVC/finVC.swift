@@ -328,6 +328,13 @@ class finTVC: UITableViewController {
         
         cell.transactionArrowIcon.image = UIImage(named: "arrowRight")?.withRenderingMode(.alwaysTemplate)
         
+        if (topOverviewCellData[12] as? String ?? "").count > 0 {
+            cell.tagsCellView = createTags(tagsString: (topOverviewCellData[12] as? String ?? ""))
+            cell.initTags()
+        } else {
+            cell.removeTags()
+        }
+        
         if (topOverviewCellData[7] as? Date) != nil {
             let interaction = UIContextMenuInteraction(delegate: self)
             cell.latestTransactionStackView.addInteraction(interaction)
@@ -526,6 +533,7 @@ class finTVC: UITableViewController {
         var isSplit:Int16 = 2
         var icon = ""
         var isLight = true
+        var tags:String = ""
         
         let dateSort = NSSortDescriptor(key: "dateTime", ascending: false)
         if let transaction = dataHandler.loadBulkSortedOneEntry(entitie: "Transactions", sort: [dateSort]) as? NSManagedObject {
@@ -533,6 +541,7 @@ class finTVC: UITableViewController {
             descriptionNote = transaction.value(forKey: "descriptionNote") as? String ?? ""
             dateTime = transaction.value(forKey: "dateTime") as? Date ?? Date()
             isSplit = transaction.value(forKey: "isSplit") as? Int16 ?? 0
+            tags = transaction.value(forKey: "tags") as? String ?? ""
             
             let queryCategory = NSPredicate(format: "cID == %i", (transaction.value(forKey: "categoryID") as? Int16 ?? 0))
             color = dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "color", query: queryCategory) as? Int16 ?? 0
@@ -557,7 +566,8 @@ class finTVC: UITableViewController {
             8:isSave,
             9:isSplit,
             10:icon,
-            11:isLight
+            11:isLight,
+            12:tags
         ]
     }
     
@@ -683,6 +693,31 @@ class finTVC: UITableViewController {
             colors.append(UIColor(red: 0/255, green: 204/255, blue: 68/255, alpha: 0.8))
         }
         return (entries,colors)
+    }
+    
+    func createTags(tagsString:String) -> [Int:[String:Any]] {
+        var tagsCellView = [Int:[String:Any]]()
+
+        for tag in tagsString.components(separatedBy: "*;*") {
+            if tag.count <= 0 {
+                continue
+            } else {
+                let tagName = tag
+                var tagColor:Int?
+                
+                let queryTag = NSPredicate(format: "tagName == %@", (tag as NSString))
+                
+                for tagData in dataHandler.loadBulkQueried(entitie: "Tags", query: queryTag) {
+                    tagColor = Int(tagData.value(forKey: "tagColor") as? Int16 ?? 0)
+                }
+                
+                tagsCellView[tagsCellView.count] = [
+                    "Title":tagName,
+                    "Color":tagColor ?? 0
+                ]
+            }
+        }
+        return tagsCellView
     }
     
     func getSplitBalances() -> (Double,Double) {

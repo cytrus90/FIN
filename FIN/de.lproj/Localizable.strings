@@ -560,7 +560,7 @@
 // Set Icon
 "setIcon" = "Icon festlegen";
 "previewIcon" = "Vorschau";
-"lightColorIcon" = "hell";
+"lightColorIcon" = "Hell";
 "setIconButton" = "Fertig";
 
 // #### CURRENCY ####

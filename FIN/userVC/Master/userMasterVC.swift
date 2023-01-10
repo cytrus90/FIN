@@ -55,7 +55,7 @@ class userMasterVC: UITableViewController {
     
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! headerView
+        return nib.instantiate(withOwner: userMasterVC.self, options: nil).first as! headerView
     }()
     
     override func viewSafeAreaInsetsDidChange() {

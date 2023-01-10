@@ -42,7 +42,7 @@ class listMasterTVC: UITableViewController {
     
     var collectionView:listCollectionView = {
         let nib = UINib(nibName: "listCollectionView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! listCollectionView
+        return nib.instantiate(withOwner: listMasterTVC.self, options: nil).first as! listCollectionView
     }()
     let collectionViewHeightFactor:CGFloat = 0.29335
     var listInset = false
@@ -57,7 +57,7 @@ class listMasterTVC: UITableViewController {
     var searchBarWide = false
     var searchBar:searchBar = {
         let nib = UINib(nibName: "searchBar", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! searchBar
+        return nib.instantiate(withOwner: listMasterTVC.self, options: nil).first as! searchBar
     }()
     var widthAnchorConstraintSearchBar: NSLayoutConstraint?
     var yAnchorConstraintSearchBar: NSLayoutConstraint?
@@ -67,7 +67,7 @@ class listMasterTVC: UITableViewController {
     
     var listBottomBar:listBottomBar = {
         let nib = UINib(nibName: "listBottomBar", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! listBottomBar
+        return nib.instantiate(withOwner: listMasterTVC.self, options: nil).first as! listBottomBar
     }()
     var widthAnchorConstraintBottomBar: NSLayoutConstraint?
     var bottomAnchorConstraintBottomBar: NSLayoutConstraint?
@@ -356,6 +356,14 @@ class listMasterTVC: UITableViewController {
         } else {
             cell.splitIcon.isHidden = true
         }
+        
+        if ((transferData[(indexPath.row)]?[17] as? String ?? "").count > 0) {
+            cell.tagsCellView = createTags(tagsString: (transferData[(indexPath.row)]?[17] as? String ?? ""))
+            cell.initTags()
+        } else {
+            cell.removeTags()
+        }
+        
         cell.amountLabel.sizeToFit()
         cell.descriptionLabel.sizeToFit()
         cell.dateLabel.sizeToFit()
@@ -472,6 +480,31 @@ class listMasterTVC: UITableViewController {
 
             alpakoImageView.image = UIImage(named: "listMasterTVC_alpaka")
         }
+    }
+    
+    func createTags(tagsString:String) -> [Int:[String:Any]] {
+        var tagsCellView = [Int:[String:Any]]()
+
+        for tag in tagsString.components(separatedBy: "*;*") {
+            if tag.count <= 0 {
+                continue
+            } else {
+                let tagName = tag
+                var tagColor:Int?
+                
+                let queryTag = NSPredicate(format: "tagName == %@", (tag as NSString))
+                
+                for tagData in dataHandler.loadBulkQueried(entitie: "Tags", query: queryTag) {
+                    tagColor = Int(tagData.value(forKey: "tagColor") as? Int16 ?? 0)
+                }
+                
+                tagsCellView[tagsCellView.count] = [
+                    "Title":tagName,
+                    "Color":tagColor ?? 0
+                ]
+            }
+        }
+        return tagsCellView
     }
     
     func updateCellIconAlpha() {
@@ -1224,7 +1257,8 @@ class listMasterTVC: UITableViewController {
 //        13: isAdd?,
 //        14:icon,
 //        15:iconLight,
-//        16:uuid
+//        16:uuid,
+//        17:tags
 
         for data in result {
             if ((data.value(forKey: "isSplit") as? Int16) == 0) || userPartOfSplit(dateTime: data.value(forKey: "dateTime") as? Date ?? Date())  {
@@ -1255,7 +1289,8 @@ class listMasterTVC: UITableViewController {
                         13:false,
                         14:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "icon", query: categoryQuery) as? String ?? "",
                         15:dataHandler.loadQueriedAttribute(entitie: "Categories", attibute: "iconLight", query: categoryQuery) as? Bool ?? true,
-                        16:uuid as Any
+                        16:uuid as Any,
+                        17:data.value(forKey: "tags") as? String ?? ""
                     ]
                     i = i + 1
                 }

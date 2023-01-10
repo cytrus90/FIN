@@ -28,7 +28,7 @@ class settleSplitTVC: UITableViewController {
     
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! headerView
+        return nib.instantiate(withOwner: settleSplitTVC.self, options: nil).first as! headerView
     }()
     let headerHeightFactor = CGFloat(0.10)
     var navTitle:String = ""
