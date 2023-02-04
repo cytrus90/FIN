@@ -175,6 +175,18 @@ class listMasterTVC: UITableViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        for row in 0...listTable.numberOfRows(inSection: 0) {
+            if let cell = listTable.cellForRow(at: IndexPath(row: row, section: 0)) as? cellListEntry {
+                if ((transferData[row]?[17] as? String ?? "").count > 0) {
+                    cell.tagsCellView = createTags(tagsString: (transferData[row]?[17] as? String ?? ""))
+                    cell.initTags()
+                } else {
+                    cell.removeTags()
+                }
+            }
+        }
+        
         initAlpakaImage()
     }
     
@@ -485,7 +497,7 @@ class listMasterTVC: UITableViewController {
     func createTags(tagsString:String) -> [Int:[String:Any]] {
         var tagsCellView = [Int:[String:Any]]()
 
-        for tag in tagsString.components(separatedBy: "*;*") {
+        for tag in tagsString.components(separatedBy: "*;*").sorted() {
             if tag.count <= 0 {
                 continue
             } else {

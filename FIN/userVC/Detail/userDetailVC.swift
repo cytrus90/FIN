@@ -29,13 +29,13 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! headerView
+        return nib.instantiate(withOwner: userDetailVC.self, options: nil).first as! headerView
     }()
     
     // Bottom Bar for re-Ordering of Categories
     var categoryBottomBar:categoryBottomBar = {
         let nib = UINib(nibName: "categoriesBottomBar", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! categoryBottomBar
+        return nib.instantiate(withOwner: userDetailVC.self, options: nil).first as! categoryBottomBar
     }()
     var widthAnchorConstraintBottomBar: NSLayoutConstraint?
     var bottomAnchorConstraintBottomBar: NSLayoutConstraint?
@@ -141,6 +141,22 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
         
         if (dataHandler.loadBulkData(entitie: "Categories", orderBy: "cID")).count <= 0 && selectedRowForCells == 1 {
             initCategories()
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if selectedRowForCells == 0 {
+            for row in 0...userDetailTable.numberOfRows(inSection: 0) {
+                if let cell = userDetailTable.cellForRow(at: IndexPath(row: row, section: 0)) as? cellDetailGeneralTVC {
+                    if ((userDetailCells[row] as? [Int:Any])?[12] as? String ?? "").count > 0 {
+                        cell.tagsCellView = createTags(tagsString: (userDetailCells[row] as? [Int:Any])?[12] as? String ?? "")
+                        cell.initTags()
+                    } else {
+                        cell.removeTags()
+                    }
+                }
+            }
         }
     }
     
@@ -1268,26 +1284,26 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     }
     
     @objc func addCategoryTabbed() {
-//        if showAdds && (dataHandler.loadBulk(entitie: "Categories").count >= 5) {
-//            let purchaseText = NSLocalizedString("purchaseTextMaxReached", comment: "Unlock Unlimited Features Text")
-//            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
-//            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
-//
-//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
-//                self.purchaseButtonPressed()
-//            }))
-//            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
-//
-//            purchasePrompt.popoverPresentationController?.sourceView = self.view
-//            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
-//
-//            self.present(purchasePrompt, animated: true)
-//        } else {
+        if showAdds && (dataHandler.loadBulk(entitie: "Categories").count >= 5) {
+            let purchaseText = NSLocalizedString("purchaseTextMaxReached", comment: "Unlock Unlimited Features Text")
+            let purchaseTitle = NSLocalizedString("purchaseTitle", comment: "Unlock Features Title")
+            let purchasePrompt = UIAlertController(title: purchaseTitle, message: purchaseText, preferredStyle: .alert)
+
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteYes", comment: "Delete Yes"), style: .cancel, handler: { action in
+                self.purchaseButtonPressed()
+            }))
+            purchasePrompt.addAction(UIAlertAction(title: NSLocalizedString("deleteNo", comment: "Delete No"), style: .default, handler: nil))
+
+            purchasePrompt.popoverPresentationController?.sourceView = self.view
+            purchasePrompt.popoverPresentationController?.sourceRect = self.view.bounds
+
+            self.present(purchasePrompt, animated: true)
+        } else {
             selectedCategoryDetail = -1
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "toCategoryTCVSeque", sender: nil)
             }
-//        }
+        }
     }
     
     @objc func categoryReorderDone() {
@@ -1571,7 +1587,7 @@ class userDetailVC: UITableViewController, UITextFieldDelegate, MFMailComposeVie
     func createTags(tagsString:String) -> [Int:[String:Any]] {
         var tagsCellView = [Int:[String:Any]]()
 
-        for tag in tagsString.components(separatedBy: "*;*") {
+        for tag in tagsString.components(separatedBy: "*;*").sorted() {
             if tag.count <= 0 {
                 continue
             } else {

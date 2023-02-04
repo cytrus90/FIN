@@ -170,6 +170,14 @@ class finTVC: UITableViewController {
         if let cell = finTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? cellSubtitleStack {
             cell.setLargeStackTrailingConstraint()
         }
+        if let cell = finTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? cellTopOverview {
+            if (topOverviewCellData[12] as? String ?? "").count > 0 {
+                cell.tagsInDetailView = createTags(tagsString: (topOverviewCellData[12] as? String ?? ""))
+                cell.initTags()
+            } else {
+                cell.removeTags()
+            }
+        }
         
         initAlpakaImage()
     }
@@ -329,7 +337,7 @@ class finTVC: UITableViewController {
         cell.transactionArrowIcon.image = UIImage(named: "arrowRight")?.withRenderingMode(.alwaysTemplate)
         
         if (topOverviewCellData[12] as? String ?? "").count > 0 {
-            cell.tagsCellView = createTags(tagsString: (topOverviewCellData[12] as? String ?? ""))
+            cell.tagsInDetailView = createTags(tagsString: (topOverviewCellData[12] as? String ?? ""))
             cell.initTags()
         } else {
             cell.removeTags()
@@ -697,8 +705,8 @@ class finTVC: UITableViewController {
     
     func createTags(tagsString:String) -> [Int:[String:Any]] {
         var tagsCellView = [Int:[String:Any]]()
-
-        for tag in tagsString.components(separatedBy: "*;*") {
+        
+        for tag in tagsString.components(separatedBy: "*;*").sorted() {
             if tag.count <= 0 {
                 continue
             } else {

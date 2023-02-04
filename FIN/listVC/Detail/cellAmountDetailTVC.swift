@@ -19,7 +19,7 @@ class cellAmountDetailTVC: UITableViewCell {
     @IBOutlet weak var descriptionLabel: UILabel!
     
     @IBOutlet weak var tagListView: TagListView!
-    
+    var tagsInDetailView = [Int:[String:Any]]()
     var tagListHeight: NSLayoutConstraint?
     
     var currencyButtonHeight: NSLayoutConstraint?
@@ -97,20 +97,20 @@ class cellAmountDetailTVC: UITableViewCell {
             tagListView.backgroundColor = .black
         }
                 
-        if tagsDetailView.count > 0 {
+        if tagsInDetailView.count > 0 {
             if tagListView.isHidden {
                 tagListView.isHidden = false
             }
-            for (_,value) in tagsDetailView.enumerated() {
-                let newTag = tagListView.addTag(value.value["Title"] as? String ?? "Tag")
-                newTag.borderColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
-                newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.5)
+            for key in Array(self.tagsInDetailView.keys.sorted()) {
+                let newTag = tagListView.addTag(self.tagsInDetailView[key]?["Title"] as? String ?? "Tag")
+                newTag.borderColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0)
+                newTag.tagBackgroundColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).withAlphaComponent(0.5)
                 if userInterfaceStyle == .light {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).darker() ?? UIColor.black
+                    newTag.textColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).darker() ?? UIColor.black
                 } else {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).lighter() ?? UIColor.white
+                    newTag.textColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).lighter() ?? UIColor.white
                 }
-                newTag.tag = value.key
+                newTag.tag = key
             }
             tagListHeight?.isActive = false
             tagListHeight = tagListView.heightAnchor.constraint(equalToConstant: (tagListView.intrinsicContentSize.height))

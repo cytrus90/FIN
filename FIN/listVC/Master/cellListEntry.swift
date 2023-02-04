@@ -85,16 +85,16 @@ class cellListEntry: UITableViewCell {
             if tagListView.isHidden {
                 tagListView.isHidden = false
             }
-            for (_,value) in self.tagsCellView.enumerated() {
-                let newTag = tagListView.addTag(value.value["Title"] as? String ?? "Tag")
-                newTag.borderColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
-                newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.5)
+            for key in Array(self.tagsCellView.keys.sorted()) {
+                let newTag = tagListView.addTag(self.tagsCellView[key]?["Title"] as? String ?? "Tag")
+                newTag.borderColor = UIColor.randomColor(color: self.tagsCellView[key]?["Color"] as? Int ?? 0)
+                newTag.tagBackgroundColor = UIColor.randomColor(color: self.tagsCellView[key]?["Color"] as? Int ?? 0).withAlphaComponent(0.5)
                 if userInterfaceStyle == .light {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).darker() ?? UIColor.black
+                    newTag.textColor = UIColor.randomColor(color: self.tagsCellView[key]?["Color"] as? Int ?? 0).darker() ?? UIColor.black
                 } else {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).lighter() ?? UIColor.white
+                    newTag.textColor = UIColor.randomColor(color: self.tagsCellView[key]?["Color"] as? Int ?? 0).lighter() ?? UIColor.white
                 }
-                newTag.tag = value.key
+                newTag.tag = key
             }
             tagListHeight?.isActive = false
             tagListHeight = tagListView.heightAnchor.constraint(equalToConstant: (tagListView.intrinsicContentSize.height))

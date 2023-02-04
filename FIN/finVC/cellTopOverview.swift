@@ -37,8 +37,7 @@ class cellTopOverview: UITableViewCell {
     
     @IBOutlet weak var tagListView: TagListView!
     var tagListHeight: NSLayoutConstraint?
-    
-    var tagsCellView = [Int:[String:Any]]()
+    var tagsInDetailView = [Int:[String:Any]]()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -74,7 +73,7 @@ class cellTopOverview: UITableViewCell {
     }
     
     func initTags() {
-        tagListView.removeAllTags()
+        self.tagListView.removeAllTags()
         
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .footnote)
@@ -88,21 +87,22 @@ class cellTopOverview: UITableViewCell {
             tagListView.backgroundColor = .clear
         }
                 
-        if self.tagsCellView.count > 0 {
+        if self.tagsInDetailView.count > 0 {
             if tagListView.isHidden {
                 tagListView.isHidden = false
             }
-            for (_,value) in self.tagsCellView.enumerated() {
-                let newTag = tagListView.addTag(value.value["Title"] as? String ?? "Tag")
-                newTag.borderColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0)
-                newTag.tagBackgroundColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).withAlphaComponent(0.5)
+            //for (_,value) in self.tagsInDetailView.sorted(by: key) {
+            for key in Array(self.tagsInDetailView.keys.sorted()) {
+                let newTag = tagListView.addTag(self.tagsInDetailView[key]?["Title"] as? String ?? "Tag")
+                newTag.borderColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0)
+                newTag.tagBackgroundColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).withAlphaComponent(0.5)
                 if userInterfaceStyle == .light {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).darker() ?? UIColor.black
+                    newTag.textColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).darker() ?? UIColor.black
                 } else {
-                    newTag.textColor = UIColor.randomColor(color: value.value["Color"] as? Int ?? 0).lighter() ?? UIColor.white
+                    newTag.textColor = UIColor.randomColor(color: self.tagsInDetailView[key]?["Color"] as? Int ?? 0).lighter() ?? UIColor.white
                 }
                 
-                newTag.tag = value.key
+                newTag.tag = key
             }
             tagListHeight?.isActive = false
             tagListHeight = tagListView.heightAnchor.constraint(equalToConstant: (tagListView.intrinsicContentSize.height))
@@ -110,10 +110,12 @@ class cellTopOverview: UITableViewCell {
         } else {
             tagListView.isHidden = true
         }
+        // self.layoutIfNeeded()
     }
     
     func removeTags() {
         tagListView.removeAllTags()
         tagListView.isHidden = true
+        self.layoutIfNeeded()
     }
 }

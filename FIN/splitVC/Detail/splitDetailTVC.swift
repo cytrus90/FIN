@@ -119,6 +119,20 @@ class splitDetailTVC: UITableViewController {
         viewDisappear = false
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        for row in 0...detailSplitViewTable.numberOfRows(inSection: 0) {
+            if let cell = detailSplitViewTable.cellForRow(at: IndexPath(row: row, section: 0)) as? cellSplitGeneral {
+                if (rowData[row]?[11] as? String ?? "").count > 0 {
+                    cell.tagsCellView = createTags(tagsString: (rowData[row]?[11] as? String ?? ""))
+                    cell.initTags()
+                } else {
+                    cell.removeTags()
+                }
+            }
+        }
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
@@ -743,7 +757,7 @@ class splitDetailTVC: UITableViewController {
     func createTags(tagsString:String) -> [Int:[String:Any]] {
         var tagsCellView = [Int:[String:Any]]()
 
-        for tag in tagsString.components(separatedBy: "*;*") {
+        for tag in tagsString.components(separatedBy: "*;*").sorted() {
             if tag.count <= 0 {
                 continue
             } else {

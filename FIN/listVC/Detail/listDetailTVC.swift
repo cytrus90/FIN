@@ -9,15 +9,13 @@
 import UIKit
 import CoreData
 
-var tagsDetailView = [Int:[String:Any]]()
-
 class listDetailTVC: UITableViewController {
 
     @IBOutlet var tableviewListDetail: UITableView!
     
     var headerView:headerView = {
         let nib = UINib(nibName: "headerView", bundle: nil)
-        return nib.instantiate(withOwner: self, options: nil).first as! headerView
+        return nib.instantiate(withOwner: listDetailTVC.self, options: nil).first as! headerView
     }()
     let headerHeightFactor = CGFloat(0.10)
     var navTitle = NSLocalizedString("viewTitleListDetail", comment: "Transaction Detail Title")
@@ -243,6 +241,9 @@ class listDetailTVC: UITableViewController {
         cell.amountCell.text = numberFormatter.string(from: NSNumber(value: ((rowData[0] as? [Int:Any])?[0] as? Double ?? 0.00)))
         cell.currencyButton.setTitle(getSymbol(forCurrencyCode: ((rowData[0] as? [Int:Any])?[1] as? String ?? "EUR")), for: .normal)
         cell.descriptionLabel.text = (rowData[0] as? [Int:Any])?[2] as? String ?? ""
+        
+        cell.tagsInDetailView = (rowData[0] as? [Int:Any])?[3] as? [Int:[String:Any]] ?? [:]
+        cell.initTags()
         
         let amountTab = UITapGestureRecognizer(target: self, action: #selector(amountCellPressed))
         cell.addGestureRecognizer(amountTab)
@@ -589,7 +590,7 @@ class listDetailTVC: UITableViewController {
             uuid = transaction.value(forKey: "uuid") as? UUID ?? UUID()
         }
         
-        createTags(tagsString: (transactionTags ?? ""))
+        tags = createTags(tagsString: (transactionTags ?? ""))
 
         // Get Data from Category
         let queryCategory = NSPredicate(format: "cID == %@", ((categoryID ?? 0) as Int16) as NSNumber)
@@ -605,7 +606,8 @@ class listDetailTVC: UITableViewController {
         let ramDictAmount = [ // Amount Cell
             0:amount ?? 0.00,
             1:currencyCode ?? "EUR",
-            2:description ?? "Description"
+            2:description ?? "Description",
+            3:tags
         ] as [Int : Any]
         rowData[0] = ramDictAmount
         
@@ -749,10 +751,10 @@ class listDetailTVC: UITableViewController {
         completion(true)
     }
     
-    func createTags(tagsString:String) {
-        tagsDetailView.removeAll()
+    func createTags(tagsString:String) -> [Int:[String:Any]] {
+        var tagsDetailView = [Int:[String:Any]]()
 
-        for tag in tagsString.components(separatedBy: "*;*") {
+        for tag in tagsString.components(separatedBy: "*;*").sorted() {
             if tag.count <= 0 {
                 continue
             } else {
@@ -771,6 +773,7 @@ class listDetailTVC: UITableViewController {
                 ]
             }
         }
+        return tagsDetailView
     }
     
     func checkIfReceiptImage(transactionUUID: UUID) -> Bool {
